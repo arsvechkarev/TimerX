@@ -22,10 +22,10 @@ public class MainActivity extends AppCompatActivity {
     textTimer = findViewById(R.id.text_timer);
     stopwatch = new Stopwatch(new TimeTickListener() {
       @Override
-      public void onTimeTick(long millis) {
-        textTimer.setText(String.valueOf(stopwatch.getTime()));
+      public void onTimeTick(String time) {
+        textTimer.setText(time);
       }
-    });
+    }, "lala");
 
     findViewById(R.id.btn_start).setOnClickListener(new OnClickListener() {
       @Override
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         stopwatch.reset();
-        textTimer.setText("");
+        textTimer.setText("0");
       }
     });
   }

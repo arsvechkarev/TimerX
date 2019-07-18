@@ -16,28 +16,25 @@ public class Stopwatch {
   private static final int MSG = 29;
 
   /**
-   * Current time of stopwatch
+   * Current time check stopwatch in millis
    */
   private long currentTime;
 
   /**
-   * Started time of stopwatch
+   * Started time check stopwatch in millis
    */
   private long baseTime;
 
   /**
-   * Current state of timer
+   * Current state check timer
    */
   private TimerState state = TimerState.INACTIVE;
 
   private final TimeTickListener tickListener;
-  private final String parseFormat;
-
   private final TimeFormatter formatter;
 
   public Stopwatch(TimeTickListener tickListener, String parseFormat) {
     this.tickListener = tickListener;
-    this.parseFormat = parseFormat;
     formatter = new TimeFormatter(parseFormat);
   }
 
