@@ -1,19 +1,24 @@
-package com.arsvechkarev.timerview;
+package com.arsvechkarev.timerx;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import com.arsvechkarev.timerx.format.Semantic;
+import com.arsvechkarev.timerx.format.TimeFormatter;
+import com.arsvechkarev.timerx.format.Validator;
 
 /**
- * Class for counting time
+ * Class for counting time in standard order
+ *
+ * @author Arseny Svechkarev
  */
 public class Stopwatch {
 
   /**
    * Message id for {@link #handler}
    */
-  private static final int MSG = 29;
+  private static final int MSG = 1;
 
   /**
    * Current time check stopwatch in millis
@@ -33,16 +38,23 @@ public class Stopwatch {
   private final TimeTickListener tickListener;
   private final TimeFormatter formatter;
 
+  /**
+   * Delay time for handler in millis
+   */
+  private long delay;
+
   public Stopwatch(TimeTickListener tickListener, String parseFormat) {
     this.tickListener = tickListener;
-    formatter = new TimeFormatter(parseFormat);
+    Semantic semantic = new Semantic(parseFormat);
+    Validator.check(semantic);
+    formatter = new TimeFormatter(semantic);
+    delay = formatter.getOptimizedDelay();
   }
 
   public void start() {
     if (state != TimerState.ACTIVE) {
-      // if timer paused or active
       baseTime = (state == TimerState.INACTIVE)
-          // first timer start
+          // start timer again
           ? SystemClock.elapsedRealtime()
           // resume timer
           : SystemClock.elapsedRealtime() - currentTime;
@@ -69,13 +81,14 @@ public class Stopwatch {
 
   @SuppressLint("HandlerLeak")
   private final Handler handler = new Handler() {
-
     @Override
     public void handleMessage(Message msg) {
       synchronized (Stopwatch.this) {
+        long executionStartedTime = SystemClock.elapsedRealtime();
         currentTime = SystemClock.elapsedRealtime() - baseTime;
         tickListener.onTimeTick(formatter.format(currentTime));
-        sendMessageDelayed(obtainMessage(MSG), 1);
+        long executionDelay = SystemClock.elapsedRealtime() - executionStartedTime;
+        sendMessageDelayed(obtainMessage(MSG), delay - executionDelay);
       }
     }
   };

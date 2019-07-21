@@ -6,7 +6,7 @@
   android:layout_height="match_parent"
   android:orientation="vertical"
   android:gravity="center_horizontal"
-  tools:context="com.arsvechkarev.timerviewexample.MainActivity">
+  tools:context="com.arsvechkarev.timerxexample.MainActivity">
 
   <TextView
     android:id="@+id/text_timer"

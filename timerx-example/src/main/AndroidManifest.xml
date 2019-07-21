@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.arsvechkarev.timerviewexample">
+  package="com.arsvechkarev.timerxexample">
 
   <application
     android:allowBackup="true"
@@ -10,7 +10,7 @@
     android:supportsRtl="true"
     android:theme="@style/AppTheme">
 
-    <activity android:name="com.arsvechkarev.timerviewexample.MainActivity">
+    <activity android:name="com.arsvechkarev.timerxexample.MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <action android:name="android.intent.action.VIEW"/>

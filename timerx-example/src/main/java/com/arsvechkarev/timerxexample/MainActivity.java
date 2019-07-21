@@ -1,4 +1,4 @@
-package com.arsvechkarev.timerviewexample;
+package com.arsvechkarev.timerxexample;
 
 import android.os.Bundle;
 import android.view.View;
@@ -6,8 +6,8 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import com.arsvechkarev.timerview.Stopwatch;
-import com.arsvechkarev.timerview.TimeTickListener;
+import com.arsvechkarev.timerx.Stopwatch;
+import com.arsvechkarev.timerx.TimeTickListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
       public void onTimeTick(String time) {
         textTimer.setText(time);
       }
-    }, "lala");
+    }, "#Hello: MM::SS::LL");
 
     findViewById(R.id.btn_start).setOnClickListener(new OnClickListener() {
       @Override

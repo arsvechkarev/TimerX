@@ -1,4 +1,4 @@
-package com.arsvechkarev.timerview;
+package com.arsvechkarev.timerx;
 
 public interface TimeTickListener {
 

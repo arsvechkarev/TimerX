@@ -1,4 +1,4 @@
-package com.arsvechkarev.timerview.exceptions;
+package com.arsvechkarev.timerx.exceptions;
 
 public class NoNecessarySymbolsException extends RuntimeException {
 
