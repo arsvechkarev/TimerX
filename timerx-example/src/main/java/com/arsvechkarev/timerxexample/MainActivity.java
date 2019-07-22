@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.arsvechkarev.timerx.Stopwatch;
 import com.arsvechkarev.timerx.TimeTickListener;
+import com.arsvechkarev.timerx.TimeUnits;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -25,12 +26,22 @@ public class MainActivity extends AppCompatActivity {
       public void onTimeTick(String time) {
         textTimer.setText(time);
       }
-    }, "#Hello: MM::SS::LL");
+    }, "Format#Start: MM::SS::")
+        .changeFormatWhen(10, TimeUnits.SECONDS, "Format10: MM:SS")
+        .changeFormatWhen(5, TimeUnits.SECONDS, "Format5: SSSSSS")
+        .changeFormatWhen(15, TimeUnits.SECONDS, "Format15: SS#L");
 
     findViewById(R.id.btn_start).setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
         stopwatch.start();
+
+//        new Handler().postDelayed(new Runnable() {
+//          @Override
+//          public void run() {
+//            stopwatch.changeFormatWhen(20, TimeUnits.SECONDS, "Format20: SS -> LL#L");
+//          }
+//        }, 19000);
       }
     });
 

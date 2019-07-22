@@ -1,14 +1,7 @@
 package com.arsvechkarev.timerx.format;
 
-import static com.arsvechkarev.timerx.Constants.TimeUnits.HOURS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.MILLIS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.MINUTES;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.SECONDS;
+import com.arsvechkarev.timerx.TimeUnits;
 
-import com.arsvechkarev.timerx.Constants.TimeUnits;
-
-// todo: handle with weaker access
-@SuppressWarnings("WeakerAccess")
 public class Semantic {
 
   private String format;
@@ -18,19 +11,19 @@ public class Semantic {
   private int secondsCount = 0;
   private int millisCount = 0;
 
-  public void setHoursCount(int hoursCount) {
+  void setHoursCount(int hoursCount) {
     this.hoursCount = hoursCount;
   }
 
-  public void setMinutesCount(int minutesCount) {
+  void setMinutesCount(int minutesCount) {
     this.minutesCount = minutesCount;
   }
 
-  public void setSecondsCount(int secondsCount) {
+  void setSecondsCount(int secondsCount) {
     this.secondsCount = secondsCount;
   }
 
-  public void setMillisCount(int millisCount) {
+  void setMillisCount(int millisCount) {
     this.millisCount = millisCount;
   }
 
@@ -42,22 +35,22 @@ public class Semantic {
     return format;
   }
 
-  public boolean has(int unitType) {
+  boolean has(TimeUnits unitType) {
     switch (unitType) {
-      case TimeUnits.HOURS:
+      case HOURS:
         return hoursCount > 0;
-      case TimeUnits.MINUTES:
+      case MINUTES:
         return minutesCount > 0;
-      case TimeUnits.SECONDS:
+      case SECONDS:
         return secondsCount > 0;
-      case TimeUnits.MILLIS:
+      case MILLIS:
         return millisCount > 0;
       default:
         throw new IllegalArgumentException("Incorrect type of unit");
     }
   }
 
-  public int countOf(int unitType) {
+  int countOf(TimeUnits unitType) {
     switch (unitType) {
       case HOURS:
         return hoursCount;

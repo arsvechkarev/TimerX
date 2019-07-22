@@ -4,12 +4,14 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import com.arsvechkarev.timerx.format.Analyzer;
 import com.arsvechkarev.timerx.format.Semantic;
 import com.arsvechkarev.timerx.format.TimeFormatter;
-import com.arsvechkarev.timerx.format.Validator;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 /**
- * Class for counting time in standard order
+ * Class for counting millis in standard order
  *
  * @author Arseny Svechkarev
  */
@@ -18,17 +20,22 @@ public class Stopwatch {
   /**
    * Message id for {@link #handler}
    */
-  private static final int MSG = 1;
+  private static final int MSG = 999;
 
   /**
-   * Current time check stopwatch in millis
+   * Current millis check stopwatch in millis
    */
   private long currentTime;
 
   /**
-   * Started time check stopwatch in millis
+   * Started millis check stopwatch in millis
    */
   private long baseTime;
+
+  /**
+   * Delay millis for handler in millis
+   */
+  private long delay;
 
   /**
    * Current state check timer
@@ -36,28 +43,38 @@ public class Stopwatch {
   private TimerState state = TimerState.INACTIVE;
 
   private final TimeTickListener tickListener;
-  private final TimeFormatter formatter;
+
+  private TimeFormatter formatter;
+  private final Semantic startSemantic;
 
   /**
-   * Delay time for handler in millis
+   * Set of formats to change
    */
-  private long delay;
+  private SortedSet<MillisSemanticHolder> formatsHolder = new TreeSet<>();
+  private SortedSet<MillisSemanticHolder> copyOfFormatsHolder;
 
-  public Stopwatch(TimeTickListener tickListener, String parseFormat) {
+  public Stopwatch(TimeTickListener tickListener, String format) {
     this.tickListener = tickListener;
-    Semantic semantic = new Semantic(parseFormat);
-    Validator.check(semantic);
-    formatter = new TimeFormatter(semantic);
-    delay = formatter.getOptimizedDelay();
+    this.startSemantic = Analyzer.checkFormat(format);
+    applyFormat(startSemantic);
+  }
+
+  public Stopwatch changeFormatWhen(long time, TimeUnits timeUnitType, String newFormat) {
+    Semantic semantic = Analyzer.checkFormat(newFormat);
+    long millis = Utils.millisOf(time, timeUnitType);
+    formatsHolder.add(new MillisSemanticHolder(millis, semantic));
+    return this;
   }
 
   public void start() {
     if (state != TimerState.ACTIVE) {
-      baseTime = (state == TimerState.INACTIVE)
-          // start timer again
-          ? SystemClock.elapsedRealtime()
-          // resume timer
-          : SystemClock.elapsedRealtime() - currentTime;
+      if (state == TimerState.INACTIVE) {
+        copyOfFormatsHolder = new TreeSet<>(formatsHolder);
+        applyFormat(startSemantic);
+        baseTime = SystemClock.elapsedRealtime();
+      } else {
+        baseTime = SystemClock.elapsedRealtime() - currentTime;
+      }
       handler.sendMessage(handler.obtainMessage(MSG));
       state = TimerState.ACTIVE;
     }
@@ -79,6 +96,11 @@ public class Stopwatch {
     return currentTime;
   }
 
+  private void applyFormat(Semantic semantic) {
+    formatter = new TimeFormatter(semantic);
+    delay = formatter.getOptimizedDelay();
+  }
+
   @SuppressLint("HandlerLeak")
   private final Handler handler = new Handler() {
     @Override
@@ -86,10 +108,21 @@ public class Stopwatch {
       synchronized (Stopwatch.this) {
         long executionStartedTime = SystemClock.elapsedRealtime();
         currentTime = SystemClock.elapsedRealtime() - baseTime;
+        changeFormatIfNeed();
         tickListener.onTimeTick(formatter.format(currentTime));
         long executionDelay = SystemClock.elapsedRealtime() - executionStartedTime;
         sendMessageDelayed(obtainMessage(MSG), delay - executionDelay);
       }
     }
   };
+
+  private void changeFormatIfNeed() {
+    if (copyOfFormatsHolder.size() > 0
+        && !formatter.currentFormat()
+        .equals(copyOfFormatsHolder.first().getSemantic().getFormat())
+        && currentTime >= copyOfFormatsHolder.first().getMillis()) {
+      applyFormat(copyOfFormatsHolder.first().getSemantic());
+      copyOfFormatsHolder.remove(copyOfFormatsHolder.first());
+    }
+  }
 }

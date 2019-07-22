@@ -4,10 +4,10 @@ import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_HOURS;
 import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_MILLIS;
 import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_MINUTES;
 import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_SECONDS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.HOURS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.MILLIS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.MINUTES;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.SECONDS;
+import static com.arsvechkarev.timerx.TimeUnits.HOURS;
+import static com.arsvechkarev.timerx.TimeUnits.MILLIS;
+import static com.arsvechkarev.timerx.TimeUnits.MINUTES;
+import static com.arsvechkarev.timerx.TimeUnits.SECONDS;
 
 import com.arsvechkarev.timerx.exceptions.IllegalSymbolsCombinationException;
 import com.arsvechkarev.timerx.exceptions.IllegalSymbolsPositionException;

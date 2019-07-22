@@ -13,15 +13,18 @@ import static com.arsvechkarev.timerx.Constants.Patterns.STANDARD_HOURS;
 import static com.arsvechkarev.timerx.Constants.Patterns.STANDARD_MILLIS;
 import static com.arsvechkarev.timerx.Constants.Patterns.STANDARD_MINUTES;
 import static com.arsvechkarev.timerx.Constants.Patterns.STANDARD_SECONDS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.HOURS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.MILLIS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.MILLIS_IN_SECOND;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.MINUTES;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.MINUTES_IN_HOUR;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.NONE;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.SECONDS;
-import static com.arsvechkarev.timerx.Constants.TimeUnits.SECONDS_IN_MINUTE;
+import static com.arsvechkarev.timerx.Constants.TimeValues.MILLIS_IN_SECOND;
+import static com.arsvechkarev.timerx.Constants.TimeValues.MINUTES_IN_HOUR;
+import static com.arsvechkarev.timerx.Constants.TimeValues.NONE;
+import static com.arsvechkarev.timerx.Constants.TimeValues.SECONDS_IN_MINUTE;
 import static com.arsvechkarev.timerx.Constants.ZERO;
+import static com.arsvechkarev.timerx.TimeUnits.HOURS;
+import static com.arsvechkarev.timerx.TimeUnits.MILLIS;
+import static com.arsvechkarev.timerx.TimeUnits.MINUTES;
+import static com.arsvechkarev.timerx.TimeUnits.SECONDS;
+
+import androidx.annotation.NonNull;
+import com.arsvechkarev.timerx.TimeUnits;
 
 public class TimeFormatter {
 
@@ -29,7 +32,7 @@ public class TimeFormatter {
   private final TimeContainer timeContainer;
   private final String format;
 
-  public TimeFormatter(Semantic semantic) {
+  public TimeFormatter(@NonNull Semantic semantic) {
     this.semantic = semantic;
     this.format = semantic.getFormat();
     timeContainer = new TimeContainer();
@@ -51,6 +54,11 @@ public class TimeFormatter {
     return delay;
   }
 
+  public String currentFormat() {
+    return semantic.getFormat();
+  }
+
+  @NonNull
   public String format(long delayTime) {
     TimeContainer units = timeUnitsOf(delayTime);
     long millisToShow = NONE;
@@ -107,7 +115,7 @@ public class TimeFormatter {
         .replaceAll(ESCAPED_MILLIS, STANDARD_MILLIS);
   }
 
-  private String getFormatOf(long number, int numberType) {
+  private String getFormatOf(long number, TimeUnits numberType) {
     if (number != NONE) {
       if (number == 0) {
         return zerosBy(semantic.countOf(numberType));
