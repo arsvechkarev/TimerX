@@ -6,135 +6,135 @@ import com.arsvechkarev.timerx.exceptions.NoNecessarySymbolsException;
 import org.junit.Test;
 
 @SuppressWarnings("SpellCheckingInspection")
-public class ValidatorTest {
+public class AnalyzerTest {
 
   @Test
   public void positiveTest1() {
-    Validator.check(new Semantic("HH:MM:SS.LLL"));
+    Analyzer.check("HH:MM:SS.LLL");
   }
 
   @Test
   public void positiveTest2() {
-    Validator.check(new Semantic("HhSMM"));
+    Analyzer.check("HhSMM");
   }
 
   @Test
   public void positiveTest3() {
-    Validator.check(new Semantic("ssMMmSSmLLl"));
+    Analyzer.check("ssMMmSSmLLl");
   }
 
   @Test
   public void positiveTest4() {
-    Validator.check(new Semantic("H/\\*)MMMM"));
+    Analyzer.check("H/\\*)MMMM");
   }
 
   @Test
   public void positiveTest5() {
-    Validator.check(new Semantic("MMMM%^:SS#$&*"));
+    Analyzer.check("MMMM%^:SS#$&*");
   }
 
   @Test
   public void positiveTest6() {
-    Validator.check(new Semantic(":SS::LL::#$&*"));
+    Analyzer.check(":SS::LL::#$&*");
   }
 
   @Test
   public void positiveTest7() {
-    Validator.check(new Semantic("SSS"));
+    Analyzer.check("SSS");
   }
 
   @Test
   public void positiveTestWithEscaping1() {
-    Validator.check(new Semantic("H#HMM#M:SS#S:LL#E#Ls##"));
+    Analyzer.check("H#HMM#M:SS#S:LL#E#Ls##");
   }
 
   @Test
   public void positiveTestWithEscaping2() {
-    Validator.check(new Semantic("HH#H - MM#MSS@#S"));
+    Analyzer.check("HH#H - MM#MSS@#S");
   }
 
   @Test
   public void positiveTestWithEscaping3() {
-    Validator.check(new Semantic("ssM#MmmSS#Sh#LL#h"));
+    Analyzer.check("ssM#MmmSS#Sh#LL#h");
   }
 
   @Test
   public void positiveTestWithEscaping4() {
-    Validator.check(new Semantic("H####H/#M#M#MM"));
+    Analyzer.check("H####H/#M#M#MM");
   }
 
   @Test
   public void positiveTestWithEscaping5() {
-    Validator.check(new Semantic("MM#####M#M%^:SS#$&*"));
+    Analyzer.check("MM#####M#M%^:SS#$&*");
   }
 
   @Test
   public void positiveTestWithEscaping6() {
-    Validator.check(new Semantic(":SS#S==:##LL::#$&*"));
+    Analyzer.check(":SS#S==:##LL::#$&*");
   }
 
   @Test
   public void positiveTestWithEscaping7() {
-    Validator.check(new Semantic("#S#SS#S#S"));
+    Analyzer.check("#S#SS#S#S");
   }
 
   @Test(expected = NoNecessarySymbolsException.class)
   public void negativeTestWithNoElements() {
-    Validator.check(new Semantic("qwerty lol! ###"));
+    Analyzer.check("qwerty lol! ###");
   }
 
   @Test(expected = NoNecessarySymbolsException.class)
   public void negativeTestWithAllCommentedElements() {
-    Validator.check(new Semantic("#H#Hs#S#L"));
+    Analyzer.check("#H#Hs#S#L");
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions1() {
-    Validator.check(new Semantic("H#HH"));
+    Analyzer.check("H#HH");
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions2() {
-    Validator.check(new Semantic("HH:MM:SSqwertyH"));
+    Analyzer.check("HH:MM:SSqwertyH");
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions3() {
-    Validator.check(new Semantic("HH#HSSS %^&*sS"));
+    Analyzer.check("HH#HSSS %^&*sS");
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions4() {
-    Validator.check(new Semantic("LLasfdLH^&sdHasdL"));
+    Analyzer.check("LLasfdLH^&sdHasdL");
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions5() {
-    Validator.check(new Semantic("M#M#H#H098/M"));
+    Analyzer.check("M#M#H#H098/M");
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination1() {
-    Validator.check(new Semantic("HH:MM:L"));
+    Analyzer.check("HH:MM:L");
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination2() {
-    Validator.check(new Semantic("HH:SS:L"));
+    Analyzer.check("HH:SS:L");
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination3() {
-    Validator.check(new Semantic("HH:SS"));
+    Analyzer.check("HH:SS");
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination4() {
-    Validator.check(new Semantic("LLLL:H"));
+    Analyzer.check("LLLL:H");
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination5() {
-    Validator.check(new Semantic(":M#ME#::LL"));
+    Analyzer.check(":M#ME#::LL");
   }
 }

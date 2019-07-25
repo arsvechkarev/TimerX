@@ -1,34 +1,36 @@
 package com.arsvechkarev.timerx;
 
-import com.arsvechkarev.timerx.Constants.TimeValues;
 import java.util.concurrent.TimeUnit;
 
 public class Utils {
 
-  public static long millisOf(long time, TimeUnits timeUnit) {
-    switch (timeUnit) {
+  public static long millisOf(long time, TimeUnits unitType) {
+    switch (unitType) {
       case HOURS:
         return TimeUnit.HOURS.toMillis(time);
       case MINUTES:
         return TimeUnit.MINUTES.toMillis(time);
       case SECONDS:
         return TimeUnit.SECONDS.toMillis(time);
-      case MILLIS:
+      case MILLISECONDS:
         return time;
       default:
         throw new IllegalArgumentException("Incorrect enum constant");
     }
   }
 
-  public static void checkNotNull(Object o, String msg) {
-    if (o == null) {
-      throw new IllegalArgumentException(msg);
-    }
-  }
-
-  public static void checkInitialized(long time, String msg) {
-    if (time == TimeValues.NONE) {
-      throw new IllegalArgumentException(msg);
+  public static long timeIn(long millis, TimeUnits unitType) {
+    switch (unitType) {
+      case HOURS:
+        return TimeUnit.MILLISECONDS.toHours(millis);
+      case MINUTES:
+        return TimeUnit.MILLISECONDS.toMinutes(millis);
+      case SECONDS:
+        return TimeUnit.MILLISECONDS.toSeconds(millis);
+      case MILLISECONDS:
+        return millis;
+      default:
+        throw new IllegalArgumentException("Incorrect enum constant");
     }
   }
 

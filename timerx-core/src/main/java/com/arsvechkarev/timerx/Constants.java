@@ -7,22 +7,19 @@ public class Constants {
 
   public static class Patterns {
 
-    static final String SYMBOL_ESCAPE = "#";
-
     public static final String STANDARD_HOURS = "H";
     public static final String STANDARD_MINUTES = "M";
     public static final String STANDARD_SECONDS = "S";
     public static final String STANDARD_MILLIS = "L";
-
-    public static final String ESCAPED_HOURS = SYMBOL_ESCAPE + STANDARD_HOURS;
-    public static final String ESCAPED_MINUTES = SYMBOL_ESCAPE + STANDARD_MINUTES;
-    public static final String ESCAPED_SECONDS = SYMBOL_ESCAPE + STANDARD_SECONDS;
-    public static final String ESCAPED_MILLIS = SYMBOL_ESCAPE + STANDARD_MILLIS;
-
     public static final String PATTERN_HAS_HOURS = "(?<!#)" + STANDARD_HOURS + "+";
     public static final String PATTERN_HAS_MINUTES = "(?<!#)" + STANDARD_MINUTES + "+";
     public static final String PATTERN_HAS_SECONDS = "(?<!#)" + STANDARD_SECONDS + "+";
     public static final String PATTERN_HAS_MILLIS = "(?<!#)" + STANDARD_MILLIS + "+";
+    static final String SYMBOL_ESCAPE = "#";
+    public static final String ESCAPED_HOURS = SYMBOL_ESCAPE + STANDARD_HOURS;
+    public static final String ESCAPED_MINUTES = SYMBOL_ESCAPE + STANDARD_MINUTES;
+    public static final String ESCAPED_SECONDS = SYMBOL_ESCAPE + STANDARD_SECONDS;
+    public static final String ESCAPED_MILLIS = SYMBOL_ESCAPE + STANDARD_MILLIS;
 
 
   }

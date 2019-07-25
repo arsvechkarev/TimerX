@@ -11,6 +11,10 @@ public class Semantic {
   private int secondsCount = 0;
   private int millisCount = 0;
 
+  public Semantic(String format) {
+    this.format = format;
+  }
+
   void setHoursCount(int hoursCount) {
     this.hoursCount = hoursCount;
   }
@@ -27,10 +31,6 @@ public class Semantic {
     this.millisCount = millisCount;
   }
 
-  public Semantic(String parseFormat) {
-    this.format = parseFormat;
-  }
-
   public String getFormat() {
     return format;
   }
@@ -43,7 +43,7 @@ public class Semantic {
         return minutesCount > 0;
       case SECONDS:
         return secondsCount > 0;
-      case MILLIS:
+      case MILLISECONDS:
         return millisCount > 0;
       default:
         throw new IllegalArgumentException("Incorrect type of unit");
@@ -58,7 +58,7 @@ public class Semantic {
         return minutesCount;
       case SECONDS:
         return secondsCount;
-      case MILLIS:
+      case MILLISECONDS:
         return millisCount;
       default:
         throw new IllegalArgumentException("Incorrect type of unit");

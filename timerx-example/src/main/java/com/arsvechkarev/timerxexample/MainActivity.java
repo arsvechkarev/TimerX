@@ -1,65 +1,52 @@
 package com.arsvechkarev.timerxexample;
 
 import android.os.Bundle;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.TextView;
-import android.widget.Toast;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import com.arsvechkarev.timerx.Stopwatch;
-import com.arsvechkarev.timerx.TimeTickListener;
-import com.arsvechkarev.timerx.TimeUnits;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+import com.google.android.material.tabs.TabLayout;
 
 public class MainActivity extends AppCompatActivity {
 
-  private TextView textTimer;
-  private Stopwatch stopwatch;
-
   @Override
-  protected void onCreate(final Bundle savedInstanceState) {
+  protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_main);
+    SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(
+        getSupportFragmentManager());
+    ViewPager viewPager = findViewById(R.id.view_pager);
+    viewPager.setAdapter(sectionsPagerAdapter);
+    TabLayout tabs = findViewById(R.id.tabs);
+    tabs.setupWithViewPager(viewPager);
+  }
 
-    textTimer = findViewById(R.id.text_timer);
-    stopwatch = new Stopwatch(new TimeTickListener() {
-      @Override
-      public void onTimeTick(String time) {
-        textTimer.setText(time);
-      }
-    }, "Format#Start: MM::SS::")
-        .changeFormatWhen(10, TimeUnits.SECONDS, "Format10: MM:SS")
-        .changeFormatWhen(5, TimeUnits.SECONDS, "Format5: SSSSSS")
-        .changeFormatWhen(15, TimeUnits.SECONDS, "Format15: SS#L");
+  private class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-    findViewById(R.id.btn_start).setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        stopwatch.start();
+    SectionsPagerAdapter(FragmentManager fm) {
+      super(fm);
+    }
 
-//        new Handler().postDelayed(new Runnable() {
-//          @Override
-//          public void run() {
-//            stopwatch.changeFormatWhen(20, TimeUnits.SECONDS, "Format20: SS -> LL#L");
-//          }
-//        }, 19000);
-      }
-    });
+    @Override
+    public Fragment getItem(int position) {
+      return (position == 0)
+          ? new StopwatchFragment()
+          : new TimerFragment();
+    }
 
-    findViewById(R.id.btn_stop).setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        stopwatch.stop();
-        Toast.makeText(MainActivity.this, "time = " + stopwatch.getTime(),
-            Toast.LENGTH_SHORT).show();
-      }
-    });
+    @Nullable
+    @Override
+    public CharSequence getPageTitle(int position) {
+      return (position == 0)
+          ? "Stopwatch"
+          : "Timer";
+    }
 
-    findViewById(R.id.btn_reset).setOnClickListener(new OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        stopwatch.reset();
-        textTimer.setText("0");
-      }
-    });
+    @Override
+    public int getCount() {
+      return 2;
+    }
   }
 }

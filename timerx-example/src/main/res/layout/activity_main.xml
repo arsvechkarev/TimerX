@@ -1,35 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:gravity="center_horizontal"
   tools:context="com.arsvechkarev.timerxexample.MainActivity">
 
-  <TextView
-    android:id="@+id/text_timer"
-    android:layout_margin="16dp"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"/>
-
-  <Button
-    android:id="@+id/btn_start"
-    android:layout_width="wrap_content"
+  <com.google.android.material.appbar.AppBarLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="Start"/>
+    android:theme="@style/AppTheme.AppBarOverlay">
 
-  <Button
-    android:id="@+id/btn_stop"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Stop"/>
+    <TextView
+      android:id="@+id/title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:minHeight="?actionBarSize"
+      android:text="@string/app_name"
+      android:textAppearance="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"/>
 
-  <Button
-    android:id="@+id/btn_reset"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Reset"/>
+    <com.google.android.material.tabs.TabLayout
+      android:id="@+id/tabs"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:background="?attr/colorPrimary">
 
-</LinearLayout>
+      <com.google.android.material.tabs.TabItem
+        android:id="@+id/tab_stopwatch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+      <com.google.android.material.tabs.TabItem
+        android:id="@+id/tab_timer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    </com.google.android.material.tabs.TabLayout>
+
+  </com.google.android.material.appbar.AppBarLayout>
+
+  <androidx.viewpager.widget.ViewPager
+    android:id="@+id/view_pager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"/>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

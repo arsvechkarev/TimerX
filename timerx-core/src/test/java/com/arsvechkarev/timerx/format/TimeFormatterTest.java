@@ -20,9 +20,7 @@ public class TimeFormatterTest {
   }
 
   private TimeFormatter getFormatterOf(String format) {
-    Semantic semantic = new Semantic(format);
-    Validator.check(semantic);
-    return new TimeFormatter(semantic);
+    return new TimeFormatter(Analyzer.check(format));
   }
 
   @Test
