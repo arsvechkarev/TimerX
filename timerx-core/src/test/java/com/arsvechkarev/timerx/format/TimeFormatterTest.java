@@ -26,31 +26,31 @@ public class TimeFormatterTest {
   @Test
   public void optimizedDelayTest1() {
     String format = "MM:SS:LLLLL";
-    assertEquals(1, getFormatterOf(format).getOptimizedDelay());
+    assertEquals(1, getFormatterOf(format).getOptimizedInterval());
   }
 
   @Test
   public void optimizedDelayTest2() {
     String format = "MM:SS:LLL";
-    assertEquals(1, getFormatterOf(format).getOptimizedDelay());
+    assertEquals(1, getFormatterOf(format).getOptimizedInterval());
   }
 
   @Test
   public void optimizedDelayTest3() {
     String format = "MM:SS:LL";
-    assertEquals(10, getFormatterOf(format).getOptimizedDelay());
+    assertEquals(10, getFormatterOf(format).getOptimizedInterval());
   }
 
   @Test
   public void optimizedDelayTest4() {
     String format = "MM:SS:L";
-    assertEquals(100, getFormatterOf(format).getOptimizedDelay());
+    assertEquals(100, getFormatterOf(format).getOptimizedInterval());
   }
 
   @Test
   public void optimizedDelayTest5() {
     String format = "MM:SS::";
-    assertEquals(1000, getFormatterOf(format).getOptimizedDelay());
+    assertEquals(100, getFormatterOf(format).getOptimizedInterval());
   }
 
 }

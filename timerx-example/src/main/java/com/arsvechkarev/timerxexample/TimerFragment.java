@@ -37,7 +37,7 @@ public class TimerFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     textTimer = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_timer);
-    timer = new TimerBuilder("SS:LL")
+    timer = new TimerBuilder("SS:LLL")
         .setStartTime(4, TimeUnits.SECONDS)
 //        .changeFormatWhen(10, TimeUnits.SECONDS, "SS:LL")
         .setTickListener(new TimerTickListener() {

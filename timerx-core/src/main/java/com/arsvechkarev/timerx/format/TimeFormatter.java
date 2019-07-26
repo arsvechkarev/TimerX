@@ -41,34 +41,14 @@ public class TimeFormatter {
     timeContainer = new TimeContainer();
   }
 
-  public long getOptimizedDelay() {
-    long delay;
-    if (semantic.has(MILLISECONDS)) {
-      if (semantic.countOf(MILLISECONDS) == 1) {
-        delay = 100;
-      } else if (semantic.countOf(MILLISECONDS) == 2) {
-        delay = 10;
-      } else {
-        delay = 1;
-      }
-    } else {
-      delay = MILLIS_IN_SECOND;
-    }
-    return delay;
-  }
-
   public long getOptimizedInterval() {
-    long delay;
+    long delay = 100;
     if (semantic.has(MILLISECONDS)) {
-      if (semantic.countOf(MILLISECONDS) == 1) {
-        delay = 100;
-      } else if (semantic.countOf(MILLISECONDS) == 2) {
+      if (semantic.countOf(MILLISECONDS) == 2) {
         delay = 10;
-      } else {
+      } else if (semantic.countOf(MILLISECONDS) > 2) {
         delay = 1;
       }
-    } else {
-      delay = 100;
     }
     return delay;
   }
@@ -143,104 +123,6 @@ public class TimeFormatter {
         .replaceAll(ESCAPED_MILLIS, STANDARD_MILLIS);
   }
 
-
-  /*
-
-
-  D/Timer: handleMessage: currentTime = 2114
-D/TimeFormatter: format: millisToShow = 114
-D/TimeFormatter: format: secondsToShow = 2
-D/TimeFormatter: format: minutesToShow = -1
-D/TimeFormatter: format: hoursToShow = -1
-D/TimeFormatter: getFormatOf (ms): number = 114
-D/TimeFormatter: getFormatOf (ms): numLength = 3
-D/TimeFormatter: getFormatOf (ms): countInSemantic
-D/TimeFormatter: getFormatOf (ms): diff = -1
-D/TimeFormatter: decreaseMillisIfNeed: millis = 114
-D/TimeFormatter: decreaseMillisIfNeed: reduceNum =
-D/TimeFormatter: decreaseMillisIfNeed: resMillis =
-D/TimeFormatter: applyFormatOf: strMillis = 11
-D/TimeFormatter: applyFormatOf: strSeconds = 02
-D/TimeFormatter: applyFormatOf: strMinutes =
-D/TimeFormatter: applyFormatOf: strHours =
-D/Timer: handleMessage: format = 02:11
-D/Timer: =================
-D/Timer: handleMessage: currentTime = 2097
-D/TimeFormatter: format: millisToShow = 97
-D/TimeFormatter: format: secondsToShow = 2
-D/TimeFormatter: format: minutesToShow = -1
-D/TimeFormatter: format: hoursToShow = -1
-D/TimeFormatter: getFormatOf (ms): number = 97
-D/TimeFormatter: getFormatOf (ms): numLength = 2
-D/TimeFormatter: getFormatOf (ms): countInSemantic
-D/TimeFormatter: getFormatOf (ms): diff = 0
-D/TimeFormatter: decreaseMillisIfNeed: millis = 97
-D/TimeFormatter: decreaseMillisIfNeed: reduceNum =
-D/TimeFormatter: decreaseMillisIfNeed: resMillis =
-D/TimeFormatter: applyFormatOf: strMillis = 97
-D/TimeFormatter: applyFormatOf: strSeconds = 02
-D/TimeFormatter: applyFormatOf: strMinutes =
-D/TimeFormatter: applyFormatOf: strHours =
-D/Timer: handleMessage: format = 02:97
-D/Timer: =================
-
-
-  */
-
-
-  /*
-  *
-  *
-  * 2 digits:
-  *
-  *                             currentTime = 9110
-                                semantic.countOf = 2
-                                lengthOf(number) = 3
-                                diff = -1
-                                number = 110
-                                kkkkk: reduce num = 10
-                                resMillis = 11
-                                format = 09:11
-                                ------
-                                currentTime = 9100
-                                semantic.countOf = 2
-                                lengthOf(number) = 3
-                                diff = -1
-                                number = 100
-                                kkkkk: reduce num = 10
-                                resMillis = 10
-                                format = 09:10
-                                ------
-                                currentTime = 9090
-                                semantic.countOf = 2
-                                lengthOf(number) = 2
-                                diff = 0
-                                number = 90
-                                kkkkk: reduce num = 1
-                                resMillis = 90
-                                format = 09:90
-                                ------
-                                currentTime = 9080
-                                semantic.countOf = 2
-                                lengthOf(number) = 2
-                                diff = 0
-                                number = 80
-                                kkkkk: reduce num = 1
-                                resMillis = 80
-                                format = 09:80
-                                ------
-  *
-  *
-  *
-  *
-  *
-  *
-  *
-  *
-  *
-  *
-  * */
-
   private String getFormatOf(long number, TimeUnits numberType) {
     if (number != NONE) {
       if (number == 0) {
@@ -254,15 +136,12 @@ D/Timer: =================
         Log.d(TAG, "getFormatOf (ms): semanticCount = " + semanticCount);
         Log.d(TAG, "getFormatOf (ms): numberLength = " + numberLength);
         Log.d(TAG, "getFormatOf (ms): diff = " + diff);
+        return formatMillis(number, semanticCount);
       }
       if (diff > 0) {
         return addZerosTo(number, diff);
-      } else {
-        if (numberType == MILLISECONDS) {
-          return formatMillis(number, semanticCount);
-        }
-        return String.valueOf(number);
       }
+      return number + EMPTY_STRING;
     }
     return EMPTY_STRING;
   }
@@ -277,14 +156,8 @@ D/Timer: =================
 
   private String formatMillis(long millis, int semanticCount) {
     String strMillis = formatToThreeOrMoreDigits(millis);
-    Log.d(TAG, "formatMillis: millis = " + millis);
-    Log.d(TAG, "formatMillis: semanticCount = " + semanticCount);
-    Log.d(TAG, "formatMillis: strMillis = " + strMillis);
-    if (semanticCount == 1) {
-      return strMillis.substring(0, 1);
-    }
-    if (semanticCount == 2) {
-      return strMillis.substring(0, 2);
+    if (semanticCount <= 2) {
+      return strMillis.substring(0, semanticCount);
     }
     return strMillis;
   }
@@ -301,10 +174,16 @@ D/Timer: =================
   }
 
   private int lengthOf(long number) {
-    return String.valueOf(number).length();
+    return (number + EMPTY_STRING).length();
   }
 
   private String addZerosTo(long number, int zerosCount) {
+    if (zerosCount == 1) {
+      return ZERO + number;
+    }
+    if (zerosCount == 2) {
+      return ZERO + ZERO + number;
+    }
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < zerosCount; i++) {
       builder.append(ZERO);

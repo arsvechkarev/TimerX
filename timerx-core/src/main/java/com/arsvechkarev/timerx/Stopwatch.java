@@ -157,7 +157,7 @@ public class Stopwatch {
 
   private void applyFormat(Semantic semantic) {
     timeFormatter = new TimeFormatter(semantic);
-    delay = timeFormatter.getOptimizedDelay();
+    delay = timeFormatter.getOptimizedInterval();
   }
 
   @SuppressLint("HandlerLeak")

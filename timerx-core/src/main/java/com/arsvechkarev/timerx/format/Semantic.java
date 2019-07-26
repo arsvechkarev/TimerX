@@ -11,7 +11,7 @@ public class Semantic {
   private int secondsCount = 0;
   private int millisCount = 0;
 
-  public Semantic(String format) {
+  Semantic(String format) {
     this.format = format;
   }
 

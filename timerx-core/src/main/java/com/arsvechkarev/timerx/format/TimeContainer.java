@@ -1,6 +1,6 @@
 package com.arsvechkarev.timerx.format;
 
-public class TimeContainer {
+class TimeContainer {
 
   long millis;
   long seconds;
@@ -10,37 +10,37 @@ public class TimeContainer {
   long remSeconds;
   long remMinutes;
 
-  public TimeContainer setMillis(long millis) {
+  TimeContainer setMillis(long millis) {
     this.millis = millis;
     return this;
   }
 
-  public TimeContainer setSeconds(long seconds) {
+  TimeContainer setSeconds(long seconds) {
     this.seconds = seconds;
     return this;
   }
 
-  public TimeContainer setMinutes(long minutes) {
+  TimeContainer setMinutes(long minutes) {
     this.minutes = minutes;
     return this;
   }
 
-  public TimeContainer setHours(long hours) {
+  TimeContainer setHours(long hours) {
     this.hours = hours;
     return this;
   }
 
-  public TimeContainer setRemMillis(long remMillis) {
+  TimeContainer setRemMillis(long remMillis) {
     this.remMillis = remMillis;
     return this;
   }
 
-  public TimeContainer setRemSeconds(long remSeconds) {
+  TimeContainer setRemSeconds(long remSeconds) {
     this.remSeconds = remSeconds;
     return this;
   }
 
-  public TimeContainer setRemMinutes(long remMinutes) {
+  TimeContainer setRemMinutes(long remMinutes) {
     this.remMinutes = remMinutes;
     return this;
   }
