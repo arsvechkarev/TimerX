@@ -48,7 +48,7 @@ public class TimerBuilder {
   }
 
   public TimerBuilder actionWhen(long time, TimeUnit timeUnit,
-      @NonNull Runnable action) {
+      @NonNull Action action) {
     expectNotNull(action);
     long millis = timeUnit.toMillis(time);
     nextActionsHolder.add(new ActionsHolder(millis, action));

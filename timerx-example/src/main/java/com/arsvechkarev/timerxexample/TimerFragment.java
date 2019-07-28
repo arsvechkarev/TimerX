@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.arsvechkarev.timerx.Action;
 import com.arsvechkarev.timerx.Timer;
 import com.arsvechkarev.timerx.TimerBuilder;
 import com.arsvechkarev.timerx.TimerTickListener;
@@ -37,25 +38,25 @@ public class TimerFragment extends Fragment {
     timer = new TimerBuilder()
         .startFormat("20: MM:SSSSSS")
         .startTime(20, TimeUnit.SECONDS)
-        .actionWhen(15, TimeUnit.SECONDS, new Runnable() {
+        .actionWhen(15, TimeUnit.SECONDS, new Action() {
           @Override
-          public void run() {
+          public void execute() {
             Toast.makeText(getContext(),
                 "15s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
                 .show();
           }
         })
-        .actionWhen(10, TimeUnit.SECONDS, new Runnable() {
+        .actionWhen(10, TimeUnit.SECONDS, new Action() {
           @Override
-          public void run() {
+          public void execute() {
             Toast.makeText(getContext(),
                 "10s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
                 .show();
           }
         })
-        .actionWhen(5, TimeUnit.SECONDS, new Runnable() {
+        .actionWhen(5, TimeUnit.SECONDS, new Action() {
           @Override
-          public void run() {
+          public void execute() {
             Toast.makeText(getContext(),
                 "5s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
                 .show();

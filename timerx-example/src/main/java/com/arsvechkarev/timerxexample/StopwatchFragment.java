@@ -11,6 +11,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import com.arsvechkarev.timerx.Action;
 import com.arsvechkarev.timerx.Stopwatch;
 import com.arsvechkarev.timerx.StopwatchBuilder;
 import com.arsvechkarev.timerx.StopwatchTickListener;
@@ -46,22 +47,22 @@ public class StopwatchFragment extends Fragment {
         })
         .changeFormatWhen(10, TimeUnit.SECONDS, "Time: MM:SS")
         .changeFormatWhen(1, TimeUnit.MINUTES, "LLLLLL")
-        .actionWhen(5, TimeUnit.SECONDS, new Runnable() {
+        .actionWhen(5, TimeUnit.SECONDS, new Action() {
           @Override
-          public void run() {
+          public void execute() {
             Toast.makeText(getContext(), "5 seconds action: now!", Toast.LENGTH_SHORT)
                 .show();
           }
         })
-        .actionWhen(30, TimeUnit.SECONDS, new Runnable() {
+        .actionWhen(30, TimeUnit.SECONDS, new Action() {
           @Override
-          public void run() {
+          public void execute() {
             Toast.makeText(getContext(), "30 seconds action: now!", Toast.LENGTH_SHORT)
                 .show();
           }
-        }).actionWhen(70, TimeUnit.SECONDS, new Runnable() {
+        }).actionWhen(70, TimeUnit.SECONDS, new Action() {
           @Override
-          public void run() {
+          public void execute() {
             Toast.makeText(getContext(), "1 minute 10 seconds seconds action: now!",
                 Toast.LENGTH_SHORT).show();
           }

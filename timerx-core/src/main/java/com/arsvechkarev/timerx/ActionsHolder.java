@@ -3,9 +3,9 @@ package com.arsvechkarev.timerx;
 public class ActionsHolder implements Comparable<ActionsHolder> {
 
   private long millis;
-  private Runnable action;
+  private Action action;
 
-  public ActionsHolder(long millis, Runnable action) {
+  public ActionsHolder(long millis, Action action) {
     this.millis = millis;
     this.action = action;
   }
@@ -14,7 +14,7 @@ public class ActionsHolder implements Comparable<ActionsHolder> {
     return millis;
   }
 
-  public Runnable getAction() {
+  public Action getAction() {
     return action;
   }
 

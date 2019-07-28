@@ -56,7 +56,7 @@ public class StopwatchBuilder {
   }
 
   public StopwatchBuilder actionWhen(long time, TimeUnit timeUnit,
-      @NonNull Runnable action) {
+      @NonNull Action action) {
     expectNotNull(action);
     long millis = timeUnit.toMillis(time);
     actionsHolder.add(new ActionsHolder(millis, action));

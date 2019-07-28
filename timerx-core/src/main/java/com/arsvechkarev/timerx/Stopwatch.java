@@ -148,7 +148,7 @@ public class Stopwatch {
   private void makeActionIfNeed() {
     if (copyOfActionsHolder.size() > 0
         && currentTime >= copyOfActionsHolder.first().getMillis()) {
-      copyOfActionsHolder.first().getAction().run();
+      copyOfActionsHolder.first().getAction().execute();
       copyOfActionsHolder.remove(copyOfActionsHolder.first());
     }
   }

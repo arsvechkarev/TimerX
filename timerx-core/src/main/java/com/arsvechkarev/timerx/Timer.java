@@ -148,7 +148,7 @@ public class Timer {
     if (copyOfActionsHolders.size() > 0
         && currentTime <= copyOfActionsHolders.first().getMillis()) {
 //      Log.d(TAG, "running action with " + copyOfFormatsHolders.first().getMillis());
-      copyOfActionsHolders.first().getAction().run();
+      copyOfActionsHolders.first().getAction().execute();
       copyOfActionsHolders.remove(copyOfActionsHolders.first());
     }
   }
