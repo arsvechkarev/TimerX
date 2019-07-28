@@ -1,21 +1,21 @@
 package com.arsvechkarev.timerx;
 
-import static com.arsvechkarev.timerx.Checker.assertThat;
-import static com.arsvechkarev.timerx.TimeCountingStateState.INACTIVE;
-import static com.arsvechkarev.timerx.TimeCountingStateState.PAUSED;
-import static com.arsvechkarev.timerx.TimeCountingStateState.RESUMED;
+import static com.arsvechkarev.timerx.TimeCountingState.INACTIVE;
+import static com.arsvechkarev.timerx.TimeCountingState.PAUSED;
+import static com.arsvechkarev.timerx.TimeCountingState.RESUMED;
+import static com.arsvechkarev.timerx.util.Checker.expect;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
-import androidx.annotation.NonNull;
-import com.arsvechkarev.timerx.format.Analyzer;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
 import com.arsvechkarev.timerx.format.Semantic;
 import com.arsvechkarev.timerx.format.TimeFormatter;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Class for standard time counting
@@ -24,8 +24,6 @@ import java.util.TreeSet;
  */
 public class Stopwatch {
 
-  private static final String TAG = Stopwatch.class.getSimpleName();
-
   /**
    * Message id for {@link #handler}
    */
@@ -33,9 +31,9 @@ public class Stopwatch {
   /**
    * Listener for sending formatted time
    *
-   * @see StopwatchListener
+   * @see StopwatchTickListener
    */
-  private final StopwatchListener tickListener;
+  private final StopwatchTickListener tickListener;
   /**
    * Semantic of base format
    */
@@ -53,14 +51,12 @@ public class Stopwatch {
    */
   private long delay;
 
-  private boolean notStartedYet = true;
-
   /**
    * Current state of stopwatch
    *
-   * @see TimeCountingStateState
+   * @see TimeCountingState
    */
-  private TimeCountingStateState state = INACTIVE;
+  private TimeCountingState state = INACTIVE;
   /**
    * Formatter for formatting {@link #currentTime} according to particular format
    *
@@ -71,66 +67,39 @@ public class Stopwatch {
    * Set of formats which will be applied when {@link #currentTime} will be equal to time
    * that holder contains
    */
-  private SortedSet<NextFormatsHolder> formatsHolder = new TreeSet<>();
+  private final SortedSet<NextFormatsHolder> nextFormatsHolder;
+  private final SortedSet<ActionsHolder> actionsHolder;
 
   // Copy of formats holder to delete it elements after format will pass
   private SortedSet<NextFormatsHolder> copyOfFormatsHolder;
+  private SortedSet<ActionsHolder> copyOfActionsHolder;
 
-  /**
-   * Main constructor
-   *
-   * @param tickListener Listener for sending formatted time
-   * @param format Started format
-   */
-  public Stopwatch(StopwatchListener tickListener, String format) {
+  @RestrictTo(Scope.LIBRARY)
+  Stopwatch(Semantic startSemantic, StopwatchTickListener tickListener,
+      SortedSet<NextFormatsHolder> nextFormatsHolder,
+      SortedSet<ActionsHolder> actionsHolder) {
+    this.startSemantic = startSemantic;
     this.tickListener = tickListener;
-    this.startSemantic = Analyzer.check(format);
-    applyFormat(startSemantic);
+    this.nextFormatsHolder = nextFormatsHolder;
+    this.actionsHolder = actionsHolder;
   }
 
-  /**
-   * Schedules changing format at certain time. Format will be applied as soon as time
-   * comes. This method can be invokes many times, all received formats will be scheduled.
-   * Invoking with same time schedules only <b>first</b> invocation. Examples:
-   * <pre>
-   *  // Creating stopwatch with start format "SS:LL"
-   *  Stopwatch stopwatch = new Stopwatch(new StopwatchListener() {...}, "SS:LL")
-   *
-   *  // When time will be equals to 1 minute, then format will change to "M:SS:LL"
-   *  stopwatch.changeFormatWhen(1, TimeUnits.MINUTES, "M:SS:LL")
-   *
-   *  // When time will be equals to 10 minutes, then format will change to "MM:SS:LL"
-   *  stopwatch.changeFormatWhen(10, TimeUnits.MINUTES, "MM:SS:LL")
-   *
-   *  // Code below will be ignored, because time we already have format will be applied
-   *  // when time will be equals to 10 minutes
-   *  stopwatch.changeFormatWhen(10, TimeUnits.MINUTES, "HH:MM:SS:LL")
-   * </pre>
-   */
-  public Stopwatch changeFormatWhen(long time, @NonNull TimeUnits timeUnitType,
-      @NonNull String newFormat) {
-    if (notStartedYet) {
-      Semantic semantic = Analyzer.check(newFormat);
-      long millis = Utils.millisOf(time, timeUnitType);
-      formatsHolder.add(new NextFormatsHolder(millis, semantic));
-      return this;
-    }
-    throw new IllegalStateException(
-        "Stopwatch already started, but formats still adding");
+  public String getFormattedStartTime() {
+    return new TimeFormatter(startSemantic).format(0L);
   }
 
   /**
    * Starts timer if timer
    */
   public void start() {
-    notStartedYet = false;
     if (state != RESUMED) {
       if (state == INACTIVE) {
-        copyOfFormatsHolder = new TreeSet<>(formatsHolder);
+        copyOfFormatsHolder = new TreeSet<>(nextFormatsHolder);
+        copyOfActionsHolder = new TreeSet<>(actionsHolder);
         applyFormat(startSemantic);
         baseTime = SystemClock.elapsedRealtime();
       } else {
-        assertThat(state == PAUSED);
+        expect(state == PAUSED);
         baseTime = SystemClock.elapsedRealtime() - currentTime;
       }
       handler.sendMessage(handler.obtainMessage(MSG));
@@ -147,12 +116,11 @@ public class Stopwatch {
     currentTime = 0;
     baseTime = 0;
     state = INACTIVE;
-    notStartedYet = true;
     handler.removeMessages(MSG);
   }
 
-  public long getTime() {
-    return currentTime;
+  public long getTimeIn(TimeUnit timeUnit) {
+    return timeUnit.convert(currentTime, TimeUnit.MILLISECONDS);
   }
 
   private void applyFormat(Semantic semantic) {
@@ -167,16 +135,23 @@ public class Stopwatch {
       synchronized (Stopwatch.this) {
         long executionStartedTime = SystemClock.elapsedRealtime();
         currentTime = SystemClock.elapsedRealtime() - baseTime;
-        Log.d(TAG, "handleMessage: currentTime = " + currentTime);
         changeFormatIfNeed();
+        makeActionIfNeed();
         String format = timeFormatter.format(currentTime);
-        Log.d(TAG, "handleMessage: format = " + format);
         tickListener.onTimeTick(format);
         long executionDelay = SystemClock.elapsedRealtime() - executionStartedTime;
         sendMessageDelayed(obtainMessage(MSG), delay - executionDelay);
       }
     }
   };
+
+  private void makeActionIfNeed() {
+    if (copyOfActionsHolder.size() > 0
+        && currentTime >= copyOfActionsHolder.first().getMillis()) {
+      copyOfActionsHolder.first().getAction().run();
+      copyOfActionsHolder.remove(copyOfActionsHolder.first());
+    }
+  }
 
   private void changeFormatIfNeed() {
     if (copyOfFormatsHolder.size() > 0

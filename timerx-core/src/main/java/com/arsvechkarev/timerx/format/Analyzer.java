@@ -1,13 +1,14 @@
 package com.arsvechkarev.timerx.format;
 
-import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_HOURS;
-import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_MILLIS;
-import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_MINUTES;
-import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_SECONDS;
 import static com.arsvechkarev.timerx.TimeUnits.HOURS;
-import static com.arsvechkarev.timerx.TimeUnits.MILLISECONDS;
 import static com.arsvechkarev.timerx.TimeUnits.MINUTES;
+import static com.arsvechkarev.timerx.TimeUnits.R_MILLISECONDS;
 import static com.arsvechkarev.timerx.TimeUnits.SECONDS;
+import static com.arsvechkarev.timerx.util.Checker.expect;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_HOURS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_MINUTES;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_R_MILLIS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_SECONDS;
 
 import com.arsvechkarev.timerx.exceptions.IllegalSymbolsCombinationException;
 import com.arsvechkarev.timerx.exceptions.IllegalSymbolsPositionException;
@@ -67,21 +68,27 @@ public class Analyzer {
       case 2:
         return PATTERN_HAS_SECONDS;
       case 3:
-        return PATTERN_HAS_MILLIS;
+        return PATTERN_HAS_R_MILLIS;
       default:
+        // TODO: 26.07.2019 Translate
         throw new IllegalStateException("No pattern to match");
     }
   }
 
   private void updateAppropriateField(int type, int count) {
+    expect(count != 0);
     if (type == 0) {
       semantic.setHoursCount(count);
+      semantic.setMinimumUnit(HOURS);
     } else if (type == 1) {
       semantic.setMinutesCount(count);
+      semantic.setMinimumUnit(MINUTES);
     } else if (type == 2) {
       semantic.setSecondsCount(count);
+      semantic.setMinimumUnit(SECONDS);
     } else if (type == 3) {
-      semantic.setMillisCount(count);
+      semantic.setRMillisCount(count);
+      semantic.setMinimumUnit(R_MILLISECONDS);
     } else {
       throw new IllegalStateException("No number to match");
     }
@@ -91,19 +98,21 @@ public class Analyzer {
     boolean hasHours = semantic.has(HOURS);
     boolean hasMinutes = semantic.has(MINUTES);
     boolean hasSeconds = semantic.has(SECONDS);
-    boolean hasMillis = semantic.has(MILLISECONDS);
+    boolean hasRMillis = semantic.has(R_MILLISECONDS);
     if (hasHours) {
-      if ((hasSeconds || hasMillis) && !hasMinutes) {
+      if ((hasSeconds || hasRMillis) && !hasMinutes) {
         throwCombinationEx();
-      } else if (hasMinutes && hasMillis && !hasSeconds) {
+      } else if (hasMinutes && hasRMillis && !hasSeconds) {
         throwCombinationEx();
       }
     } else {
-      if (hasMinutes && hasMillis && !hasSeconds) {
+      if (hasMinutes && hasRMillis && !hasSeconds) {
         throwCombinationEx();
       }
     }
   }
+
+  // TODO: 26.07.2019 Translate below
 
   private void throwIncorrectPositionEx() {
     throw new IllegalSymbolsPositionException(

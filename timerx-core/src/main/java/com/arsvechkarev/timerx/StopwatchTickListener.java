@@ -1,6 +1,6 @@
 package com.arsvechkarev.timerx;
 
-public interface StopwatchListener {
+public interface StopwatchTickListener {
 
   void onTimeTick(String time);
 }

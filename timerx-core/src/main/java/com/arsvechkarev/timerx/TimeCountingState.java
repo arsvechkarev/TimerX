@@ -3,7 +3,7 @@ package com.arsvechkarev.timerx;
 /**
  * Current state of timer or stopwatch
  */
-enum TimeCountingStateState {
+enum TimeCountingState {
   RESUMED,
   PAUSED,
   INACTIVE

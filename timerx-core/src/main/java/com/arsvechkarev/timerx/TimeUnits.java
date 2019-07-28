@@ -4,5 +4,5 @@ public enum TimeUnits {
   HOURS,
   MINUTES,
   SECONDS,
-  MILLISECONDS
+  R_MILLISECONDS
 }

@@ -1,20 +1,21 @@
 package com.arsvechkarev.timerx;
 
-import static com.arsvechkarev.timerx.Checker.checkInitialized;
-import static com.arsvechkarev.timerx.Checker.checkNotNull;
-import static com.arsvechkarev.timerx.TimeCountingStateState.INACTIVE;
-import static com.arsvechkarev.timerx.TimeCountingStateState.PAUSED;
-import static com.arsvechkarev.timerx.TimeCountingStateState.RESUMED;
+import static com.arsvechkarev.timerx.TimeCountingState.INACTIVE;
+import static com.arsvechkarev.timerx.TimeCountingState.PAUSED;
+import static com.arsvechkarev.timerx.TimeCountingState.RESUMED;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.util.Log;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
 import com.arsvechkarev.timerx.format.Semantic;
 import com.arsvechkarev.timerx.format.TimeFormatter;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 public class Timer {
 
@@ -23,6 +24,7 @@ public class Timer {
   private final int MSG = 3;
 
   private long startTime;
+
   private long millisInFuture;
 
   private long interval;
@@ -35,39 +37,36 @@ public class Timer {
 
   private Semantic startSemantic;
 
-  private SortedSet<NextFormatsHolder> formatsHolder;
-  private SortedSet<NextFormatsHolder> copyOfFormatsHolder;
-  private TimeCountingStateState state = INACTIVE;
+  private TimeCountingState state = INACTIVE;
 
-  Timer(TimerTickListener tickListener, Semantic semantic,
-      SortedSet<NextFormatsHolder> formatsHolder, long startTime) {
-    checkNotNull(tickListener, "");
-    checkNotNull(semantic, "");
-    checkNotNull(formatsHolder, "");
-    checkInitialized(startTime, "");
-    checkInitialized(interval, "");
-    this.tickListener = tickListener;
-    this.startSemantic = semantic;
-    this.formatsHolder = formatsHolder;
+  private final SortedSet<NextFormatsHolder> nextFormatsHolders;
+  private final SortedSet<ActionsHolder> nextActionsHolders;
+
+  private SortedSet<NextFormatsHolder> copyOfFormatsHolders;
+  private SortedSet<ActionsHolder> copyOfActionsHolders;
+
+  @RestrictTo(Scope.LIBRARY)
+  Timer(long startTime, Semantic startSemantic, TimerTickListener tickListener,
+      SortedSet<NextFormatsHolder> nextFormatsHolders,
+      SortedSet<ActionsHolder> nextActionsHolders) {
     this.startTime = startTime;
+    this.startSemantic = startSemantic;
+    this.tickListener = tickListener;
+    this.nextFormatsHolders = nextFormatsHolders;
+    this.nextActionsHolders = nextActionsHolders;
     currentTime = startTime;
-    copyOfFormatsHolder = new TreeSet<>(formatsHolder);
-    timeFormatter = new TimeFormatter(startSemantic);
-    interval = timeFormatter.getOptimizedInterval();
   }
 
   public String getFormattedStartTime() {
-    return timeFormatter.format(startTime);
-  }
-
-  public void restartWith(long time, TimeUnits unitType) {
-    startTime = Utils.millisOf(time, unitType);
+    return new TimeFormatter(startSemantic).format(startTime);
   }
 
   public void start() {
     if (state != RESUMED) {
       if (state == INACTIVE) {
-        copyOfFormatsHolder = new TreeSet<>(formatsHolder);
+        currentTime = startTime;
+        copyOfFormatsHolders = new TreeSet<>(nextFormatsHolders);
+        copyOfActionsHolders = new TreeSet<>(nextActionsHolders);
         applyFormat(startSemantic);
         millisInFuture = SystemClock.elapsedRealtime() + startTime;
       } else {
@@ -84,14 +83,16 @@ public class Timer {
   }
 
   public void reset() {
-    currentTime = startTime;
     state = INACTIVE;
     handler.removeMessages(MSG);
     applyFormat(startSemantic);
   }
 
-  public long getTimeIn(TimeUnits unitType) {
-    return Utils.timeIn(currentTime, unitType);
+  public long getRemainingTimeIn(TimeUnit timeUnit) {
+    long timeToFormat = currentTime + timeFormatter.minimumUnitInMillis();
+    return (currentTime > 0)
+        ? timeUnit.convert(timeToFormat, TimeUnit.MILLISECONDS)
+        : 0;
   }
 
   private void applyFormat(Semantic semantic) {
@@ -105,36 +106,54 @@ public class Timer {
     @Override
     public void handleMessage(Message msg) {
       synchronized (Timer.this) {
-        long a = SystemClock.elapsedRealtime();
-        changeFormatIfNeed();
+        long startExecution = SystemClock.elapsedRealtime();
         currentTime = millisInFuture - SystemClock.elapsedRealtime();
+        changeFormatIfNeed();
+        makeActionIfNeed();
         Log.d(TAG, "handleMessage: currentTime = " + currentTime);
         if (currentTime <= 0) {
           currentTime = 0;
-          String format = timeFormatter.format(currentTime);
-          tickListener.onTick(format);
+          tickListener.onTick(timeFormatter.format(currentTime));
           tickListener.onFinish();
           reset();
           return;
         }
-        String format = timeFormatter.format(currentTime);
-        Log.d(TAG, "handleMessage: format = " + format);
-        Log.d(TAG, "=================");
-        tickListener.onTick(format);
-        long b = SystemClock.elapsedRealtime() - a;
-        sendMessageDelayed(obtainMessage(MSG), interval - b);
+        long timeToFormat;
+        if (currentTime == startTime) {
+          timeToFormat = currentTime;
+        } else {
+          timeToFormat = currentTime + timeFormatter.minimumUnitInMillis();
+        }
+        String formattedTime = timeFormatter.format(timeToFormat);
+        Log.d(TAG, "handleMessage: formattedTime = " + formattedTime);
+        tickListener.onTick(formattedTime);
+        long executionTime = SystemClock.elapsedRealtime() - startExecution;
+        sendMessageDelayed(obtainMessage(MSG), interval - executionTime);
       }
     }
   };
 
-
   private void changeFormatIfNeed() {
-    if (copyOfFormatsHolder.size() > 0
+    Log.d("wow", "" + copyOfFormatsHolders);
+    if (copyOfFormatsHolders.size() > 0
         && !timeFormatter.currentFormat()
-        .equals(copyOfFormatsHolder.first().getSemantic().getFormat())
-        && currentTime <= copyOfFormatsHolder.first().getMillis()) {
-      applyFormat(copyOfFormatsHolder.first().getSemantic());
-      copyOfFormatsHolder.remove(copyOfFormatsHolder.first());
+        .equals(copyOfFormatsHolders.first().getSemantic().getFormat())
+        && currentTime <= copyOfFormatsHolders.first().getMillis()) {
+      applyFormat(copyOfFormatsHolders.first().getSemantic());
+      copyOfFormatsHolders.remove(copyOfFormatsHolders.first());
+    }
+  }
+
+  private void makeActionIfNeed() {
+    if (copyOfActionsHolders.size() > 0
+        && currentTime <= copyOfActionsHolders.first().getMillis()) {
+//      Log.d(TAG, "running action with " + copyOfFormatsHolders.first().getMillis());
+      copyOfActionsHolders.first().getAction().run();
+      copyOfActionsHolders.remove(copyOfActionsHolders.first());
     }
   }
 }
+
+
+
+

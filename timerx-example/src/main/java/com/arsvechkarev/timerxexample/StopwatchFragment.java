@@ -12,14 +12,16 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import com.arsvechkarev.timerx.Stopwatch;
-import com.arsvechkarev.timerx.StopwatchListener;
+import com.arsvechkarev.timerx.StopwatchBuilder;
+import com.arsvechkarev.timerx.StopwatchTickListener;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class StopwatchFragment extends Fragment {
 
-  private TextView textTimer;
+  private TextView textTime;
   private Stopwatch stopwatch;
 
   @Override
@@ -32,16 +34,41 @@ public class StopwatchFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    textTimer = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_timer);
-    stopwatch = new Stopwatch(new StopwatchListener() {
-      @Override
-      public void onTimeTick(String time) {
-        textTimer.setText(time);
-      }
-    }, "Format#Start: MM::SS::LL")/*
-        .changeFormatWhen(5, TimeUnits.SECONDS, "Format5: SSSSSS")
-        .changeFormatWhen(5, TimeUnits.SECONDS, "Format52: LA#LSSS")
-        .changeFormatWhen(10, TimeUnits.SECONDS, "Format10: SS#L")*/;
+    textTime = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_time);
+
+    stopwatch = new StopwatchBuilder()
+        .startFormat("Time: SS:LL")
+        .tickListener(new StopwatchTickListener() {
+          @Override
+          public void onTimeTick(String time) {
+            textTime.setText(time);
+          }
+        })
+        .changeFormatWhen(10, TimeUnit.SECONDS, "Time: MM:SS")
+        .changeFormatWhen(1, TimeUnit.MINUTES, "LLLLLL")
+        .actionWhen(5, TimeUnit.SECONDS, new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(getContext(), "5 seconds action: now!", Toast.LENGTH_SHORT)
+                .show();
+          }
+        })
+        .actionWhen(30, TimeUnit.SECONDS, new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(getContext(), "30 seconds action: now!", Toast.LENGTH_SHORT)
+                .show();
+          }
+        }).actionWhen(70, TimeUnit.SECONDS, new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(getContext(), "1 minute 10 seconds seconds action: now!",
+                Toast.LENGTH_SHORT).show();
+          }
+        })
+        .build();
+
+    textTime.setText(stopwatch.getFormattedStartTime());
 
     view.findViewById(
         com.arsvechkarev.timerxexample.R.id.btn_start)
@@ -49,13 +76,6 @@ public class StopwatchFragment extends Fragment {
           @Override
           public void onClick(View v) {
             stopwatch.start();
-
-//            new Handler().postDelayed(new Runnable() {
-//              @Override
-//              public void run() {
-//                stopwatch.changeFormatWhen(15, TimeUnits.SECONDS, "Format15: SS -> LL#L");
-//              }
-//            }, 10000);
           }
         });
 
@@ -64,7 +84,8 @@ public class StopwatchFragment extends Fragment {
           @Override
           public void onClick(View v) {
             stopwatch.stop();
-            Toast.makeText(getActivity(), "time = " + stopwatch.getTime(),
+            Toast.makeText(getActivity(),
+                "time = " + stopwatch.getTimeIn(TimeUnit.MILLISECONDS),
                 Toast.LENGTH_SHORT).show();
           }
         });
@@ -74,7 +95,7 @@ public class StopwatchFragment extends Fragment {
           @Override
           public void onClick(View v) {
             stopwatch.reset();
-            textTimer.setText("0");
+            textTime.setText(stopwatch.getFormattedStartTime());
           }
         });
   }

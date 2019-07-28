@@ -11,49 +11,76 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.arsvechkarev.timerx.TimeUnits;
 import com.arsvechkarev.timerx.Timer;
 import com.arsvechkarev.timerx.TimerBuilder;
 import com.arsvechkarev.timerx.TimerTickListener;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class TimerFragment extends Fragment {
 
-
-  private TextView textTimer;
+  private TextView textTime;
   private Timer timer;
-
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
       Bundle savedInstanceState) {
-    // Inflate the layout for this fragment
     return inflater.inflate(R.layout.fragment_timer, container, false);
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    textTimer = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_timer);
-    timer = new TimerBuilder("SS:LLL")
-        .setStartTime(4, TimeUnits.SECONDS)
-//        .changeFormatWhen(10, TimeUnits.SECONDS, "SS:LL")
-        .setTickListener(new TimerTickListener() {
+    textTime = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_time);
+    timer = new TimerBuilder()
+        .startFormat("20: MM:SSSSSS")
+        .startTime(20, TimeUnit.SECONDS)
+        .actionWhen(15, TimeUnit.SECONDS, new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(getContext(),
+                "15s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
+                .show();
+          }
+        })
+        .actionWhen(10, TimeUnit.SECONDS, new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(getContext(),
+                "10s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
+                .show();
+          }
+        })
+        .actionWhen(5, TimeUnit.SECONDS, new Runnable() {
+          @Override
+          public void run() {
+            Toast.makeText(getContext(),
+                "5s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
+                .show();
+          }
+        })
+        .changeFormatWhen(15, TimeUnit.SECONDS, "15: MM:SS")
+        .changeFormatWhen(10, TimeUnit.SECONDS, "10: SS:LLLLL")
+        .changeFormatWhen(5, TimeUnit.SECONDS, "5: SS:LLLLL")
+        .tickListener(new TimerTickListener() {
           @Override
           public void onTick(String time) {
-            textTimer.setText(time);
+            textTime.setText(time);
           }
 
           @Override
           public void onFinish() {
-            Toast.makeText(getActivity(), "Done!", Toast.LENGTH_SHORT).show();
-//            textTimer.setText("Done!");
+            Toast.makeText(getActivity(),
+                "Done!, time = " + timer.getRemainingTimeIn(TimeUnit.SECONDS),
+                Toast.LENGTH_SHORT).show();
           }
         })
         .build();
-    textTimer.setText(timer.getFormattedStartTime());
+
+    textTime.setText(timer.getFormattedStartTime());
+
     view.findViewById(
         com.arsvechkarev.timerxexample.R.id.btn_start)
         .setOnClickListener(new OnClickListener() {
@@ -68,7 +95,8 @@ public class TimerFragment extends Fragment {
           @Override
           public void onClick(View v) {
             timer.stop();
-            Toast.makeText(getActivity(), "time = " + timer.getTimeIn(TimeUnits.SECONDS),
+            Toast.makeText(getActivity(),
+                "rem time = " + timer.getRemainingTimeIn(TimeUnit.SECONDS),
                 Toast.LENGTH_SHORT).show();
           }
         });
@@ -78,7 +106,7 @@ public class TimerFragment extends Fragment {
           @Override
           public void onClick(View v) {
             timer.reset();
-            textTimer.setText(timer.getFormattedStartTime());
+            textTime.setText(timer.getFormattedStartTime());
           }
         });
   }

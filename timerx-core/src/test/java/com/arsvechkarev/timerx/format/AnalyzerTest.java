@@ -1,5 +1,8 @@
 package com.arsvechkarev.timerx.format;
 
+import static org.junit.Assert.assertSame;
+
+import com.arsvechkarev.timerx.TimeUnits;
 import com.arsvechkarev.timerx.exceptions.IllegalSymbolsCombinationException;
 import com.arsvechkarev.timerx.exceptions.IllegalSymbolsPositionException;
 import com.arsvechkarev.timerx.exceptions.NoNecessarySymbolsException;
@@ -10,72 +13,86 @@ public class AnalyzerTest {
 
   @Test
   public void positiveTest1() {
-    Analyzer.check("HH:MM:SS.LLL");
+    Semantic semantic = Analyzer.check("HH:MM:SS.LLL");
+    assertSame(semantic.minimumUnit(), TimeUnits.R_MILLISECONDS);
   }
 
   @Test
   public void positiveTest2() {
-    Analyzer.check("HhSMM");
+    Semantic semantic = Analyzer.check("HhSMM");
+    assertSame(semantic.minimumUnit(), TimeUnits.SECONDS);
   }
 
   @Test
   public void positiveTest3() {
-    Analyzer.check("ssMMmSSmLLl");
+    Semantic semantic = Analyzer.check("ssMMmSSmLLl");
+    assertSame(semantic.minimumUnit(), TimeUnits.R_MILLISECONDS);
   }
 
   @Test
   public void positiveTest4() {
-    Analyzer.check("H/\\*)MMMM");
+    Semantic semantic = Analyzer.check("H/\\*)MMMM");
+    assertSame(semantic.minimumUnit(), TimeUnits.MINUTES);
   }
 
   @Test
   public void positiveTest5() {
-    Analyzer.check("MMMM%^:SS#$&*");
+    Semantic semantic = Analyzer.check("MMMM%^:SS#$&*");
+    assertSame(semantic.minimumUnit(), TimeUnits.SECONDS);
   }
 
   @Test
   public void positiveTest6() {
-    Analyzer.check(":SS::LL::#$&*");
+    Semantic semantic = Analyzer.check(":SS::LL::#$&*");
+    assertSame(semantic.minimumUnit(), TimeUnits.R_MILLISECONDS);
   }
 
   @Test
   public void positiveTest7() {
-    Analyzer.check("SSS");
+    Semantic semantic = Analyzer.check("SSS");
+    assertSame(semantic.minimumUnit(), TimeUnits.SECONDS);
   }
 
   @Test
   public void positiveTestWithEscaping1() {
-    Analyzer.check("H#HMM#M:SS#S:LL#E#Ls##");
+    Semantic semantic = Analyzer.check("H#HMM#M:SS#S:LL#E#Ls##");
+    assertSame(semantic.minimumUnit(), TimeUnits.R_MILLISECONDS);
   }
 
   @Test
   public void positiveTestWithEscaping2() {
-    Analyzer.check("HH#H - MM#MSS@#S");
+    Semantic semantic = Analyzer.check("HH#H - MM#MSS@#S");
+    assertSame(semantic.minimumUnit(), TimeUnits.SECONDS);
   }
 
   @Test
   public void positiveTestWithEscaping3() {
-    Analyzer.check("ssM#MmmSS#Sh#LL#h");
+    Semantic semantic = Analyzer.check("ssM#MmmSS#Sh#LL#h");
+    assertSame(semantic.minimumUnit(), TimeUnits.R_MILLISECONDS);
   }
 
   @Test
   public void positiveTestWithEscaping4() {
-    Analyzer.check("H####H/#M#M#MM");
+    Semantic semantic = Analyzer.check("H####H/#M#M#MM");
+    assertSame(semantic.minimumUnit(), TimeUnits.MINUTES);
   }
 
   @Test
   public void positiveTestWithEscaping5() {
-    Analyzer.check("MM#####M#M%^:SS#$&*");
+    Semantic semantic = Analyzer.check("MM#####M#M%^:SS#$&*");
+    assertSame(semantic.minimumUnit(), TimeUnits.SECONDS);
   }
 
   @Test
   public void positiveTestWithEscaping6() {
-    Analyzer.check(":SS#S==:##LL::#$&*");
+    Semantic semantic = Analyzer.check(":SS#S==:##LL::#$&*");
+    assertSame(semantic.minimumUnit(), TimeUnits.R_MILLISECONDS);
   }
 
   @Test
   public void positiveTestWithEscaping7() {
-    Analyzer.check("#S#SS#S#S");
+    Semantic semantic = Analyzer.check("#S#SS#S#S");
+    assertSame(semantic.minimumUnit(), TimeUnits.SECONDS);
   }
 
   @Test(expected = NoNecessarySymbolsException.class)

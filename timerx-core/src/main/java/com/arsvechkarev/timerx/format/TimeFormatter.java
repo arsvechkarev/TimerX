@@ -1,27 +1,29 @@
 package com.arsvechkarev.timerx.format;
 
-import static com.arsvechkarev.timerx.Constants.EMPTY_STRING;
-import static com.arsvechkarev.timerx.Constants.Patterns.ESCAPED_HOURS;
-import static com.arsvechkarev.timerx.Constants.Patterns.ESCAPED_MILLIS;
-import static com.arsvechkarev.timerx.Constants.Patterns.ESCAPED_MINUTES;
-import static com.arsvechkarev.timerx.Constants.Patterns.ESCAPED_SECONDS;
-import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_HOURS;
-import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_MILLIS;
-import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_MINUTES;
-import static com.arsvechkarev.timerx.Constants.Patterns.PATTERN_HAS_SECONDS;
-import static com.arsvechkarev.timerx.Constants.Patterns.STANDARD_HOURS;
-import static com.arsvechkarev.timerx.Constants.Patterns.STANDARD_MILLIS;
-import static com.arsvechkarev.timerx.Constants.Patterns.STANDARD_MINUTES;
-import static com.arsvechkarev.timerx.Constants.Patterns.STANDARD_SECONDS;
-import static com.arsvechkarev.timerx.Constants.TimeValues.MILLIS_IN_SECOND;
-import static com.arsvechkarev.timerx.Constants.TimeValues.MINUTES_IN_HOUR;
-import static com.arsvechkarev.timerx.Constants.TimeValues.NONE;
-import static com.arsvechkarev.timerx.Constants.TimeValues.SECONDS_IN_MINUTE;
-import static com.arsvechkarev.timerx.Constants.ZERO;
 import static com.arsvechkarev.timerx.TimeUnits.HOURS;
-import static com.arsvechkarev.timerx.TimeUnits.MILLISECONDS;
 import static com.arsvechkarev.timerx.TimeUnits.MINUTES;
+import static com.arsvechkarev.timerx.TimeUnits.R_MILLISECONDS;
 import static com.arsvechkarev.timerx.TimeUnits.SECONDS;
+import static com.arsvechkarev.timerx.util.Constants.EMPTY_STRING;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_HOURS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_MINUTES;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_R_MILLIS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_SECONDS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_HOURS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_MINUTES;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_R_MILLIS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_SECONDS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.STANDARD_HOURS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.STANDARD_MINUTES;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.STANDARD_R_MILLIS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.STANDARD_SECONDS;
+import static com.arsvechkarev.timerx.util.Constants.STR_ZERO;
+import static com.arsvechkarev.timerx.util.Constants.TimeValues.MILLIS_IN_HOUR;
+import static com.arsvechkarev.timerx.util.Constants.TimeValues.MILLIS_IN_MINUTE;
+import static com.arsvechkarev.timerx.util.Constants.TimeValues.MILLIS_IN_SECOND;
+import static com.arsvechkarev.timerx.util.Constants.TimeValues.MINUTES_IN_HOUR;
+import static com.arsvechkarev.timerx.util.Constants.TimeValues.NONE;
+import static com.arsvechkarev.timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 
 import android.util.Log;
 import androidx.annotation.NonNull;
@@ -43,14 +45,25 @@ public class TimeFormatter {
 
   public long getOptimizedInterval() {
     long delay = 100;
-    if (semantic.has(MILLISECONDS)) {
-      if (semantic.countOf(MILLISECONDS) == 2) {
+    if (semantic.has(R_MILLISECONDS)) {
+      if (semantic.countOf(R_MILLISECONDS) == 2) {
         delay = 10;
-      } else if (semantic.countOf(MILLISECONDS) > 2) {
+      } else if (semantic.countOf(R_MILLISECONDS) > 2) {
         delay = 1;
       }
     }
     return delay;
+  }
+
+  public long minimumUnitInMillis() {
+    if (semantic.minimumUnit() == R_MILLISECONDS) {
+      return 1;
+    } else if (semantic.minimumUnit() == SECONDS) {
+      return MILLIS_IN_SECOND;
+    } else if (semantic.minimumUnit() == MINUTES) {
+      return MILLIS_IN_MINUTE;
+    }
+    return MILLIS_IN_HOUR;
   }
 
   public String currentFormat() {
@@ -64,7 +77,7 @@ public class TimeFormatter {
     long secondsToShow = NONE;
     long minutesToShow = NONE;
     long hoursToShow = NONE;
-    if (semantic.has(MILLISECONDS)) {
+    if (semantic.has(R_MILLISECONDS)) {
       millisToShow = (semantic.has(SECONDS)) ? units.remMillis : units.millis;
     }
     if (semantic.has(SECONDS)) {
@@ -105,7 +118,7 @@ public class TimeFormatter {
     String strHours = getFormatOf(hoursToShow, HOURS);
     String strMinutes = getFormatOf(minutesToShow, MINUTES);
     String strSeconds = getFormatOf(secondsToShow, SECONDS);
-    String strMillis = getFormatOf(millisToShow, MILLISECONDS);
+    String strMillis = getFormatOf(millisToShow, R_MILLISECONDS);
 
     Log.d(TAG, "applyFormatOf: strMillis = " + strMillis);
     Log.d(TAG, "applyFormatOf: strSeconds = " + strSeconds);
@@ -116,11 +129,11 @@ public class TimeFormatter {
         .replaceAll(PATTERN_HAS_HOURS, strHours)
         .replaceAll(PATTERN_HAS_MINUTES, strMinutes)
         .replaceAll(PATTERN_HAS_SECONDS, strSeconds)
-        .replaceAll(PATTERN_HAS_MILLIS, strMillis)
+        .replaceAll(PATTERN_HAS_R_MILLIS, strMillis)
         .replaceAll(ESCAPED_HOURS, STANDARD_HOURS)
         .replaceAll(ESCAPED_MINUTES, STANDARD_MINUTES)
         .replaceAll(ESCAPED_SECONDS, STANDARD_SECONDS)
-        .replaceAll(ESCAPED_MILLIS, STANDARD_MILLIS);
+        .replaceAll(ESCAPED_R_MILLIS, STANDARD_R_MILLIS);
   }
 
   private String getFormatOf(long number, TimeUnits numberType) {
@@ -131,7 +144,7 @@ public class TimeFormatter {
       int semanticCount = semantic.countOf(numberType);
       int numberLength = lengthOf(number);
       int diff = semanticCount - numberLength;
-      if (numberType == MILLISECONDS) {
+      if (numberType == R_MILLISECONDS) {
         Log.d(TAG, "getFormatOf (ms): number = " + number);
         Log.d(TAG, "getFormatOf (ms): semanticCount = " + semanticCount);
         Log.d(TAG, "getFormatOf (ms): numberLength = " + numberLength);
@@ -139,7 +152,7 @@ public class TimeFormatter {
         return formatMillis(number, semanticCount);
       }
       if (diff > 0) {
-        return addZerosTo(number, diff);
+        return withStartZeros(number, diff);
       }
       return number + EMPTY_STRING;
     }
@@ -149,26 +162,30 @@ public class TimeFormatter {
   private String zerosBy(int num) {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < num; i++) {
-      builder.append(ZERO);
+      builder.append(STR_ZERO);
     }
     return builder.toString();
   }
 
   private String formatMillis(long millis, int semanticCount) {
-    String strMillis = formatToThreeOrMoreDigits(millis);
+    String strMillis = formatToThreeOrMoreDigits(millis, semanticCount);
     if (semanticCount <= 2) {
       return strMillis.substring(0, semanticCount);
     }
     return strMillis;
   }
 
-  private String formatToThreeOrMoreDigits(long remMillis) {
-    int length = lengthOf(remMillis);
-    if (length == 1) {
-      return ZERO + ZERO + remMillis;
+  private String formatToThreeOrMoreDigits(long remMillis, int semanticCount) {
+    int numLength = lengthOf(remMillis);
+    if (numLength == 1) {
+      return STR_ZERO + STR_ZERO + remMillis;
     }
-    if (length == 2) {
-      return ZERO + remMillis;
+    if (numLength == 2) {
+      return STR_ZERO + remMillis;
+    }
+    int zerosToAdd = semanticCount - numLength;
+    if (zerosToAdd > 0) {
+      return withStartZeros(remMillis, zerosToAdd);
     }
     return remMillis + EMPTY_STRING;
   }
@@ -177,16 +194,16 @@ public class TimeFormatter {
     return (number + EMPTY_STRING).length();
   }
 
-  private String addZerosTo(long number, int zerosCount) {
+  private String withStartZeros(long number, int zerosCount) {
     if (zerosCount == 1) {
-      return ZERO + number;
+      return STR_ZERO + number;
     }
     if (zerosCount == 2) {
-      return ZERO + ZERO + number;
+      return STR_ZERO + STR_ZERO + number;
     }
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i < zerosCount; i++) {
-      builder.append(ZERO);
+      builder.append(STR_ZERO);
     }
     return builder.append(number).toString();
   }
