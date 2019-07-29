@@ -2,6 +2,13 @@ package com.arsvechkarev.timerx.format;
 
 import com.arsvechkarev.timerx.TimeUnits;
 
+/**
+ * Provides various information about input format (including number of different parse
+ * symbols etc)
+ *
+ * @see Analyzer
+ * @see TimeFormatter
+ */
 public class Semantic {
 
   private String format;

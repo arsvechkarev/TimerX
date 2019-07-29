@@ -1,5 +1,10 @@
 package com.arsvechkarev.timerx.format;
 
+/**
+ * Class for temporary containing of different time units
+ *
+ * @see TimeFormatter
+ */
 class TimeContainer {
 
   long millis;

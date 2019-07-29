@@ -7,16 +7,16 @@ import static com.arsvechkarev.timerx.TimeUnits.SECONDS;
 import static com.arsvechkarev.timerx.util.Constants.EMPTY_STRING;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_HOURS;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_MINUTES;
-import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_R_MILLIS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_REM_MILLIS;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.ESCAPED_SECONDS;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_HOURS;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_MINUTES;
-import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_R_MILLIS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_REM_MILLIS;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_SECONDS;
-import static com.arsvechkarev.timerx.util.Constants.Patterns.STANDARD_HOURS;
-import static com.arsvechkarev.timerx.util.Constants.Patterns.STANDARD_MINUTES;
-import static com.arsvechkarev.timerx.util.Constants.Patterns.STANDARD_R_MILLIS;
-import static com.arsvechkarev.timerx.util.Constants.Patterns.STANDARD_SECONDS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.STR_HOURS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.STR_MINUTES;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.STR_REM_MILLIS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.STR_SECONDS;
 import static com.arsvechkarev.timerx.util.Constants.STR_ZERO;
 import static com.arsvechkarev.timerx.util.Constants.TimeValues.MILLIS_IN_HOUR;
 import static com.arsvechkarev.timerx.util.Constants.TimeValues.MILLIS_IN_MINUTE;
@@ -27,13 +27,34 @@ import static com.arsvechkarev.timerx.util.Constants.TimeValues.SECONDS_IN_MINUT
 
 import androidx.annotation.NonNull;
 import com.arsvechkarev.timerx.TimeUnits;
+import com.arsvechkarev.timerx.util.Constants.Patterns;
 
+/**
+ * Main class that formatting input milliseconds into string representation according to
+ * parse format. Also returns optimized delay for handler in {@link
+ * com.arsvechkarev.timerx.Timer} and {@link com.arsvechkarev.timerx.Stopwatch} (see
+ * {@link #getOptimizedDelay()})
+ *
+ * @author Arseniy Svechkarev
+ * @see Analyzer
+ */
 public class TimeFormatter {
 
-  private static final String TAG = TimeFormatter.class.getSimpleName();
-
+  /**
+   * Semantic representation of input format creates by {@link Analyzer}
+   *
+   * @see Semantic
+   */
   private final Semantic semantic;
+
+  /**
+   * Temporary container for time units
+   */
   private final TimeContainer timeContainer;
+
+  /**
+   * Input string format format
+   */
   private final String format;
 
   public TimeFormatter(@NonNull Semantic semantic) {
@@ -42,6 +63,16 @@ public class TimeFormatter {
     timeContainer = new TimeContainer();
   }
 
+  /**
+   * Returns optimized delay for handler in Timer and Stopwatch. Optimized delay
+   * calculates depending on which symbols contains in parse format. For example, if input
+   * format contains {@link Patterns#STR_REM_MILLIS}, then delay for handler should be
+   * every millisecond (on every ten milliseconds, depending on number of {@link
+   * Patterns#STR_REM_MILLIS} symbols in format), but if input format do not contains
+   * {@link Patterns#STR_REM_MILLIS}, there is no reason to notify user about changing
+   * time every milliseconds, because millis will not displayed. But delay should be at
+   * most 100 for correct pause/resume handling
+   */
   public long getOptimizedDelay() {
     long delay = 100;
     if (semantic.has(R_MILLISECONDS)) {
@@ -54,6 +85,11 @@ public class TimeFormatter {
     return delay;
   }
 
+  /**
+   * Returns minimum unit of semantic converted to millis
+   *
+   * @see com.arsvechkarev.timerx.Timer
+   */
   public long minimumUnitInMillis() {
     if (semantic.minimumUnit() == R_MILLISECONDS) {
       return 1;
@@ -69,6 +105,12 @@ public class TimeFormatter {
     return semantic.getFormat();
   }
 
+  /**
+   * Actually, formats milliseconds to string representation according by {@link #format}
+   *
+   * @param time Time in milliseconds
+   * @return Formatted time
+   */
   @NonNull
   public String format(long time) {
     TimeContainer units = timeUnitsOf(time);
@@ -119,11 +161,11 @@ public class TimeFormatter {
         .replaceAll(PATTERN_HAS_HOURS, strHours)
         .replaceAll(PATTERN_HAS_MINUTES, strMinutes)
         .replaceAll(PATTERN_HAS_SECONDS, strSeconds)
-        .replaceAll(PATTERN_HAS_R_MILLIS, strMillis)
-        .replaceAll(ESCAPED_HOURS, STANDARD_HOURS)
-        .replaceAll(ESCAPED_MINUTES, STANDARD_MINUTES)
-        .replaceAll(ESCAPED_SECONDS, STANDARD_SECONDS)
-        .replaceAll(ESCAPED_R_MILLIS, STANDARD_R_MILLIS);
+        .replaceAll(PATTERN_HAS_REM_MILLIS, strMillis)
+        .replaceAll(ESCAPED_HOURS, STR_HOURS)
+        .replaceAll(ESCAPED_MINUTES, STR_MINUTES)
+        .replaceAll(ESCAPED_SECONDS, STR_SECONDS)
+        .replaceAll(ESCAPED_REM_MILLIS, STR_REM_MILLIS);
   }
 
   private String getFormatOf(long number, TimeUnits numberType) {
@@ -163,8 +205,6 @@ public class TimeFormatter {
 
   private String formatToThreeOrMoreDigits(long millis, int semanticCount) {
     int numLength = lengthOf(millis);
-    System.out.println("numLength = " + numLength);
-    System.out.println("semanticCount = " + semanticCount);
     StringBuilder result = new StringBuilder();
     if (numLength == 1) {
       result.append(STR_ZERO).append(STR_ZERO);
@@ -173,13 +213,11 @@ public class TimeFormatter {
       result.append(STR_ZERO);
     }
     int zerosToAdd = semanticCount - (result.length() + numLength);
-    System.out.println("zerosToAdd = " + zerosToAdd);
     if (zerosToAdd > 0) {
       result.insert(0, zerosBy(zerosToAdd)).append(millis);
     } else {
       result.append(millis);
     }
-    System.out.println("result.toString() = " + result.toString());
     return result.toString();
   }
 

@@ -7,7 +7,7 @@ import static com.arsvechkarev.timerx.TimeUnits.SECONDS;
 import static com.arsvechkarev.timerx.util.Checker.expect;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_HOURS;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_MINUTES;
-import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_R_MILLIS;
+import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_REM_MILLIS;
 import static com.arsvechkarev.timerx.util.Constants.Patterns.PATTERN_HAS_SECONDS;
 
 import com.arsvechkarev.timerx.exceptions.IllegalSymbolsCombinationException;
@@ -16,6 +16,13 @@ import com.arsvechkarev.timerx.exceptions.NoNecessarySymbolsException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Class that validate and analyzes input format and builds a {@link Semantic} of the
+ * format
+ *
+ * @see Semantic
+ * @see TimeFormatter
+ */
 public class Analyzer {
 
   private Semantic semantic;
@@ -24,6 +31,12 @@ public class Analyzer {
     this.semantic = semantic;
   }
 
+  /**
+   * Checks and validates input format
+   *
+   * @param format Format to check
+   * @return Semantic with information about format
+   */
   public static Semantic check(String format) {
     Semantic semantic = new Semantic(format);
     Analyzer analyzer = new Analyzer(semantic);
@@ -68,7 +81,7 @@ public class Analyzer {
       case 2:
         return PATTERN_HAS_SECONDS;
       case 3:
-        return PATTERN_HAS_R_MILLIS;
+        return PATTERN_HAS_REM_MILLIS;
       default:
         // TODO: 26.07.2019 Translate
         throw new IllegalArgumentException("No pattern to match");

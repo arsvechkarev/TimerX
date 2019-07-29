@@ -1,6 +1,5 @@
 package com.arsvechkarev.timerx.util;
 
-@SuppressWarnings("WeakerAccess")
 public class Constants {
 
   public static final String EMPTY_STRING = "";
@@ -8,19 +7,19 @@ public class Constants {
 
   public static class Patterns {
 
-    public static final String STANDARD_HOURS = "H";
-    public static final String STANDARD_MINUTES = "M";
-    public static final String STANDARD_SECONDS = "S";
-    public static final String STANDARD_R_MILLIS = "L";
-    public static final String PATTERN_HAS_HOURS = "(?<!#)" + STANDARD_HOURS + "+";
-    public static final String PATTERN_HAS_MINUTES = "(?<!#)" + STANDARD_MINUTES + "+";
-    public static final String PATTERN_HAS_SECONDS = "(?<!#)" + STANDARD_SECONDS + "+";
-    public static final String PATTERN_HAS_R_MILLIS = "(?<!#)" + STANDARD_R_MILLIS + "+";
+    public static final String STR_HOURS = "H";
+    public static final String STR_MINUTES = "M";
+    public static final String STR_SECONDS = "S";
+    public static final String STR_REM_MILLIS = "L";
+    public static final String PATTERN_HAS_HOURS = "(?<!#)" + STR_HOURS + "+";
+    public static final String PATTERN_HAS_MINUTES = "(?<!#)" + STR_MINUTES + "+";
+    public static final String PATTERN_HAS_SECONDS = "(?<!#)" + STR_SECONDS + "+";
+    public static final String PATTERN_HAS_REM_MILLIS = "(?<!#)" + STR_REM_MILLIS + "+";
     public static final String SYMBOL_ESCAPE = "#";
-    public static final String ESCAPED_HOURS = SYMBOL_ESCAPE + STANDARD_HOURS;
-    public static final String ESCAPED_MINUTES = SYMBOL_ESCAPE + STANDARD_MINUTES;
-    public static final String ESCAPED_SECONDS = SYMBOL_ESCAPE + STANDARD_SECONDS;
-    public static final String ESCAPED_R_MILLIS = SYMBOL_ESCAPE + STANDARD_R_MILLIS;
+    public static final String ESCAPED_HOURS = SYMBOL_ESCAPE + STR_HOURS;
+    public static final String ESCAPED_MINUTES = SYMBOL_ESCAPE + STR_MINUTES;
+    public static final String ESCAPED_SECONDS = SYMBOL_ESCAPE + STR_SECONDS;
+    public static final String ESCAPED_REM_MILLIS = SYMBOL_ESCAPE + STR_REM_MILLIS;
   }
 
   public static class TimeValues {

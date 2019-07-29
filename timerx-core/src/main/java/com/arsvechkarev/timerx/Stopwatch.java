@@ -18,7 +18,10 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Represents a standard stopwatch
+ * Represents a stopwatch with standard {@link #start()}, {@link #stop()}, {@link
+ * #getTimeIn(TimeUnit)}, {@link #reset()} methods, but provides more functionality, like
+ * changing time format and executing actions by a specific time. Use {@link
+ * StopwatchBuilder} to configure and instantiate the stopwatch
  *
  * @author Arseny Svechkarev
  * @see StopwatchBuilder
@@ -26,28 +29,29 @@ import java.util.concurrent.TimeUnit;
  */
 public class Stopwatch {
 
-  /**
-   * Message id for {@link #handler}
-   */
+  // Message id for handler
   private static final int MSG = 2;
+
   /**
    * Listener for sending formatted time
    *
    * @see TimeTickListener
    */
   private final TimeTickListener tickListener;
-  /**
-   * Semantic of base format
-   */
+
+  // Semantic of base format
   private final Semantic startSemantic;
+
   /**
    * Current time of stopwatch (in millis)
    */
   private long currentTime;
+
   /**
    * Time when stopwatch started (in millis)
    */
   private long baseTime;
+
   /**
    * Delay for handler in millis
    */
@@ -59,15 +63,16 @@ public class Stopwatch {
    * @see TimeCountingState
    */
   private TimeCountingState state = INACTIVE;
+
   /**
    * Formatter for formatting {@link #currentTime} according to particular format
    *
    * @see TimeFormatter
    */
   private TimeFormatter timeFormatter;
+
   /**
-   * Set of formats which will be applied when {@link #currentTime} will be equal to time
-   * that holder contains
+   * Set of formats and times
    */
   private final SortedSet<NextFormatsHolder> nextFormatsHolder;
   private final SortedSet<ActionsHolder> actionsHolder;
