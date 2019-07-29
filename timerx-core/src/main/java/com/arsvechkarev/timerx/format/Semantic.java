@@ -60,6 +60,11 @@ public class Semantic {
     }
   }
 
+  boolean hasOnlyRMillis() {
+    return (rMillisCount > 0 && secondsCount == 0
+        && minutesCount == 0 && hoursCount == 0);
+  }
+
   int countOf(TimeUnits unitType) {
     switch (unitType) {
       case HOURS:

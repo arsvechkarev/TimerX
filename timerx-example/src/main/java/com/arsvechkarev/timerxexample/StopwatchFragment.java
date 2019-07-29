@@ -38,15 +38,15 @@ public class StopwatchFragment extends Fragment {
     textTime = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_time);
 
     stopwatch = new StopwatchBuilder()
-        .startFormat("Time: SS:LL")
+        .startFormat("Time: LL")
         .tickListener(new StopwatchTickListener() {
           @Override
           public void onTimeTick(String time) {
             textTime.setText(time);
           }
         })
-        .changeFormatWhen(10, TimeUnit.SECONDS, "Time: MM:SS")
-        .changeFormatWhen(1, TimeUnit.MINUTES, "LLLLLL")
+//        .changeFormatWhen(10, TimeUnit.SECONDS, "Time: MM:SS")
+//        .changeFormatWhen(1, TimeUnit.MINUTES, "LLLLLL")
         .actionWhen(5, TimeUnit.SECONDS, new Action() {
           @Override
           public void execute() {

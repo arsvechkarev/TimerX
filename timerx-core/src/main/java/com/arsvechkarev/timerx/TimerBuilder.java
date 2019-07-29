@@ -17,9 +17,9 @@ public class TimerBuilder {
   private long startTime = TimeValues.NONE;
   private TimerTickListener tickListener = null;
   private SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>(
-      Collections.<NextFormatsHolder>reverseOrder());
+      Collections.reverseOrder());
   private SortedSet<ActionsHolder> nextActionsHolder = new TreeSet<>(
-      Collections.<ActionsHolder>reverseOrder());
+      Collections.reverseOrder());
 
   public TimerBuilder startFormat(String format) {
     expectNotNull(format);

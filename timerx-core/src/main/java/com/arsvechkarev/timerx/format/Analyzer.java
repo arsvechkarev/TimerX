@@ -71,7 +71,7 @@ public class Analyzer {
         return PATTERN_HAS_R_MILLIS;
       default:
         // TODO: 26.07.2019 Translate
-        throw new IllegalStateException("No pattern to match");
+        throw new IllegalArgumentException("No pattern to match");
     }
   }
 
@@ -90,7 +90,7 @@ public class Analyzer {
       semantic.setRMillisCount(count);
       semantic.setMinimumUnit(R_MILLISECONDS);
     } else {
-      throw new IllegalStateException("No number to match");
+      throw new IllegalArgumentException("No number to match");
     }
   }
 

@@ -25,7 +25,6 @@ import static com.arsvechkarev.timerx.util.Constants.TimeValues.MINUTES_IN_HOUR;
 import static com.arsvechkarev.timerx.util.Constants.TimeValues.NONE;
 import static com.arsvechkarev.timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 
-import android.util.Log;
 import androidx.annotation.NonNull;
 import com.arsvechkarev.timerx.TimeUnits;
 
@@ -43,7 +42,7 @@ public class TimeFormatter {
     timeContainer = new TimeContainer();
   }
 
-  public long getOptimizedInterval() {
+  public long getOptimizedDelay() {
     long delay = 100;
     if (semantic.has(R_MILLISECONDS)) {
       if (semantic.countOf(R_MILLISECONDS) == 2) {
@@ -89,10 +88,6 @@ public class TimeFormatter {
     if (semantic.has(HOURS)) {
       hoursToShow = units.hours;
     }
-    Log.d(TAG, "format: millisToShow = " + millisToShow);
-    Log.d(TAG, "format: secondsToShow = " + secondsToShow);
-    Log.d(TAG, "format: minutesToShow = " + minutesToShow);
-    Log.d(TAG, "format: hoursToShow = " + hoursToShow);
     return applyFormatOf(millisToShow, secondsToShow, minutesToShow, hoursToShow);
   }
 
@@ -120,11 +115,6 @@ public class TimeFormatter {
     String strSeconds = getFormatOf(secondsToShow, SECONDS);
     String strMillis = getFormatOf(millisToShow, R_MILLISECONDS);
 
-    Log.d(TAG, "applyFormatOf: strMillis = " + strMillis);
-    Log.d(TAG, "applyFormatOf: strSeconds = " + strSeconds);
-    Log.d(TAG, "applyFormatOf: strMinutes = " + strMinutes);
-    Log.d(TAG, "applyFormatOf: strHours = " + strHours);
-
     return format
         .replaceAll(PATTERN_HAS_HOURS, strHours)
         .replaceAll(PATTERN_HAS_MINUTES, strMinutes)
@@ -144,15 +134,11 @@ public class TimeFormatter {
       int semanticCount = semantic.countOf(numberType);
       int numberLength = lengthOf(number);
       int diff = semanticCount - numberLength;
-      if (numberType == R_MILLISECONDS) {
-        Log.d(TAG, "getFormatOf (ms): number = " + number);
-        Log.d(TAG, "getFormatOf (ms): semanticCount = " + semanticCount);
-        Log.d(TAG, "getFormatOf (ms): numberLength = " + numberLength);
-        Log.d(TAG, "getFormatOf (ms): diff = " + diff);
-        return formatMillis(number, semanticCount);
+      if (numberType == R_MILLISECONDS && !semantic.hasOnlyRMillis()) {
+        return formatRMillis(number, semanticCount);
       }
       if (diff > 0) {
-        return withStartZeros(number, diff);
+        return zerosBy(diff) + number;
       }
       return number + EMPTY_STRING;
     }
@@ -167,7 +153,7 @@ public class TimeFormatter {
     return builder.toString();
   }
 
-  private String formatMillis(long millis, int semanticCount) {
+  private String formatRMillis(long millis, int semanticCount) {
     String strMillis = formatToThreeOrMoreDigits(millis, semanticCount);
     if (semanticCount <= 2) {
       return strMillis.substring(0, semanticCount);
@@ -175,36 +161,29 @@ public class TimeFormatter {
     return strMillis;
   }
 
-  private String formatToThreeOrMoreDigits(long remMillis, int semanticCount) {
-    int numLength = lengthOf(remMillis);
+  private String formatToThreeOrMoreDigits(long millis, int semanticCount) {
+    int numLength = lengthOf(millis);
+    System.out.println("numLength = " + numLength);
+    System.out.println("semanticCount = " + semanticCount);
+    StringBuilder result = new StringBuilder();
     if (numLength == 1) {
-      return STR_ZERO + STR_ZERO + remMillis;
+      result.append(STR_ZERO).append(STR_ZERO);
     }
     if (numLength == 2) {
-      return STR_ZERO + remMillis;
+      result.append(STR_ZERO);
     }
-    int zerosToAdd = semanticCount - numLength;
+    int zerosToAdd = semanticCount - (result.length() + numLength);
+    System.out.println("zerosToAdd = " + zerosToAdd);
     if (zerosToAdd > 0) {
-      return withStartZeros(remMillis, zerosToAdd);
+      result.insert(0, zerosBy(zerosToAdd)).append(millis);
+    } else {
+      result.append(millis);
     }
-    return remMillis + EMPTY_STRING;
+    System.out.println("result.toString() = " + result.toString());
+    return result.toString();
   }
 
   private int lengthOf(long number) {
     return (number + EMPTY_STRING).length();
-  }
-
-  private String withStartZeros(long number, int zerosCount) {
-    if (zerosCount == 1) {
-      return STR_ZERO + number;
-    }
-    if (zerosCount == 2) {
-      return STR_ZERO + STR_ZERO + number;
-    }
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < zerosCount; i++) {
-      builder.append(STR_ZERO);
-    }
-    return builder.append(number).toString();
   }
 }

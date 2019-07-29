@@ -8,7 +8,6 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.util.Log;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
 import com.arsvechkarev.timerx.format.Semantic;
@@ -97,7 +96,7 @@ public class Timer {
 
   private void applyFormat(Semantic semantic) {
     timeFormatter = new TimeFormatter(semantic);
-    interval = timeFormatter.getOptimizedInterval();
+    interval = timeFormatter.getOptimizedDelay();
   }
 
   @SuppressLint("HandlerLeak")
@@ -110,7 +109,6 @@ public class Timer {
         currentTime = millisInFuture - SystemClock.elapsedRealtime();
         changeFormatIfNeed();
         makeActionIfNeed();
-        Log.d(TAG, "handleMessage: currentTime = " + currentTime);
         if (currentTime <= 0) {
           currentTime = 0;
           tickListener.onTick(timeFormatter.format(currentTime));
@@ -125,7 +123,6 @@ public class Timer {
           timeToFormat = currentTime + timeFormatter.minimumUnitInMillis();
         }
         String formattedTime = timeFormatter.format(timeToFormat);
-        Log.d(TAG, "handleMessage: formattedTime = " + formattedTime);
         tickListener.onTick(formattedTime);
         long executionTime = SystemClock.elapsedRealtime() - startExecution;
         sendMessageDelayed(obtainMessage(MSG), interval - executionTime);
@@ -134,7 +131,6 @@ public class Timer {
   };
 
   private void changeFormatIfNeed() {
-    Log.d("wow", "" + copyOfFormatsHolders);
     if (copyOfFormatsHolders.size() > 0
         && !timeFormatter.currentFormat()
         .equals(copyOfFormatsHolders.first().getSemantic().getFormat())
@@ -147,7 +143,6 @@ public class Timer {
   private void makeActionIfNeed() {
     if (copyOfActionsHolders.size() > 0
         && currentTime <= copyOfActionsHolders.first().getMillis()) {
-//      Log.d(TAG, "running action with " + copyOfFormatsHolders.first().getMillis());
       copyOfActionsHolders.first().getAction().execute();
       copyOfActionsHolders.remove(copyOfActionsHolders.first());
     }

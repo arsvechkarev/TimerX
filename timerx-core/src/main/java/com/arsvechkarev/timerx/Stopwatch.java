@@ -18,9 +18,11 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Class for standard time counting
+ * Represents a standard stopwatch
  *
  * @author Arseny Svechkarev
+ * @see StopwatchBuilder
+ * @see Timer
  */
 public class Stopwatch {
 
@@ -125,7 +127,7 @@ public class Stopwatch {
 
   private void applyFormat(Semantic semantic) {
     timeFormatter = new TimeFormatter(semantic);
-    delay = timeFormatter.getOptimizedInterval();
+    delay = timeFormatter.getOptimizedDelay();
   }
 
   @SuppressLint("HandlerLeak")

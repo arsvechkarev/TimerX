@@ -5,16 +5,16 @@ public class ActionsHolder implements Comparable<ActionsHolder> {
   private long millis;
   private Action action;
 
-  public ActionsHolder(long millis, Action action) {
+  ActionsHolder(long millis, Action action) {
     this.millis = millis;
     this.action = action;
   }
 
-  public long getMillis() {
+  long getMillis() {
     return millis;
   }
 
-  public Action getAction() {
+  Action getAction() {
     return action;
   }
 
