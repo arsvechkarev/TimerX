@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import com.arsvechkarev.timerx.Action;
 import com.arsvechkarev.timerx.Stopwatch;
 import com.arsvechkarev.timerx.StopwatchBuilder;
-import com.arsvechkarev.timerx.StopwatchTickListener;
 import java.util.concurrent.TimeUnit;
 
 /**

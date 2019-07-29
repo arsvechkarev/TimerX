@@ -30,7 +30,8 @@ public class Timer {
 
   private long currentTime;
 
-  private TimerTickListener tickListener;
+  private TimeTickListener tickListener;
+  private TimeFinishListener finishListener;
 
   private TimeFormatter timeFormatter;
 
@@ -45,12 +46,13 @@ public class Timer {
   private SortedSet<ActionsHolder> copyOfActionsHolders;
 
   @RestrictTo(Scope.LIBRARY)
-  Timer(long startTime, Semantic startSemantic, TimerTickListener tickListener,
-      SortedSet<NextFormatsHolder> nextFormatsHolders,
+  Timer(long startTime, Semantic startSemantic, TimeTickListener tickListener,
+      TimeFinishListener finishListener, SortedSet<NextFormatsHolder> nextFormatsHolders,
       SortedSet<ActionsHolder> nextActionsHolders) {
     this.startTime = startTime;
     this.startSemantic = startSemantic;
     this.tickListener = tickListener;
+    this.finishListener = finishListener;
     this.nextFormatsHolders = nextFormatsHolders;
     this.nextActionsHolders = nextActionsHolders;
     currentTime = startTime;
@@ -112,7 +114,7 @@ public class Timer {
         if (currentTime <= 0) {
           currentTime = 0;
           tickListener.onTick(timeFormatter.format(currentTime));
-          tickListener.onFinish();
+          finishListener.onFinish();
           reset();
           return;
         }

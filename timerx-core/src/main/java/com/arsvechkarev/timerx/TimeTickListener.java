@@ -1,8 +1,6 @@
 package com.arsvechkarev.timerx;
 
-public interface TimerTickListener {
+public interface TimeTickListener {
 
   void onTick(String time);
-
-  void onFinish();
 }

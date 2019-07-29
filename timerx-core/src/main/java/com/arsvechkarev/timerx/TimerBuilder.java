@@ -15,7 +15,8 @@ public class TimerBuilder {
 
   private Semantic startSemantic;
   private long startTime = TimeValues.NONE;
-  private TimerTickListener tickListener = null;
+  private TimeTickListener tickListener = null;
+  private TimeFinishListener finishListener = null;
   private SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>(
       Collections.reverseOrder());
   private SortedSet<ActionsHolder> nextActionsHolder = new TreeSet<>(
@@ -32,9 +33,15 @@ public class TimerBuilder {
     return this;
   }
 
-  public TimerBuilder tickListener(@NonNull TimerTickListener tickListener) {
+  public TimerBuilder onTick(@NonNull TimeTickListener tickListener) {
     expectNotNull(tickListener);
     this.tickListener = tickListener;
+    return this;
+  }
+
+  public TimerBuilder onFinish(@NonNull TimeFinishListener finishListener) {
+    expectNotNull(finishListener);
+    this.finishListener = finishListener;
     return this;
   }
 
@@ -56,7 +63,8 @@ public class TimerBuilder {
   }
 
   public Timer build() {
-    return new Timer(startTime, startSemantic, tickListener, nextFormatsHolder,
+    return new Timer(startTime, startSemantic, tickListener, finishListener,
+        nextFormatsHolder,
         nextActionsHolder);
   }
 }

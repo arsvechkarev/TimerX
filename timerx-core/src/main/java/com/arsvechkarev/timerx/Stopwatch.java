@@ -33,9 +33,9 @@ public class Stopwatch {
   /**
    * Listener for sending formatted time
    *
-   * @see StopwatchTickListener
+   * @see TimeTickListener
    */
-  private final StopwatchTickListener tickListener;
+  private final TimeTickListener tickListener;
   /**
    * Semantic of base format
    */
@@ -77,7 +77,7 @@ public class Stopwatch {
   private SortedSet<ActionsHolder> copyOfActionsHolder;
 
   @RestrictTo(Scope.LIBRARY)
-  Stopwatch(Semantic startSemantic, StopwatchTickListener tickListener,
+  Stopwatch(Semantic startSemantic, TimeTickListener tickListener,
       SortedSet<NextFormatsHolder> nextFormatsHolder,
       SortedSet<ActionsHolder> actionsHolder) {
     this.startSemantic = startSemantic;
@@ -140,7 +140,7 @@ public class Stopwatch {
         changeFormatIfNeed();
         makeActionIfNeed();
         String format = timeFormatter.format(currentTime);
-        tickListener.onTimeTick(format);
+        tickListener.onTick(format);
         long executionDelay = SystemClock.elapsedRealtime() - executionStartedTime;
         sendMessageDelayed(obtainMessage(MSG), delay - executionDelay);
       }

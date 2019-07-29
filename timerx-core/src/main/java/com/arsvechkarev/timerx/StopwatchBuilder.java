@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class StopwatchBuilder {
 
   private Semantic startSemantic;
-  private StopwatchTickListener tickListener;
+  private TimeTickListener tickListener;
   private SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>();
   private SortedSet<ActionsHolder> actionsHolder = new TreeSet<>();
 
@@ -21,7 +21,7 @@ public class StopwatchBuilder {
     return this;
   }
 
-  public StopwatchBuilder tickListener(StopwatchTickListener tickListener) {
+  public StopwatchBuilder tickListener(TimeTickListener tickListener) {
     expectNotNull(tickListener);
     this.tickListener = tickListener;
     return this;

@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment;
 import com.arsvechkarev.timerx.Action;
 import com.arsvechkarev.timerx.Timer;
 import com.arsvechkarev.timerx.TimerBuilder;
-import com.arsvechkarev.timerx.TimerTickListener;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -65,7 +64,7 @@ public class TimerFragment extends Fragment {
         .changeFormatWhen(15, TimeUnit.SECONDS, "15: MM:SS")
         .changeFormatWhen(10, TimeUnit.SECONDS, "10: SS:LLLLL")
         .changeFormatWhen(5, TimeUnit.SECONDS, "5: SS:LLLLL")
-        .tickListener(new TimerTickListener() {
+        .onTick(new TimerTickListener() {
           @Override
           public void onTick(String time) {
             textTime.setText(time);
