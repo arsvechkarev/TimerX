@@ -17,6 +17,7 @@ public class StopwatchBuilder {
   private SortedSet<ActionsHolder> actionsHolder = new TreeSet<>();
 
   public StopwatchBuilder startFormat(String format) {
+    expectNotNull(format);
     startSemantic = Analyzer.check(format);
     return this;
   }
@@ -64,6 +65,8 @@ public class StopwatchBuilder {
   }
 
   public Stopwatch build() {
+    expectNotNull(startSemantic);
+    expectNotNull(tickListener);
     return new Stopwatch(startSemantic, tickListener, nextFormatsHolder,
         actionsHolder);
   }

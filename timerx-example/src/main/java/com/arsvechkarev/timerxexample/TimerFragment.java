@@ -36,9 +36,9 @@ public class TimerFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     textTime = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_time);
     timer = new TimerBuilder()
-        .startFormat("20: MM:SSSSSS")
-        .startTime(20, TimeUnit.SECONDS)
-        .actionWhen(15, TimeUnit.SECONDS, new Action() {
+        .startFormat("start: MM:SSSSSS")
+        .startTime(15, TimeUnit.SECONDS)
+        .actionWhen(18, TimeUnit.SECONDS, new Action() {
           @Override
           public void run() {
             Toast.makeText(getContext(),
@@ -62,7 +62,7 @@ public class TimerFragment extends Fragment {
                 .show();
           }
         })
-        .changeFormatWhen(15, TimeUnit.SECONDS, "15: MM:SS")
+//        .changeFormatWhen(1, TimeUnit.MINUTES, "One minute: SS:LL")
         .changeFormatWhen(10, TimeUnit.SECONDS, "10: SS:LLLLL")
         .changeFormatWhen(5, TimeUnit.SECONDS, "5: SS:LLLLL")
         .onTick(new TimeTickListener() {

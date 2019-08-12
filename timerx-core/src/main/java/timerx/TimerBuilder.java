@@ -1,6 +1,8 @@
 package timerx;
 
+import static timerx.util.Checker.expect;
 import static timerx.util.Checker.expectNotNull;
+import static timerx.util.Checker.expectTimeInitialized;
 
 import androidx.annotation.NonNull;
 import java.util.Collections;
@@ -15,8 +17,8 @@ public class TimerBuilder {
 
   private Semantic startSemantic;
   private long startTime = TimeValues.NONE;
-  private TimeTickListener tickListener = null;
-  private TimeFinishListener finishListener = null;
+  private TimeTickListener tickListener;
+  private TimeFinishListener finishListener;
   private SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>(
       Collections.reverseOrder());
   private SortedSet<ActionsHolder> nextActionsHolder = new TreeSet<>(
@@ -47,6 +49,7 @@ public class TimerBuilder {
 
   public TimerBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
+    expect(time >= 0, "Time should be positive");
     expectNotNull(newFormat);
     Semantic semantic = Analyzer.check(newFormat);
     long millis = timeUnit.toMillis(time);
@@ -56,6 +59,7 @@ public class TimerBuilder {
 
   public TimerBuilder actionWhen(long time, TimeUnit timeUnit,
       @NonNull Action action) {
+    expect(time >= 0, "Time should be positive");
     expectNotNull(action);
     long millis = timeUnit.toMillis(time);
     nextActionsHolder.add(new ActionsHolder(millis, action));
@@ -63,6 +67,8 @@ public class TimerBuilder {
   }
 
   public Timer build() {
+    expectNotNull(startSemantic, "Start format should be initialized");
+    expectTimeInitialized(startTime, "Time should be initialized");
     return new Timer(startTime, startSemantic, tickListener, finishListener,
         nextFormatsHolder,
         nextActionsHolder);

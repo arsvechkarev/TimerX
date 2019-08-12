@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import java.util.concurrent.TimeUnit;
 import timerx.Action;
+import timerx.Stopwatch;
 import timerx.StopwatchBuilder;
 import timerx.TimeTickListener;
 
@@ -49,19 +50,6 @@ public class StopwatchFragment extends Fragment {
           public void run() {
             Toast.makeText(getContext(), "5 seconds action: now!", Toast.LENGTH_SHORT)
                 .show();
-          }
-        })
-        .actionWhen(30, TimeUnit.SECONDS, new Action() {
-          @Override
-          public void run() {
-            Toast.makeText(getContext(), "30 seconds action: now!", Toast.LENGTH_SHORT)
-                .show();
-          }
-        }).actionWhen(70, TimeUnit.SECONDS, new Action() {
-          @Override
-          public void run() {
-            Toast.makeText(getContext(), "1 minute 10 seconds seconds action: now!",
-                Toast.LENGTH_SHORT).show();
           }
         })
         .build();
