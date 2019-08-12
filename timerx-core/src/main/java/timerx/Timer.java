@@ -1,8 +1,8 @@
-package timerx.timer;
+package timerx;
 
-import static timerx.common.TimeCountingState.INACTIVE;
-import static timerx.common.TimeCountingState.PAUSED;
-import static timerx.common.TimeCountingState.RESUMED;
+import static timerx.TimeCountingState.INACTIVE;
+import static timerx.TimeCountingState.PAUSED;
+import static timerx.TimeCountingState.RESUMED;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
@@ -13,11 +13,6 @@ import androidx.annotation.RestrictTo.Scope;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.common.ActionsHolder;
-import timerx.common.NextFormatsHolder;
-import timerx.common.TimeCountingState;
-import timerx.common.TimeFinishListener;
-import timerx.common.TimeTickListener;
 import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
 
@@ -51,7 +46,7 @@ import timerx.format.TimeFormatter;
  * @author Arseny Svechkarev
  * @see TimerBuilder
  */
-public class TimerImpl {
+public class Timer {
 
   /**
    * Message id for {@link #handler}
@@ -113,7 +108,7 @@ public class TimerImpl {
   private SortedSet<ActionsHolder> copyOfActionsHolders;
 
   @RestrictTo(Scope.LIBRARY)
-  TimerImpl(long startTime, Semantic startSemantic, TimeTickListener tickListener,
+  Timer(long startTime, Semantic startSemantic, TimeTickListener tickListener,
       TimeFinishListener finishListener, SortedSet<NextFormatsHolder> nextFormatsHolders,
       SortedSet<ActionsHolder> nextActionsHolders) {
     this.startTime = startTime;
@@ -194,7 +189,7 @@ public class TimerImpl {
 
     @Override
     public void handleMessage(Message msg) {
-      synchronized (TimerImpl.this) {
+      synchronized (Timer.this) {
         long startExecution = SystemClock.elapsedRealtime();
         currentTime = millisInFuture - SystemClock.elapsedRealtime();
         changeFormatIfNeed();

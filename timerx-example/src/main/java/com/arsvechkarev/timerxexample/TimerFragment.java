@@ -12,10 +12,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import java.util.concurrent.TimeUnit;
-import timerx.common.Action;
-import timerx.common.TimeTickListener;
-import timerx.timer.TimerBuilder;
-import timerx.timer.TimerImpl;
+import timerx.Action;
+import timerx.TimeTickListener;
+import timerx.Timer;
+import timerx.TimerBuilder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,7 +23,7 @@ import timerx.timer.TimerImpl;
 public class TimerFragment extends Fragment {
 
   private TextView textTime;
-  private TimerImpl timer;
+  private Timer timer;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,

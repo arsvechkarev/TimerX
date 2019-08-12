@@ -1,4 +1,4 @@
-package timerx.timer;
+package timerx;
 
 import static timerx.util.Checker.expectNotNull;
 
@@ -7,11 +7,6 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.common.Action;
-import timerx.common.ActionsHolder;
-import timerx.common.NextFormatsHolder;
-import timerx.common.TimeFinishListener;
-import timerx.common.TimeTickListener;
 import timerx.format.Analyzer;
 import timerx.format.Semantic;
 import timerx.util.Constants.TimeValues;
@@ -68,7 +63,7 @@ public class TimerBuilder {
   }
 
   public Timer build() {
-    return new TimerImpl(startTime, startSemantic, tickListener, finishListener,
+    return new Timer(startTime, startSemantic, tickListener, finishListener,
         nextFormatsHolder,
         nextActionsHolder);
   }

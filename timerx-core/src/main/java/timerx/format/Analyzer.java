@@ -1,9 +1,9 @@
 package timerx.format;
 
-import static timerx.common.TimeUnits.HOURS;
-import static timerx.common.TimeUnits.MINUTES;
-import static timerx.common.TimeUnits.R_MILLISECONDS;
-import static timerx.common.TimeUnits.SECONDS;
+import static timerx.TimeUnits.HOURS;
+import static timerx.TimeUnits.MINUTES;
+import static timerx.TimeUnits.R_MILLISECONDS;
+import static timerx.TimeUnits.SECONDS;
 import static timerx.util.Checker.expect;
 import static timerx.util.Constants.Patterns.PATTERN_HAS_HOURS;
 import static timerx.util.Constants.Patterns.PATTERN_HAS_MINUTES;

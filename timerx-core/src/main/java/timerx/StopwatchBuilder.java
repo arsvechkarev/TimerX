@@ -1,4 +1,4 @@
-package timerx.stopwatch;
+package timerx;
 
 import static timerx.util.Checker.expectNotNull;
 
@@ -6,10 +6,6 @@ import androidx.annotation.NonNull;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.common.Action;
-import timerx.common.ActionsHolder;
-import timerx.common.NextFormatsHolder;
-import timerx.common.TimeTickListener;
 import timerx.format.Analyzer;
 import timerx.format.Semantic;
 
@@ -67,8 +63,8 @@ public class StopwatchBuilder {
     return this;
   }
 
-  public StopwatchImpl build() {
-    return new StopwatchImpl(startSemantic, tickListener, nextFormatsHolder,
+  public Stopwatch build() {
+    return new Stopwatch(startSemantic, tickListener, nextFormatsHolder,
         actionsHolder);
   }
 }

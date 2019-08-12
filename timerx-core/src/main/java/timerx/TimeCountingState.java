@@ -1,4 +1,4 @@
-package timerx.common;
+package timerx;
 
 /**
  * Current state of timer or stopwatch

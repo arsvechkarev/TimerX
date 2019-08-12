@@ -12,9 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import java.util.concurrent.TimeUnit;
-import timerx.common.Action;
-import timerx.common.TimeTickListener;
-import timerx.stopwatch.StopwatchBuilder;
+import timerx.Action;
+import timerx.StopwatchBuilder;
+import timerx.TimeTickListener;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -1,8 +1,6 @@
-package timerx.common;
+package timerx;
 
 import java.util.concurrent.TimeUnit;
-import timerx.stopwatch.StopwatchBuilder;
-import timerx.timer.TimerBuilder;
 
 /**
  * Holder of actions and times when first should be executed

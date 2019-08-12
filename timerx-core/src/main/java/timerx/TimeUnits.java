@@ -1,4 +1,4 @@
-package timerx.common;
+package timerx;
 
 public enum TimeUnits {
   HOURS,

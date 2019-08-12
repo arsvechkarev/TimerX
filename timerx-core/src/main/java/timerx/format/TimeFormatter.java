@@ -1,9 +1,9 @@
 package timerx.format;
 
-import static timerx.common.TimeUnits.HOURS;
-import static timerx.common.TimeUnits.MINUTES;
-import static timerx.common.TimeUnits.R_MILLISECONDS;
-import static timerx.common.TimeUnits.SECONDS;
+import static timerx.TimeUnits.HOURS;
+import static timerx.TimeUnits.MINUTES;
+import static timerx.TimeUnits.R_MILLISECONDS;
+import static timerx.TimeUnits.SECONDS;
 import static timerx.util.Constants.EMPTY_STRING;
 import static timerx.util.Constants.Patterns.ESCAPED_HOURS;
 import static timerx.util.Constants.Patterns.ESCAPED_MINUTES;
@@ -27,15 +27,15 @@ import static timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 
 import androidx.annotation.NonNull;
 import java.util.concurrent.TimeUnit;
-import timerx.common.TimeUnits;
-import timerx.stopwatch.StopwatchImpl;
-import timerx.timer.TimerImpl;
+import timerx.Stopwatch;
+import timerx.TimeUnits;
+import timerx.Timer;
 import timerx.util.Constants.Patterns;
 
 /**
  * Main class that formatting input milliseconds into string representation according to
- * parse format. Also returns optimized delay for handler in {@link TimerImpl} and {@link
- * StopwatchImpl} (see {@link #getOptimizedDelay()})
+ * parse format. Also returns optimized delay for handler in {@link Timer} and {@link
+ * Stopwatch} (see {@link #getOptimizedDelay()})
  *
  * @author Arseniy Svechkarev
  * @see Analyzer
@@ -101,7 +101,7 @@ public class TimeFormatter {
   /**
    * Returns minimum unit of semantic converted to millis
    *
-   * @see TimerImpl
+   * @see Timer
    */
   public long minimumUnitInMillis() {
     if (semantic.minimumUnit() == R_MILLISECONDS) {

@@ -1,6 +1,6 @@
 package timerx.format;
 
-import timerx.common.TimeUnits;
+import timerx.TimeUnits;
 
 /**
  * Provides various information about input format (including number of different parse

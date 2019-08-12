@@ -1,8 +1,8 @@
-package timerx.stopwatch;
+package timerx;
 
-import static timerx.common.TimeCountingState.INACTIVE;
-import static timerx.common.TimeCountingState.PAUSED;
-import static timerx.common.TimeCountingState.RESUMED;
+import static timerx.TimeCountingState.INACTIVE;
+import static timerx.TimeCountingState.PAUSED;
+import static timerx.TimeCountingState.RESUMED;
 import static timerx.util.Checker.expect;
 
 import android.annotation.SuppressLint;
@@ -14,13 +14,8 @@ import androidx.annotation.RestrictTo.Scope;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.common.ActionsHolder;
-import timerx.common.NextFormatsHolder;
-import timerx.common.TimeCountingState;
-import timerx.common.TimeTickListener;
 import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
-import timerx.timer.TimerImpl;
 
 /**
  * Represents standard stopwatch with base functions like {@link #start() start}, {@link
@@ -52,9 +47,9 @@ import timerx.timer.TimerImpl;
  *
  * @author Arseny Svechkarev
  * @see StopwatchBuilder
- * @see TimerImpl
+ * @see Timer
  */
-public class StopwatchImpl {
+public class Stopwatch {
 
   // Message id for handler
   private static final int MSG = 2;
@@ -108,7 +103,7 @@ public class StopwatchImpl {
   private SortedSet<ActionsHolder> copyOfActionsHolder;
 
   @RestrictTo(Scope.LIBRARY)
-  StopwatchImpl(Semantic startSemantic, TimeTickListener tickListener,
+  Stopwatch(Semantic startSemantic, TimeTickListener tickListener,
       SortedSet<NextFormatsHolder> nextFormatsHolder,
       SortedSet<ActionsHolder> actionsHolder) {
     this.startSemantic = startSemantic;
@@ -183,7 +178,7 @@ public class StopwatchImpl {
   private final Handler handler = new Handler() {
     @Override
     public void handleMessage(Message msg) {
-      synchronized (StopwatchImpl.this) {
+      synchronized (Stopwatch.this) {
         long executionStartedTime = SystemClock.elapsedRealtime();
         currentTime = SystemClock.elapsedRealtime() - baseTime;
         changeFormatIfNeed();

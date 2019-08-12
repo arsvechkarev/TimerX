@@ -7,7 +7,6 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.junit.Test;
-import timerx.common.TimeUnits;
 import timerx.exceptions.IllegalSymbolsCombinationException;
 import timerx.exceptions.IllegalSymbolsPositionException;
 import timerx.exceptions.NoNecessarySymbolsException;

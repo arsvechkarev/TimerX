@@ -1,15 +1,11 @@
-package timerx.common;
+package timerx;
 
 import java.util.concurrent.TimeUnit;
 import timerx.format.Semantic;
-import timerx.stopwatch.StopwatchBuilder;
-import timerx.stopwatch.StopwatchImpl;
-import timerx.timer.TimerBuilder;
-import timerx.timer.TimerImpl;
 
 /**
- * Holder of formats and times when first should be applied in {@link TimerImpl} and
- * {@link StopwatchImpl}
+ * Holder of formats and times when first should be applied in {@link Timer} and
+ * {@link Stopwatch}
  *
  * @see TimerBuilder#changeFormatWhen(long, TimeUnit, String)
  * @see StopwatchBuilder#changeFormatWhen(long, TimeUnit, String)
