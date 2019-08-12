@@ -184,7 +184,9 @@ public class Stopwatch {
         changeFormatIfNeed();
         makeActionIfNeed();
         String format = timeFormatter.format(currentTime);
-        tickListener.onTick(format);
+        if (tickListener != null) {
+          tickListener.onTick(format);
+        }
         long executionDelay = SystemClock.elapsedRealtime() - executionStartedTime;
         sendMessageDelayed(obtainMessage(MSG), delay - executionDelay);
       }

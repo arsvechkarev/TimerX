@@ -195,20 +195,14 @@ public class Timer {
         changeFormatIfNeed();
         makeActionIfNeed();
         if (currentTime <= 0) {
-          currentTime = 0;
-          tickListener.onTick(timeFormatter.format(currentTime));
-          finishListener.onFinish();
-          reset();
+          finishTimer();
           return;
         }
-        long timeToFormat;
-        if (currentTime == startTime) {
-          timeToFormat = currentTime;
-        } else {
-          timeToFormat = currentTime + timeFormatter.minimumUnitInMillis();
-        }
+        long timeToFormat = defineFormatTime();
         String formattedTime = timeFormatter.format(timeToFormat);
-        tickListener.onTick(formattedTime);
+        if (tickListener != null) {
+          tickListener.onTick(formattedTime);
+        }
         long executionTime = SystemClock.elapsedRealtime() - startExecution;
         sendMessageDelayed(obtainMessage(MSG), interval - executionTime);
       }
@@ -231,6 +225,26 @@ public class Timer {
       copyOfActionsHolders.first().getAction().run();
       copyOfActionsHolders.remove(copyOfActionsHolders.first());
     }
+  }
+
+  private long defineFormatTime() {
+    if (currentTime == startTime) {
+
+      return currentTime;
+    } else {
+      return currentTime + timeFormatter.minimumUnitInMillis();
+    }
+  }
+
+  private void finishTimer() {
+    currentTime = 0;
+    if (tickListener != null) {
+      tickListener.onTick(timeFormatter.format(currentTime));
+    }
+    if (finishListener != null) {
+      finishListener.onFinish();
+    }
+    reset();
   }
 }
 
