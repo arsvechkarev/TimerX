@@ -11,10 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import com.arsvechkarev.timerx.Action;
-import com.arsvechkarev.timerx.Timer;
-import com.arsvechkarev.timerx.TimerBuilder;
 import java.util.concurrent.TimeUnit;
+import timerx.common.Action;
+import timerx.common.TimeTickListener;
+import timerx.timer.TimerBuilder;
+import timerx.timer.TimerImpl;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -22,7 +23,7 @@ import java.util.concurrent.TimeUnit;
 public class TimerFragment extends Fragment {
 
   private TextView textTime;
-  private Timer timer;
+  private TimerImpl timer;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -39,7 +40,7 @@ public class TimerFragment extends Fragment {
         .startTime(20, TimeUnit.SECONDS)
         .actionWhen(15, TimeUnit.SECONDS, new Action() {
           @Override
-          public void execute() {
+          public void run() {
             Toast.makeText(getContext(),
                 "15s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
                 .show();
@@ -47,7 +48,7 @@ public class TimerFragment extends Fragment {
         })
         .actionWhen(10, TimeUnit.SECONDS, new Action() {
           @Override
-          public void execute() {
+          public void run() {
             Toast.makeText(getContext(),
                 "10s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
                 .show();
@@ -55,7 +56,7 @@ public class TimerFragment extends Fragment {
         })
         .actionWhen(5, TimeUnit.SECONDS, new Action() {
           @Override
-          public void execute() {
+          public void run() {
             Toast.makeText(getContext(),
                 "5s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
                 .show();
@@ -64,17 +65,10 @@ public class TimerFragment extends Fragment {
         .changeFormatWhen(15, TimeUnit.SECONDS, "15: MM:SS")
         .changeFormatWhen(10, TimeUnit.SECONDS, "10: SS:LLLLL")
         .changeFormatWhen(5, TimeUnit.SECONDS, "5: SS:LLLLL")
-        .onTick(new TimerTickListener() {
+        .onTick(new TimeTickListener() {
           @Override
           public void onTick(String time) {
             textTime.setText(time);
-          }
-
-          @Override
-          public void onFinish() {
-            Toast.makeText(getActivity(),
-                "Done!, time = " + timer.getRemainingTimeIn(TimeUnit.SECONDS),
-                Toast.LENGTH_SHORT).show();
           }
         })
         .build();
