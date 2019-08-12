@@ -1,4 +1,4 @@
-package timerx;
+package timerx.format;
 
 import static org.junit.Assert.assertSame;
 import static timerx.TestHelper.updateFormatIfNecessary;
@@ -7,15 +7,15 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.junit.Test;
+import timerx.TimeUnits;
 import timerx.exceptions.IllegalSymbolsCombinationException;
 import timerx.exceptions.IllegalSymbolsPositionException;
 import timerx.exceptions.NoNecessarySymbolsException;
-import timerx.format.Analyzer;
-import timerx.format.Semantic;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class AnalyzerTest {
 
+  // Just for cover semantic class with 100% tests
   @Test(expected = IllegalArgumentException.class)
   public void nextPatternOfPositionFailsWithWrongArguments() throws Throwable {
     Method nextPatternOf = Analyzer.class.getDeclaredMethod("nextPatternOf", int.class);
@@ -35,6 +35,7 @@ public class AnalyzerTest {
     }
   }
 
+  // Just for 100% coverage of analyzer
   @Test(expected = IllegalArgumentException.class)
   public void updateAppropriateFieldFailsWithWrongArguments() throws Throwable {
     Method updateAppropriateField = Analyzer.class

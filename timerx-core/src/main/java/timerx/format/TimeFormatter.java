@@ -126,7 +126,7 @@ public class TimeFormatter {
    * convenient usage. Uses basically together with {@link #with(String)} method
    */
   public String format(long time, TimeUnit timeUnit) {
-    return format(timeUnit.convert(time, TimeUnit.MILLISECONDS));
+    return format(timeUnit.toMillis(time));
   }
 
   /**

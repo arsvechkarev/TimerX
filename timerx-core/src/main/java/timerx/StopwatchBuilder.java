@@ -33,7 +33,7 @@ public class StopwatchBuilder {
    * comes. This method can be invokes many times, all received formats will be scheduled.
    * Invoking with same time schedules only <b>first</b> invocation. Examples:
    * <pre>
-   *  // Creating stopwatch with start format "SS:LL"
+   *  // Creating stopwatch builder with start format "SS:LL"
    *  Stopwatch stopwatch = new Stopwatch(new StopwatchTickListener() {...}, "SS:LL")
    *
    *  // When time will be equals to 1 minute, then format will change to "M:SS:LL"
