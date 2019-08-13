@@ -1,6 +1,7 @@
 package com.arsvechkarev.timerxexample;
 
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class StopwatchFragment extends Fragment {
 
   private TextView textTime;
   private Stopwatch stopwatch;
+  private Context context;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -36,6 +38,24 @@ public class StopwatchFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     textTime = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_time);
+    context = getContext();
+    final Stopwatch stopwatch1 = new StopwatchBuilder()
+        .startFormat("SS:LL")
+        .changeFormatWhen(1, TimeUnit.MINUTES, "MM:SS")
+        .tickListener(new TimeTickListener() {
+          @Override
+          public void onTick(String time) {
+            textTime.setText(time);
+          }
+        })
+        .actionWhen(30, TimeUnit.SECONDS, new Action() {
+          @Override
+          public void run() {
+            Toast.makeText(context, "30 seconds past!", Toast.LENGTH_SHORT).show();
+          }
+        })
+        .build();
+    textTime.setText(stopwatch1.getFormattedStartTime());
 
     stopwatch = new StopwatchBuilder()
         .startFormat("Time: LL")
@@ -61,7 +81,8 @@ public class StopwatchFragment extends Fragment {
         .setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
-            stopwatch.start();
+//            stopwatch.start();
+            stopwatch1.start();
           }
         });
 

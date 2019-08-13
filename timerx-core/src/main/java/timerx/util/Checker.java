@@ -16,6 +16,12 @@ public class Checker {
     }
   }
 
+  public static void expectTimeNotNegative(long value) {
+    if (value < 0) {
+      throw new IllegalArgumentException("Time shouldn't be negative");
+    }
+  }
+
   public static void expectTimeInitialized(long time, String failMsg) {
     if (time == TimeValues.NONE) {
       throw new IllegalArgumentException(failMsg);
