@@ -18,8 +18,9 @@ import timerx.format.TimeFormatter;
 
 /**
  * Represents standard timer with base functions like {@link #start() start}, {@link
- * #stop() stop}, etc. Also allows changing time format and executing actions by a
- * specific time. Use {@link TimerBuilder} to configure and instantiate the stopwatch.
+ * #stop() stop}, etc. Also allows format time by specific pattern and executing actions
+ * at a certain time. See {@link TimeFormatter} to know about format syntax. Use {@link
+ * TimerBuilder} to configure and instantiate the stopwatch.
  * <p>Example of usage:</p>
  * <pre>
  *   Timer timer = new timerBuilder()

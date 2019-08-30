@@ -27,17 +27,100 @@ import static timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 
 import androidx.annotation.NonNull;
 import java.util.concurrent.TimeUnit;
-import timerx.Stopwatch;
 import timerx.TimeUnits;
 import timerx.Timer;
 import timerx.util.Constants.Patterns;
 
 /**
  * Main class that formatting input milliseconds into string representation according to
- * parse format. Also returns optimized delay for handler in {@link Timer} and {@link
- * Stopwatch} (see {@link #getOptimizedDelay()})
+ * parse format. Parse format is a string that contains one of followed characters:
+ * <p>"H" - represents hours</p>
+ * <p>"M" - represents minutes</p>
+ * <p>"S" - represents seconds</p>
+ * <p>"L" - represents milliseconds or centiseconds (depending on amount of symbols,
+ * detailed explanation later)</p><br/>
  *
- * @author Arseniy Svechkarev
+ * For example, let's consider format like "MM:SS". It consist of hours, minutes and
+ * seconds. So if current time is 1 minute and 37 seconds, result of formatting will be
+ * "01:37", and if current time is 1 hour, 2 minutes and 9 seconds, result will be
+ * "122:09" and so on.<br/><br/>
+ *
+ * If you need to use special format characters as a plain text, you can insert the escape
+ * symbol "#", For example, if format is "HH#H MM#M", and time is 2 hours 47 minutes, then
+ * result will be "02H 47M".<br/><br/>
+ *
+ * There are some formatting examples:
+ *
+ * <pre>
+ *   | ------------------------------------------------------------ |
+ *   |       Format       |  Time(milliseconds) |      Output       |
+ *   | ------------------ | --------------------| ----------------- |
+ *   |                    |        11478        |       00:11       |
+ *   |       MM:SS        |        146229       |       02:26       |
+ *   |                    |        8246387      |      137:26       |
+ *   | ------------------ | ------------------- | ----------------- |
+ *   |                    |        11478        |      00m 11s      |
+ *   |      MMm SSs       |        146229       |      02m 26s      |
+ *   |                    |        8246387      |      137m 26s     |
+ *   | ------------------ | ------------------- | ----------------- |
+ *   |                    |        394724       |       00:06       |
+ *   |       HH:MM        |        8262249      |       02:17       |
+ *   |                    |        71476396     |       19:51       |
+ *   | ------------------ | ------------------- | ----------------- |
+ *   |                    |        394724       |  00H 06M and 34S  |
+ *   | HH#H MM#M and SS#S |        8262249      |  02H 17M and 42S  |
+ *   |                    |        71476396     |  19H 51M and 16S  |
+ *   | ------------------ | ------------------- | ----------------- |
+ * </pre>
+ *
+ * Some formats are unacceptable. There are three types of such formats:
+ * <p>
+ * 1. Formats that not contain any special characters ("H", "M", "S" or "L").
+ * </p>
+ * <p>
+ * 2. Formats that contain same special symbols in different positions. Example: "HH:HH",
+ * or "MM:SS ML" (See {@link timerx.exceptions.IllegalSymbolsPositionException} for more
+ * detailed information)
+ * </p>
+ * <p>
+ * 3. Formats that contain <b>incompatible</b> symbols together. To find out what is
+ * incompatible symbols, see {@link timerx.exceptions.IllegalSymbolsCombinationException}
+ * </p><br/>
+ *
+ * Now, let's take a look to the character like "L". It can represents represents
+ * milliseconds, centiseconds, and decisecond, depending on amount and other characters.
+ * Consider format "M:SS.LL" and time 36698 milliseconds (36 seconds and 698
+ * milliseconds). In this case, since amount of "L" characters is 2, last digit in
+ * milliseconds is omitted, and result will be "0:36.69". In case if there is no special
+ * symbols except "L", or it amount is three or more, then it will be formats as a plain
+ * milliseconds.<br/><br/>
+ *
+ * Here some examples of formatting with "L" symbol:
+ * <pre>
+ *   | ---------------------------------------------- |
+ *   |   Format    |  Time(milliseconds)  |  Output   |
+ *   | ----------- | -------------------- | --------- |
+ *   |             |         367          |   00:3    |
+ *   |    SS:L     |         1322         |   01:3    |
+ *   |             |         15991        |   15:9    |
+ *   | ----------- | -------------------- | --------- |
+ *   |             |         367          |   00:36   |
+ *   |    SS:LL    |         1322         |   01:32   |
+ *   |             |         15991        |   15:99   |
+ *   | ----------- | -------------------- | --------- |
+ *   |             |         367          |  00:367   |
+ *   |    SS:LLL   |         1322         |  01:322   |
+ *   |             |         15991        |  15:991   |
+ *   | ----------- | -------------------- | --------- |
+ *   |             |         367          |  00:0367  |
+ *   |    SS:LLLL  |         1322         |  01:0322  |
+ *   |             |         15991        |  15:0991  |
+ *   | ----------- | -------------------- | --------- |
+ *   |             |         367          |   0367    |
+ *   |    LLLL     |         1322         |   1322    |
+ *   |             |         15991        |   15991   |
+ *   | ----------- | -------------------- | --------- |
+ * </pre>
  * @see Analyzer
  */
 public class TimeFormatter {
@@ -60,10 +143,10 @@ public class TimeFormatter {
   private final String format;
 
   /**
-   * Helper method to just format any time according to format<br/> Usage example:
+   * Helper method to just format time.<br/> Usage example:
    * <pre>{@code
    *    String formattedTime = TimeFormatter.with("MMm SSs").format(5, TimeUnit.MINUTES);
-   *    System.out.println(formattedTime) // Prints "05m 00s"
+   *    System.out.println(formattedTime) // Output: "05m 00s"
    * }</pre>
    */
   public static TimeFormatter with(String format) {
