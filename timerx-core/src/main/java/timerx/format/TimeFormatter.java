@@ -37,8 +37,8 @@ import timerx.util.Constants.Patterns;
  * <p>"H" - represents hours</p>
  * <p>"M" - represents minutes</p>
  * <p>"S" - represents seconds</p>
- * <p>"L" - represents milliseconds or centiseconds (depending on amount of symbols,
- * detailed explanation later)</p><br/>
+ * <p>"L" - can represent milliseconds, centiseconds etc. (It depends on amount of the
+ * symbols, detailed explanation later)</p><br/>
  *
  * For example, let's consider format like "MM:SS". It consist of hours, minutes and
  * seconds. So if current time is 1 minute and 37 seconds, result of formatting will be
@@ -121,6 +121,7 @@ import timerx.util.Constants.Patterns;
  *   |             |         15991        |   15991   |
  *   | ----------- | -------------------- | --------- |
  * </pre>
+ *
  * @see Analyzer
  */
 public class TimeFormatter {

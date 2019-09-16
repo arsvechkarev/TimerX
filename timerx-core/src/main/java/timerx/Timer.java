@@ -22,7 +22,7 @@ import timerx.format.TimeFormatter;
  * at a certain time. See {@link TimeFormatter} to know about format syntax. Use {@link
  * TimerBuilder} to configure and instantiate the stopwatch.
  * <p>Example of usage:</p>
- * <pre>
+ * <pre>{@code
  *   Timer timer = new timerBuilder()
  *         // Set start format of time
  *         .startFormat("SS:LL")
@@ -42,7 +42,7 @@ import timerx.format.TimeFormatter;
  *   timer.stop();
  *   long resultMillis = timer.getRemainingTimeIn(TimeUnit.MILLISECONDS);
  *   timer.reset();
- * </pre>
+ * }</pre>
  *
  * @author Arseny Svechkarev
  * @see TimerBuilder

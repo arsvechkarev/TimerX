@@ -1,0 +1,11 @@
+ext {
+  userOrg = 'arsvechkarev'
+  repoName = 'TimerX'
+
+  groupId = 'com.arsvechkarev.timerx'
+  artifactId = 'timerx-core'
+  publishVersion = '0.7.1'
+
+  desc = 'Android timer and stopwatch library'
+  website = 'https://github.com/arsvechkarev/TimerX'
+}
