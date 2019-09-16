@@ -52,8 +52,7 @@ public class TimerBuilder {
   /**
    * Set start format to timer
    */
-  public TimerBuilder startFormat(String format) {
-    expectNotNull(format);
+  public TimerBuilder startFormat(@NonNull String format) {
     this.startSemantic = Analyzer.check(format);
     return this;
   }
@@ -71,7 +70,6 @@ public class TimerBuilder {
    * Set tick listener to receive formatted time
    */
   public TimerBuilder onTick(@NonNull TimeTickListener tickListener) {
-    expectNotNull(tickListener);
     this.tickListener = tickListener;
     return this;
   }
@@ -80,7 +78,6 @@ public class TimerBuilder {
    * Set tick listener to be notified when timer ends
    */
   public TimerBuilder onFinish(@NonNull TimeFinishListener finishListener) {
-    expectNotNull(finishListener);
     this.finishListener = finishListener;
     return this;
   }
@@ -106,7 +103,6 @@ public class TimerBuilder {
   public TimerBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
     expectTimeNotNegative(time);
-    expectNotNull(newFormat);
     Semantic semantic = Analyzer.check(newFormat);
     long millis = timeUnit.toMillis(time);
     nextFormatsHolder.add(new NextFormatsHolder(millis, semantic));

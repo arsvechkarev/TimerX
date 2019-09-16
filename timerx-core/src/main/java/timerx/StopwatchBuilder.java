@@ -48,8 +48,7 @@ public class StopwatchBuilder {
   /**
    * Set start time format to stopwatch
    */
-  public StopwatchBuilder startFormat(String format) {
-    expectNotNull(format);
+  public StopwatchBuilder startFormat(@NonNull String format) {
     startSemantic = Analyzer.check(format);
     return this;
   }
@@ -57,8 +56,7 @@ public class StopwatchBuilder {
   /**
    * Set tick listener to receive formatted time
    */
-  public StopwatchBuilder tickListener(TimeTickListener tickListener) {
-    expectNotNull(tickListener);
+  public StopwatchBuilder tickListener(@NonNull TimeTickListener tickListener) {
     this.tickListener = tickListener;
     return this;
   }
@@ -83,7 +81,6 @@ public class StopwatchBuilder {
    */
   public StopwatchBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
-    expectNotNull(newFormat);
     expectTimeNotNegative(time);
     Semantic semantic = Analyzer.check(newFormat);
     long millis = timeUnit.toMillis(time);
@@ -114,7 +111,6 @@ public class StopwatchBuilder {
    */
   public StopwatchBuilder actionWhen(long time, TimeUnit timeUnit,
       @NonNull Action action) {
-    expectNotNull(action);
     long millis = timeUnit.toMillis(time);
     actionsHolder.add(new ActionsHolder(millis, action));
     return this;
@@ -124,8 +120,7 @@ public class StopwatchBuilder {
    * Creates and returns stopwatch instance
    */
   public Stopwatch build() {
-    expectNotNull(startSemantic);
-    expectNotNull(tickListener);
+    expectNotNull(startSemantic, "Start format should be initialized");
     return new Stopwatch(startSemantic, tickListener, nextFormatsHolder,
         actionsHolder);
   }
