@@ -10,17 +10,17 @@ import timerx.format.Semantic;
  * @see TimerBuilder#changeFormatWhen(long, TimeUnit, String)
  * @see StopwatchBuilder#changeFormatWhen(long, TimeUnit, String)
  */
-public class NextFormatsHolder implements Comparable<NextFormatsHolder> {
+class NextFormatsHolder implements Comparable<NextFormatsHolder> {
 
-  private long millis;
-  private Semantic semantic;
+  private final long millis;
+  private final Semantic semantic;
 
-  public NextFormatsHolder(long millis, Semantic semantic) {
+  NextFormatsHolder(long millis, Semantic semantic) {
     this.millis = millis;
     this.semantic = semantic;
   }
 
-  public long getMillis() {
+  long getMillis() {
     return millis;
   }
 

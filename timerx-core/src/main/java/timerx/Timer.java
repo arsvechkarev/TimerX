@@ -55,7 +55,7 @@ public class Timer {
   private final int MSG = 3;
 
   // Start time in milliseconds
-  private long startTime;
+  private final long startTime;
 
   // Current time (left time) in millis
   private long currentTime;
@@ -71,15 +71,15 @@ public class Timer {
    *
    * @see TimeTickListener
    */
-  private TimeTickListener tickListener;
+  private final TimeTickListener tickListener;
 
   /**
    * Listener to notify user when timer finishes counting
    */
-  private TimeFinishListener finishListener;
+  private final TimeFinishListener finishListener;
 
   // Semantic of start format
-  private Semantic startSemantic;
+  private final Semantic startSemantic;
 
   /**
    * Current state of timer

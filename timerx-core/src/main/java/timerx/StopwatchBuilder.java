@@ -42,8 +42,8 @@ public class StopwatchBuilder {
 
   private Semantic startSemantic;
   private TimeTickListener tickListener;
-  private SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>();
-  private SortedSet<ActionsHolder> actionsHolder = new TreeSet<>();
+  private final SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>();
+  private final SortedSet<ActionsHolder> actionsHolder = new TreeSet<>();
 
   /**
    * Set start time format to stopwatch

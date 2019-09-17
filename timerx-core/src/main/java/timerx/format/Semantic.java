@@ -11,7 +11,7 @@ import timerx.TimeUnits;
  */
 public class Semantic {
 
-  private String format;
+  private final String format;
 
   private int hoursCount = 0;
   private int minutesCount = 0;

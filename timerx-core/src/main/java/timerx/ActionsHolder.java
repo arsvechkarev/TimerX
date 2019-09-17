@@ -8,21 +8,21 @@ import java.util.concurrent.TimeUnit;
  * @see TimerBuilder#actionWhen(long, TimeUnit, Action)
  * @see StopwatchBuilder#actionWhen(long, TimeUnit, Action)
  */
-public class ActionsHolder implements Comparable<ActionsHolder> {
+class ActionsHolder implements Comparable<ActionsHolder> {
 
-  private long millis;
-  private Action action;
+  private final long millis;
+  private final Action action;
 
-  public ActionsHolder(long millis, Action action) {
+  ActionsHolder(long millis, Action action) {
     this.millis = millis;
     this.action = action;
   }
 
-  public long getMillis() {
+  long getMillis() {
     return millis;
   }
 
-  public Action getAction() {
+  Action getAction() {
     return action;
   }
 

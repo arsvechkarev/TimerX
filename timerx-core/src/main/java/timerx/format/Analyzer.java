@@ -25,7 +25,7 @@ import timerx.exceptions.NoNecessarySymbolsException;
  */
 public class Analyzer {
 
-  private Semantic semantic;
+  private final Semantic semantic;
 
   private Analyzer(Semantic semantic) {
     this.semantic = semantic;

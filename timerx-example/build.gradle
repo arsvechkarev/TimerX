@@ -16,4 +16,7 @@ android {
 
 dependencies {
   implementation project(':timerx-core')
+//  implementation 'com.arsvechkarev.timerx:timerx-core:0.7.4'
+  implementation 'androidx.appcompat:appcompat:1.1.0'
+  implementation 'com.google.android.material:material:1.0.0'
 }

@@ -9,6 +9,7 @@ import static timerx.util.Constants.TimeValues.MILLIS_IN_SECOND;
 import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class TimeFormattingTest {
 
   private static TimeFormatter formatTime(String format) {

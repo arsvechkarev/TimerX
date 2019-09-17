@@ -44,9 +44,9 @@ public class TimerBuilder {
   private TimeTickListener tickListener;
   private TimeFinishListener finishListener;
 
-  private SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>(
+  private final SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>(
       Collections.reverseOrder());
-  private SortedSet<ActionsHolder> nextActionsHolder = new TreeSet<>(
+  private final SortedSet<ActionsHolder> nextActionsHolder = new TreeSet<>(
       Collections.reverseOrder());
 
   /**

@@ -34,9 +34,4 @@ public class Checker {
     }
   }
 
-  public static void expect(boolean condition, String failMsg) {
-    if (!condition) {
-      throw new AssertionError(failMsg);
-    }
-  }
 }
