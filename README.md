@@ -6,8 +6,11 @@ TimerX provides simple api to apply different format to timer or stopwatch. For 
 Format syntax explanation and more exapmles here.
 
 ## Gradle Setup
+In your module-level build.gradle file:
 ```groovy
-implementation 'com.arsvechkarev:timerx:0.7.6'
+dependencies {
+      implementation 'com.arsvechkarev:timerx:0.7.6'
+}
 ```
 
 
