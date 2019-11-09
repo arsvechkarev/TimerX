@@ -5,6 +5,10 @@ import static timerx.TimeUnits.MINUTES;
 import static timerx.TimeUnits.R_MILLISECONDS;
 import static timerx.TimeUnits.SECONDS;
 import static timerx.util.Checker.expect;
+import static timerx.util.Constants.Patterns.ESCAPED_HOURS;
+import static timerx.util.Constants.Patterns.ESCAPED_MINUTES;
+import static timerx.util.Constants.Patterns.ESCAPED_REM_MILLIS;
+import static timerx.util.Constants.Patterns.ESCAPED_SECONDS;
 import static timerx.util.Constants.Patterns.PATTERN_HAS_HOURS;
 import static timerx.util.Constants.Patterns.PATTERN_HAS_MINUTES;
 import static timerx.util.Constants.Patterns.PATTERN_HAS_REM_MILLIS;
@@ -50,6 +54,7 @@ public class Analyzer {
       throwNoSymbolsEx();
     } else {
       executeCombinationCheck();
+      assignEscapedPatterns();
     }
   }
 
@@ -58,6 +63,7 @@ public class Analyzer {
     for (int type = 0; type < 4; type++) {
       String strPattern = nextPatternOf(type);
       Pattern pattern = Pattern.compile(strPattern);
+      assignPattern(type, pattern);
       Matcher matcher = pattern.matcher(format);
       int counter = 0;
       while (matcher.find()) {
@@ -72,19 +78,17 @@ public class Analyzer {
     return formatOccurs;
   }
 
-  private String nextPatternOf(int pos) {
-    switch (pos) {
-      case 0:
-        return PATTERN_HAS_HOURS;
-      case 1:
-        return PATTERN_HAS_MINUTES;
-      case 2:
-        return PATTERN_HAS_SECONDS;
-      case 3:
-        return PATTERN_HAS_REM_MILLIS;
-      default:
-        // TODO: 26.07.2019 Translate
-        throw new IllegalArgumentException("No pattern to match");
+  private void assignPattern(int type, Pattern pattern) {
+    if (type == 0) {
+      semantic.patternHours = pattern;
+    } else if (type == 1) {
+      semantic.patternMinutes = pattern;
+    } else if (type == 2) {
+      semantic.patternSeconds = pattern;
+    } else if (type == 3) {
+      semantic.patternRMillis = pattern;
+    } else {
+      throw new IllegalArgumentException("What was that?");
     }
   }
 
@@ -122,6 +126,29 @@ public class Analyzer {
       if (hasMinutes && hasRMillis && !hasSeconds) {
         throwCombinationEx();
       }
+    }
+  }
+
+  private void assignEscapedPatterns() {
+    semantic.patternEscapedHours = Pattern.compile(ESCAPED_HOURS);
+    semantic.patternEscapedMinutes = Pattern.compile(ESCAPED_MINUTES);
+    semantic.patternEscapedSeconds = Pattern.compile(ESCAPED_SECONDS);
+    semantic.patternEscapedRMillis = Pattern.compile(ESCAPED_REM_MILLIS);
+  }
+
+  private String nextPatternOf(int pos) {
+    switch (pos) {
+      case 0:
+        return PATTERN_HAS_HOURS;
+      case 1:
+        return PATTERN_HAS_MINUTES;
+      case 2:
+        return PATTERN_HAS_SECONDS;
+      case 3:
+        return PATTERN_HAS_REM_MILLIS;
+      default:
+        // TODO: 26.07.2019 Translate
+        throw new IllegalArgumentException("No pattern to match");
     }
   }
 

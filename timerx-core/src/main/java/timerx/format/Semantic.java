@@ -1,5 +1,6 @@
 package timerx.format;
 
+import java.util.regex.Pattern;
 import timerx.TimeUnits;
 
 /**
@@ -17,6 +18,16 @@ public class Semantic {
   private int minutesCount = 0;
   private int secondsCount = 0;
   private int rMillisCount = 0;
+
+  Pattern patternHours;
+  Pattern patternMinutes;
+  Pattern patternSeconds;
+  Pattern patternRMillis;
+
+  Pattern patternEscapedHours;
+  Pattern patternEscapedMinutes;
+  Pattern patternEscapedSeconds;
+  Pattern patternEscapedRMillis;
 
   private TimeUnits minimumUnit;
 
@@ -44,7 +55,7 @@ public class Semantic {
     this.minimumUnit = unit;
   }
 
-  public TimeUnits minimumUnit() {
+  TimeUnits minimumUnit() {
     return minimumUnit;
   }
 

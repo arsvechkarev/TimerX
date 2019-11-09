@@ -5,14 +5,6 @@ import static timerx.TimeUnits.MINUTES;
 import static timerx.TimeUnits.R_MILLISECONDS;
 import static timerx.TimeUnits.SECONDS;
 import static timerx.util.Constants.EMPTY_STRING;
-import static timerx.util.Constants.Patterns.ESCAPED_HOURS;
-import static timerx.util.Constants.Patterns.ESCAPED_MINUTES;
-import static timerx.util.Constants.Patterns.ESCAPED_REM_MILLIS;
-import static timerx.util.Constants.Patterns.ESCAPED_SECONDS;
-import static timerx.util.Constants.Patterns.PATTERN_HAS_HOURS;
-import static timerx.util.Constants.Patterns.PATTERN_HAS_MINUTES;
-import static timerx.util.Constants.Patterns.PATTERN_HAS_REM_MILLIS;
-import static timerx.util.Constants.Patterns.PATTERN_HAS_SECONDS;
 import static timerx.util.Constants.Patterns.STR_HOURS;
 import static timerx.util.Constants.Patterns.STR_MINUTES;
 import static timerx.util.Constants.Patterns.STR_REM_MILLIS;
@@ -141,7 +133,7 @@ public class TimeFormatter {
   /**
    * Input string format format
    */
-  private final String format;
+  private String format;
 
   /**
    * Helper method to just format time.<br/> Usage example:
@@ -265,21 +257,22 @@ public class TimeFormatter {
     String strSeconds = getFormatOf(secondsToShow, SECONDS);
     String strMillis = getFormatOf(millisToShow, R_MILLISECONDS);
 
-    return format
-        .replaceAll(PATTERN_HAS_HOURS, strHours)
-        .replaceAll(PATTERN_HAS_MINUTES, strMinutes)
-        .replaceAll(PATTERN_HAS_SECONDS, strSeconds)
-        .replaceAll(PATTERN_HAS_REM_MILLIS, strMillis)
-        .replaceAll(ESCAPED_HOURS, STR_HOURS)
-        .replaceAll(ESCAPED_MINUTES, STR_MINUTES)
-        .replaceAll(ESCAPED_SECONDS, STR_SECONDS)
-        .replaceAll(ESCAPED_REM_MILLIS, STR_REM_MILLIS);
+    format = semantic.patternHours.matcher(format).replaceAll(strHours);
+    format = semantic.patternMinutes.matcher(format).replaceAll(strMinutes);
+    format = semantic.patternSeconds.matcher(format).replaceAll(strSeconds);
+    format = semantic.patternRMillis.matcher(format).replaceAll(strMillis);
+
+    format = semantic.patternEscapedHours.matcher(format).replaceAll(STR_HOURS);
+    format = semantic.patternEscapedMinutes.matcher(format).replaceAll(STR_MINUTES);
+    format = semantic.patternEscapedSeconds.matcher(format).replaceAll(STR_SECONDS);
+    format = semantic.patternEscapedRMillis.matcher(format).replaceAll(STR_REM_MILLIS);
+
+    return format;
   }
 
   private String getFormatOf(long number, TimeUnits numberType) {
     if (number != NONE) {
       if (number == 0) {
-        // Number = 0, so just returning zeros
         return zerosBy(semantic.countOf(numberType));
       }
       int semanticCount = semantic.countOf(numberType);

@@ -2,9 +2,9 @@ ext {
   userOrg = 'arsvechkarev'
   repoName = 'TimerX'
 
-  groupId = 'com.arsvechkarev'
-  artifactId = 'timerx'
-  publishVersion = '0.7.5'
+  groupId = 'com.arsvechkarev.timerx'
+  artifactId = 'timerx-core'
+  publishVersion = '0.7.6'
 
   desc = 'Android timer and stopwatch library'
   website = 'https://github.com/arsvechkarev/TimerX'
