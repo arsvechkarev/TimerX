@@ -1,7 +1,7 @@
 # TimerX
 A simple timer & stowatch library for android which allows to set format for time, schedule actions and more.
 
-TimerX provides simple api to apply different format to timer or stopwatch. For example, you can create stopwatch, specify format as **HH:MM:SS** or **SS.LL** and time in stopwatch will formats according to your format. 
+TimerX provides a simple api to apply different format to timer or stopwatch. For example, you can create stopwatch, specify format as **HH:MM:SS** or **SS.LL** and time in stopwatch will be formating according to your format. 
 
 Format syntax explanation and more exapmles here.
 
