@@ -52,4 +52,4 @@ timer.start()
 ```
 
 ## Documentation
-Detailed documentation here
+Coming soon
