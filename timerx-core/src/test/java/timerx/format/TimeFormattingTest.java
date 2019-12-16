@@ -1,7 +1,7 @@
 package timerx.format;
 
 import static org.junit.Assert.assertEquals;
-import static timerx.TestHelper.updateFormatIfNecessary;
+import static timerx.TestHelper.updateFormat;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_HOUR;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_MINUTE;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_SECOND;
@@ -13,11 +13,11 @@ import org.junit.Test;
 public class TimeFormattingTest {
 
   private static TimeFormatter formatTime(String format) {
-    return new TimeFormatter(Analyzer.check(updateFormatIfNecessary(format)));
+    return new TimeFormatter(Analyzer.check(updateFormat(format)));
   }
 
   private String formatTime(String format, long millis) {
-    return new TimeFormatter(Analyzer.check(updateFormatIfNecessary(format)))
+    return new TimeFormatter(Analyzer.check(updateFormat(format)))
         .format(millis);
   }
 

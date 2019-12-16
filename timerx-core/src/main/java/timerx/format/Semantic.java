@@ -4,8 +4,7 @@ import java.util.regex.Pattern;
 import timerx.TimeUnits;
 
 /**
- * Provides various information about input format (including number of different parse
- * symbols etc)
+ * Provides information about input format
  *
  * @see Analyzer
  * @see TimeFormatter

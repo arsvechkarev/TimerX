@@ -21,7 +21,7 @@ import timerx.exceptions.IllegalSymbolsPositionException;
 import timerx.exceptions.NoNecessarySymbolsException;
 
 /**
- * Class that validate and analyzes input format and builds a {@link Semantic} of the
+ * Class for validating and analyzing input format and builds a {@link Semantic} of the
  * format
  *
  * @see Semantic

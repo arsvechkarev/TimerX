@@ -1,7 +1,6 @@
 package timerx;
 
-import static timerx.util.Checker.expectNotNull;
-import static timerx.util.Checker.expectTimeNotNegative;
+import static timerx.util.Checker.assertTimeNotNegative;
 
 import androidx.annotation.NonNull;
 import java.util.SortedSet;
@@ -10,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import timerx.format.Analyzer;
 import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
+import timerx.util.Checker;
 
 /**
  * Builder to configure and instantiate {@link Stopwatch}.<br/> Usage example:
@@ -62,26 +62,12 @@ public class StopwatchBuilder {
   }
 
   /**
-   * Schedules changing format at certain time. Format will be applied as soon as time
-   * comes. This method can be invokes many times, all received formats will be scheduled.
-   * Invoking with same time schedules only <b>first</b> invocation.<br/> Example:
-   * <pre>{@code
-   *  StopwatchBuilder stopwatchBuilder = new StopwatchBuilder()
-   *
-   * // When time will equal to 1 minute, then format changes to "M:SS:LL"
-   * stopwatchBuilder.changeFormatWhen(1, TimeUnits.MINUTES, "M:SS:LL")
-   *
-   * // When time will equal to 10 minutes, then format changes to "MM:SS:LL"
-   * stopwatchBuilder.changeFormatWhen(10, TimeUnits.MINUTES, "MM:SS:LL")
-   *
-   * // Invocation below will be ignored, because time we already have
-   * // format will be applied when time will be equals to 10 minutes
-   * stopwatchBuilder.changeFormatWhen(10, TimeUnits.MINUTES, "HH:MM:SS:LL")
-   * }</pre>
+   * Schedules changing format at certain time. This method can be invokes many times, all
+   * received formats will be scheduled.
    */
   public StopwatchBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
-    expectTimeNotNegative(time);
+    assertTimeNotNegative(time);
     Semantic semantic = Analyzer.check(newFormat);
     long millis = timeUnit.toMillis(time);
     nextFormatsHolder.add(new NextFormatsHolder(millis, semantic));
@@ -90,24 +76,7 @@ public class StopwatchBuilder {
 
   /**
    * Like {@link #changeFormatWhen(long, TimeUnit, String)}, but schedules action at a
-   * certain time.<br/> Example:
-   * <pre>
-   * StopwatchBuilder builder = new StopwatchBuilder();
-   *
-   * // When time will equal to 1 minute, show toast
-   * builder.actionWhen(1, TimeUnits.MINUTES, () -> {
-   *     Toast.makeText(getContext(), "1 minute past", Toast.LENGTH_SHORT).show();
-   * })
-   *
-   * // When time will equal to 10 minutes do something
-   * builder.actionWhen(10, TimeUnits.MINUTES, this::doSomething())
-   *
-   * // Invocation below will be ignored, because time we already action will be run
-   * // when time will be 10 minutes
-   * builder.actionWhen(10, TimeUnits.MINUTES, () -> {
-   *     Toast.makeText(getContext(), "1 minute past, lol", Toast.LENGTH_SHORT).show();
-   * })
-   * </pre>
+   * certain time.<br/>
    */
   public StopwatchBuilder actionWhen(long time, TimeUnit timeUnit,
       @NonNull Action action) {
@@ -120,7 +89,7 @@ public class StopwatchBuilder {
    * Creates and returns stopwatch instance
    */
   public Stopwatch build() {
-    expectNotNull(startSemantic, "Start format should be initialized");
+    Checker.assertNotNull(startSemantic, "Start format should be initialized");
     return new Stopwatch(startSemantic, tickListener, nextFormatsHolder,
         actionsHolder);
   }

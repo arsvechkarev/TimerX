@@ -3,7 +3,7 @@ package timerx;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Holder of actions and times when first should be executed
+ * Holder of actions and times when formers should be executed
  *
  * @see TimerBuilder#actionWhen(long, TimeUnit, Action)
  * @see StopwatchBuilder#actionWhen(long, TimeUnit, Action)

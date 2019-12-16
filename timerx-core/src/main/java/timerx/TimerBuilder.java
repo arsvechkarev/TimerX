@@ -1,8 +1,8 @@
 package timerx;
 
-import static timerx.util.Checker.expectNotNull;
-import static timerx.util.Checker.expectTimeInitialized;
-import static timerx.util.Checker.expectTimeNotNegative;
+import static timerx.util.Checker.assertNotNull;
+import static timerx.util.Checker.assertTimeInitialized;
+import static timerx.util.Checker.assertTimeNotNegative;
 
 import androidx.annotation.NonNull;
 import java.util.Collections;
@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import timerx.format.Analyzer;
 import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
+import timerx.util.Checker;
 import timerx.util.Constants.TimeValues;
 
 /**
@@ -61,7 +62,7 @@ public class TimerBuilder {
    * Set start time to timer
    */
   public TimerBuilder startTime(long time, TimeUnit timeUnit) {
-    expectTimeNotNegative(time);
+    assertTimeNotNegative(time);
     startTime = timeUnit.toMillis(time);
     return this;
   }
@@ -102,7 +103,7 @@ public class TimerBuilder {
    */
   public TimerBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
-    expectTimeNotNegative(time);
+    assertTimeNotNegative(time);
     Semantic semantic = Analyzer.check(newFormat);
     long millis = timeUnit.toMillis(time);
     nextFormatsHolder.add(new NextFormatsHolder(millis, semantic));
@@ -129,8 +130,8 @@ public class TimerBuilder {
    */
   public TimerBuilder actionWhen(long time, TimeUnit timeUnit,
       @NonNull Action action) {
-    expectTimeNotNegative(time);
-    expectNotNull(action);
+    assertTimeNotNegative(time);
+    assertNotNull(action);
     long millis = timeUnit.toMillis(time);
     nextActionsHolder.add(new ActionsHolder(millis, action));
     return this;
@@ -140,8 +141,8 @@ public class TimerBuilder {
    * Creates and returns timer instance
    */
   public Timer build() {
-    expectNotNull(startSemantic, "Start format should be initialized");
-    expectTimeInitialized(startTime, "Time should be initialized");
+    Checker.assertNotNull(startSemantic, "Start format should be initialized");
+    assertTimeInitialized(startTime, "Time should be initialized");
     return new Timer(startTime, startSemantic, tickListener, finishListener,
         nextFormatsHolder,
         nextActionsHolder);

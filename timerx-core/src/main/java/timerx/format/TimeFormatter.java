@@ -24,22 +24,22 @@ import timerx.Timer;
 import timerx.util.Constants.Patterns;
 
 /**
- * Main class that formatting input milliseconds into string representation according to
+ * Main class for formatting input milliseconds into string representation according to
  * parse format. Parse format is a string that contains one of followed characters:
- * <p>"H" - represents hours</p>
- * <p>"M" - represents minutes</p>
- * <p>"S" - represents seconds</p>
- * <p>"L" - can represent milliseconds, centiseconds etc. (It depends on amount of the
+ * <p>"H" - hours</p>
+ * <p>"M" - minutes</p>
+ * <p>"S" - seconds</p>
+ * <p>"L" - can be milliseconds, centiseconds etc. (It depends on amount of the
  * symbols, detailed explanation later)</p><br/>
  *
- * For example, let's consider format like "MM:SS". It consist of hours, minutes and
- * seconds. So if current time is 1 minute and 37 seconds, result of formatting will be
+ * For example, let's consider format like "MM:SS". It consists of hours, minutes and
+ * seconds. If current time is 1 minute and 37 seconds, result of formatting will be
  * "01:37", and if current time is 1 hour, 2 minutes and 9 seconds, result will be
- * "122:09" and so on.<br/><br/>
+ * "122:09" and so forth.<br/><br/>
  *
- * If you need to use special format characters as a plain text, you can insert the escape
- * symbol "#", For example, if format is "HH#H MM#M", and time is 2 hours 47 minutes, then
- * result will be "02H 47M".<br/><br/>
+ * If you need to use special format characters ("H", "M", "S", or "L") as a plain text,
+ * you can put the escape symbol before these symbols "#", For example, if format is "HH#H
+ * MM#M", and time is 2 hours 47 minutes, then result will be "02H 47M".<br/><br/>
  *
  * There are some formatting examples:
  *
@@ -67,7 +67,7 @@ import timerx.util.Constants.Patterns;
  *
  * Some formats are unacceptable. There are three types of such formats:
  * <p>
- * 1. Formats that not contain any special characters ("H", "M", "S" or "L").
+ * 1. Formats that don't contain any special characters ("H", "M", "S" or "L").
  * </p>
  * <p>
  * 2. Formats that contain same special symbols in different positions. Example: "HH:HH",
@@ -79,13 +79,12 @@ import timerx.util.Constants.Patterns;
  * incompatible symbols, see {@link timerx.exceptions.IllegalSymbolsCombinationException}
  * </p><br/>
  *
- * Now, let's take a look to the character like "L". It can represents represents
- * milliseconds, centiseconds, and decisecond, depending on amount and other characters.
- * Consider format "M:SS.LL" and time 36698 milliseconds (36 seconds and 698
- * milliseconds). In this case, since amount of "L" characters is 2, last digit in
- * milliseconds is omitted, and result will be "0:36.69". In case if there is no special
- * symbols except "L", or it amount is three or more, then it will be formats as a plain
- * milliseconds.<br/><br/>
+ * Now, let's take a look to the character like "L". It can be formatted as milliseconds,
+ * centiseconds, and decisecond, depending on amount and other characters. Consider format
+ * "M:SS.LL" and time 36698 milliseconds (36 seconds and 698 milliseconds). In this case,
+ * since amount of "L" characters is 2, last digit in milliseconds will be omitted, and
+ * result will be "0:36.69". In case if there is no special symbols except "L", or it
+ * amount is three or more, then it will be formatted as milliseconds.<br/><br/>
  *
  * Here some examples of formatting with "L" symbol:
  * <pre>
@@ -118,25 +117,13 @@ import timerx.util.Constants.Patterns;
  */
 public class TimeFormatter {
 
-  /**
-   * Semantic representation of input format creates by {@link Analyzer}
-   *
-   * @see Semantic
-   */
   private final Semantic semantic;
-
-  /**
-   * Temporary container for time units
-   */
   private final TimeContainer timeContainer;
-
-  /**
-   * Input string format format
-   */
   private String format;
 
   /**
-   * Helper method to just format time.<br/> Usage example:
+   * Helper method if you want to just format the particular time, without timer or
+   * stopwatch.<br/> Usage example:
    * <pre>{@code
    *    String formattedTime = TimeFormatter.with("MMm SSs").format(5, TimeUnit.MINUTES);
    *    System.out.println(formattedTime) // Output: "05m 00s"
@@ -152,16 +139,6 @@ public class TimeFormatter {
     timeContainer = new TimeContainer();
   }
 
-  /**
-   * Returns optimized delay for handler in Timer and Stopwatch. <br/><br/> Optimized
-   * delay calculates depending on which symbols contains in parse format. For example, if
-   * input format contains {@link Patterns#STR_REM_MILLIS}, then delay for handler should
-   * be every millisecond (on every ten milliseconds, depending on number of {@link
-   * Patterns#STR_REM_MILLIS} symbols in format), but if input format do not contains
-   * {@link Patterns#STR_REM_MILLIS}, there is no reason to notify user about changing
-   * time every milliseconds, because millis will not displayed. But delay should be at
-   * most 100 for correct pause/resume handling
-   */
   public long getOptimizedDelay() {
     long delay = 100;
     if (semantic.has(R_MILLISECONDS)) {
@@ -174,11 +151,6 @@ public class TimeFormatter {
     return delay;
   }
 
-  /**
-   * Returns minimum unit of semantic converted to millis
-   *
-   * @see Timer
-   */
   public long minimumUnitInMillis() {
     if (semantic.minimumUnit() == R_MILLISECONDS) {
       return 1;
@@ -193,20 +165,22 @@ public class TimeFormatter {
   /**
    * Returns current format of semantic
    */
+  @NonNull
   public String currentFormat() {
     return semantic.getFormat();
   }
 
   /**
    * Like {@link #format(long)}, but also converts time into particular time unit for more
-   * convenient usage. Uses basically together with {@link #with(String)} method
+   * convenient usage. Used primary together with {@link #with(String)} method
    */
+  @NonNull
   public String format(long time, TimeUnit timeUnit) {
     return format(timeUnit.toMillis(time));
   }
 
   /**
-   * Formats milliseconds to string representation according by {@link #format}
+   * Formats milliseconds to string representation according ti {@link #format}
    *
    * @param time Time in milliseconds
    * @return Formatted time

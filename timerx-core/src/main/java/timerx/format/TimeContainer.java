@@ -1,7 +1,7 @@
 package timerx.format;
 
 /**
- * Class for temporary containing of different time units
+ * Class for temporary holding different time units
  *
  * @see TimeFormatter
  */

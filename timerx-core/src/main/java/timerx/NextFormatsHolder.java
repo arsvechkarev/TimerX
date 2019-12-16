@@ -4,7 +4,7 @@ import java.util.concurrent.TimeUnit;
 import timerx.format.Semantic;
 
 /**
- * Holder of formats and times when first should be applied in {@link Timer} and
+ * Holder of formats and times when former should be applied in {@link Timer} and
  * {@link Stopwatch}
  *
  * @see TimerBuilder#changeFormatWhen(long, TimeUnit, String)

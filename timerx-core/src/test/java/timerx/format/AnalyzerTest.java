@@ -1,7 +1,8 @@
 package timerx.format;
 
 import static org.junit.Assert.assertSame;
-import static timerx.TestHelper.updateFormatIfNecessary;
+import static timerx.TestHelper.updateFormat;
+import static timerx.format.Analyzer.check;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -58,145 +59,145 @@ public class AnalyzerTest {
 
   @Test
   public void positiveTest1() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("HH:MM:SS.LLL"));
+    Semantic semantic = check(updateFormat("HH:MM:SS.LLL"));
     assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest2() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("HhSMM"));
+    Semantic semantic = check(updateFormat("HhSMM"));
     assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest3() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("ssMMmSSmLLl"));
+    Semantic semantic = check(updateFormat("ssMMmSSmLLl"));
     assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest4() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("H/\\*)MMMM"));
+    Semantic semantic = check(updateFormat("H/\\*)MMMM"));
     assertSame(TimeUnits.MINUTES, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest5() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("MMMM%^:SS#$&*"));
+    Semantic semantic = check(updateFormat("MMMM%^:SS#$&*"));
     assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest6() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary(":SS::LL::#$&*"));
+    Semantic semantic = check(updateFormat(":SS::LL::#$&*"));
     assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest7() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("SSS"));
+    Semantic semantic = check(updateFormat("SSS"));
     assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping1() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("H#HMM#M:SS#S:LL#E#Ls##"));
+    Semantic semantic = check(updateFormat("H#HMM#M:SS#S:LL#E#Ls##"));
     assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping2() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("HH#H - MM#MSS@#S"));
+    Semantic semantic = check(updateFormat("HH#H - MM#MSS@#S"));
     assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping3() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("ssM#MmmSS#Sh#LL#h"));
+    Semantic semantic = check(updateFormat("ssM#MmmSS#Sh#LL#h"));
     assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping4() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("H####H/#M#M#MM"));
+    Semantic semantic = check(updateFormat("H####H/#M#M#MM"));
     assertSame(TimeUnits.MINUTES, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping5() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("MM#####M#M%^:SS#$&*"));
+    Semantic semantic = check(updateFormat("MM#####M#M%^:SS#$&*"));
     assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping6() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary(":SS#S==:##LL::#$&*"));
+    Semantic semantic = check(updateFormat(":SS#S==:##LL::#$&*"));
     assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping7() {
-    Semantic semantic = Analyzer.check(updateFormatIfNecessary("#S#SS#S#S"));
+    Semantic semantic = check(updateFormat("#S#SS#S#S"));
     assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
   }
 
   @Test(expected = NoNecessarySymbolsException.class)
   public void negativeTestWithNoElements() {
-    Analyzer.check(updateFormatIfNecessary("qwerty lol! ###"));
+    check(updateFormat("qwerty lol! ###"));
   }
 
   @Test(expected = NoNecessarySymbolsException.class)
   public void negativeTestWithAllCommentedElements() {
-    Analyzer.check(updateFormatIfNecessary("#H#Hs#S#L"));
+    check(updateFormat("#H#Hs#S#L"));
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions1() {
-    Analyzer.check(updateFormatIfNecessary("H#HH"));
+    check(updateFormat("H#HH"));
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions2() {
-    Analyzer.check(updateFormatIfNecessary("HH:MM:SSqwertyH"));
+    check(updateFormat("HH:MM:SSqwertyH"));
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions3() {
-    Analyzer.check(updateFormatIfNecessary("HH#HSSS %^&*sS"));
+    check(updateFormat("HH#HSSS %^&*sS"));
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions4() {
-    Analyzer.check(updateFormatIfNecessary("LLasfdLH^&sdHasdL"));
+    check(updateFormat("LLasfdLH^&sdHasdL"));
   }
 
   @Test(expected = IllegalSymbolsPositionException.class)
   public void negativeTestWithIncorrectPositions5() {
-    Analyzer.check(updateFormatIfNecessary("M#M#H#H098/M"));
+    check(updateFormat("M#M#H#H098/M"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination1() {
-    Analyzer.check(updateFormatIfNecessary("HH:MM:L"));
+    check(updateFormat("HH:MM:L"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination2() {
-    Analyzer.check(updateFormatIfNecessary("HH:SS:L"));
+    check(updateFormat("HH:SS:L"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination3() {
-    Analyzer.check(updateFormatIfNecessary("HH:SS"));
+    check(updateFormat("HH:SS"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination4() {
-    Analyzer.check(updateFormatIfNecessary("LLLL:H"));
+    check(updateFormat("LLLL:H"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination5() {
-    Analyzer.check(updateFormatIfNecessary(":M#ME#::LL"));
+    check(updateFormat(":M#ME#::LL"));
   }
 }
