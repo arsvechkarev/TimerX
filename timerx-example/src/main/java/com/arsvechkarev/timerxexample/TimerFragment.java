@@ -1,28 +1,26 @@
 package com.arsvechkarev.timerxexample;
 
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import java.util.concurrent.TimeUnit;
-import timerx.Action;
-import timerx.TimeTickListener;
 import timerx.Timer;
 import timerx.TimerBuilder;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Example of using timer
  */
 public class TimerFragment extends Fragment {
 
-  private TextView textTime;
   private Timer timer;
 
   @Override
@@ -34,74 +32,39 @@ public class TimerFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    textTime = view.findViewById(com.arsvechkarev.timerxexample.R.id.text_time);
+    Button buttonStart = view.findViewById(R.id.btn_start);
+    Button buttonStop = view.findViewById(R.id.btn_stop);
+    Button buttonReset = view.findViewById(R.id.btn_reset);
+
     timer = new TimerBuilder()
-        .startFormat("start: MM:SSSSSS")
-        .startTime(15, TimeUnit.SECONDS)
-        .actionWhen(18, TimeUnit.SECONDS, new Action() {
-          @Override
-          public void run() {
-            Toast.makeText(getContext(),
-                "15s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
-                .show();
-          }
-        })
-        .actionWhen(10, TimeUnit.SECONDS, new Action() {
-          @Override
-          public void run() {
-            Toast.makeText(getContext(),
-                "10s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
-                .show();
-          }
-        })
-        .actionWhen(5, TimeUnit.SECONDS, new Action() {
-          @Override
-          public void run() {
-            Toast.makeText(getContext(),
-                "5s: " + timer.getRemainingTimeIn(TimeUnit.SECONDS), Toast.LENGTH_SHORT)
-                .show();
-          }
-        })
-//        .changeFormatWhen(1, TimeUnit.MINUTES, "One minute: SS:LL")
-        .changeFormatWhen(10, TimeUnit.SECONDS, "10: SS:LLLLL")
-        .changeFormatWhen(5, TimeUnit.SECONDS, "5: SS:LLLLL")
-        .onTick(new TimeTickListener() {
-          @Override
-          public void onTick(String time) {
-            textTime.setText(time);
-          }
+        .startFormat("SS:LL")
+        .startTime(25, SECONDS)
+        .actionWhen(18, SECONDS, () -> showToast("18s left"))
+        .actionWhen(10, SECONDS, () -> showToast("10s left"))
+        .actionWhen(5, SECONDS, () -> showToast("5s left"))
+        .changeFormatWhen(10, SECONDS, "10: SS:LLL")
+        .changeFormatWhen(5, SECONDS, "5: SS:LLLLL")
+        .onTick(time -> {
+          Log.d("qwerty", "time = " + time);
         })
         .build();
 
-    textTime.setText(timer.getFormattedStartTime());
+    buttonStart.setOnClickListener(v -> {
+      timer.start();
+    });
 
-    view.findViewById(
-        com.arsvechkarev.timerxexample.R.id.btn_start)
-        .setOnClickListener(new OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            timer.start();
-          }
-        });
+    buttonStop.setOnClickListener(v -> {
+      timer.stop();
+      showToast("Remaining time in seconds = " + timer.getRemainingTimeIn(SECONDS));
+    });
 
-    view.findViewById(com.arsvechkarev.timerxexample.R.id.btn_stop)
-        .setOnClickListener(new OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            timer.stop();
-            Toast.makeText(getActivity(),
-                "rem time = " + timer.getRemainingTimeIn(TimeUnit.SECONDS),
-                Toast.LENGTH_SHORT).show();
-          }
-        });
+    buttonReset.setOnClickListener(v -> {
+      timer.reset();
+    });
 
-    view.findViewById(com.arsvechkarev.timerxexample.R.id.btn_reset)
-        .setOnClickListener(new OnClickListener() {
-          @Override
-          public void onClick(View v) {
-            timer.reset();
-            textTime.setText(timer.getFormattedStartTime());
-          }
-        });
+  }
+
+  private void showToast(String text) {
+    Toast.makeText(getContext(), text, Toast.LENGTH_LONG).show();
   }
 }

@@ -20,8 +20,6 @@ import static timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 import androidx.annotation.NonNull;
 import java.util.concurrent.TimeUnit;
 import timerx.TimeUnits;
-import timerx.Timer;
-import timerx.util.Constants.Patterns;
 
 /**
  * Main class for formatting input milliseconds into string representation according to
@@ -231,7 +229,9 @@ public class TimeFormatter {
     String strSeconds = getFormatOf(secondsToShow, SECONDS);
     String strMillis = getFormatOf(millisToShow, R_MILLISECONDS);
 
-    format = semantic.patternHours.matcher(format).replaceAll(strHours);
+    // I have no the hell idea why there should be a new format variable, but without
+    // this nothing works
+    String format = semantic.patternHours.matcher(this.format).replaceAll(strHours);
     format = semantic.patternMinutes.matcher(format).replaceAll(strMinutes);
     format = semantic.patternSeconds.matcher(format).replaceAll(strSeconds);
     format = semantic.patternRMillis.matcher(format).replaceAll(strMillis);
