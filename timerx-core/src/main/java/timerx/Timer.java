@@ -122,8 +122,9 @@ public class Timer {
   }
 
   /**
-   * Returns start time formatted according to start format<br/> For example, if start
-   * format is "MM:SS.LL", and start time is 10 minutes then result is "10:00.00"
+   * Returns the start time formatted according to the start format<br/> For example, if
+   * the start format is "MM:SS.LL", and start time is 10 minutes then result will be
+   * "10:00.00"
    */
   public String getFormattedStartTime() {
     return new TimeFormatter(startSemantic).format(startTime);
@@ -131,8 +132,8 @@ public class Timer {
 
   /**
    * Depending on state of timer there are three possible variants of behaviour:
-   * <p> - If timer hasn't started yet or {@link #reset()} was called, then
-   * timer normally starts</p>
+   * <p> - If timer hasn't been started yet or {@link #reset()} was called, then
+   * timer just starts</p>
    * <p> - If timer has been started, and method {@link #stop()} was called, then
    * timer continues time counting</p>
    * <p> - If timer is running now, then the method does nothing</p>
@@ -230,7 +231,6 @@ public class Timer {
 
   private long defineFormatTime() {
     if (currentTime == startTime) {
-
       return currentTime;
     } else {
       return currentTime + timeFormatter.minimumUnitInMillis();

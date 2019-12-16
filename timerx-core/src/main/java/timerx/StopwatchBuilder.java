@@ -56,7 +56,7 @@ public class StopwatchBuilder {
   /**
    * Set tick listener to receive formatted time
    */
-  public StopwatchBuilder tickListener(@NonNull TimeTickListener tickListener) {
+  public StopwatchBuilder onTick(@NonNull TimeTickListener tickListener) {
     this.tickListener = tickListener;
     return this;
   }
