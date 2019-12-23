@@ -9,7 +9,7 @@ See all detailed documentation in javadoc.
 Add following lines in your module-level build.gradle file:
 ```groovy
 dependencies {
-      implementation 'com.arsvechkarev:timerx:0.7.6'
+      implementation 'com.arsvechkarev:timerx:1.0.0'
 }
 ```
 
