@@ -1,9 +1,9 @@
 # TimerX
-A simple timer & stowatch library for android which allows you to set format for the time, schedule actions and a lot more.
+A simple timer & stowatch library for android which allows you build customizable timer or stopwatch, set custom formats, and schedule actions.
 
-TimerX provides a simple api to apply different format to timer or stopwatch. For example, you can create stopwatch, specify format as **HH:MM:SS** or **SS.LL** and time in stopwatch will be formating according to your format. 
+TimerX provides a simple api to apply different format to timer or stopwatch. For instance, you can create stopwatch, specify format as **HH:MM:SS** or **SS.LL** and time in stopwatch will be formating according to this format. 
 
-See all detailed documentation in javadoc.
+See javadoc for more detailed explanation.
 
 ## Gradle Setup
 Add following lines in your module-level build.gradle file:
@@ -20,9 +20,9 @@ dependencies {
 Stopwatch stopwatch = new StopwatchBuilder()
       // Set start format of time
       .startFormat("MM:SS")
-      // Set tick listener that receives formatted time
+      // Set tick listener for displaying time
       .tickListener(time -> textViewStopwatch.setText(time)) 
-      // When time will be equal to one hour, change format to "HH:MM:SS"
+      // When time is equal to one hour, change format to "HH:MM:SS"
       .changeFormatWhen(1, TimeUnit.HOURS, "HH:MM:SS")
       .build();
       
