@@ -11,6 +11,7 @@ import static timerx.util.Constants.TimeValues.MINUTES_IN_HOUR;
 import static timerx.util.Constants.TimeValues.NONE;
 import static timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 
+import androidx.annotation.NonNull;
 import timerx.TimeUnit;
 
 public class NewTimeFormatter {
@@ -35,6 +36,11 @@ public class NewTimeFormatter {
       }
     }
     return delay;
+  }
+
+  @NonNull
+  public String currentFormat() {
+    return semantic.getFormat();
   }
 
   public long minimumUnitInMillis() {

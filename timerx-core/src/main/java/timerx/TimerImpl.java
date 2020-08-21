@@ -13,8 +13,9 @@ import androidx.annotation.RestrictTo.Scope;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
+import timerx.format2.NewSemantic;
+import timerx.format2.NewTimeFormatter;
 
 /**
  * Represents standard timer with base functions like {@link #start() start}, {@link
@@ -79,7 +80,7 @@ public class TimerImpl {
   private final Action finishAction;
 
   // Semantic of start format
-  private final Semantic startSemantic;
+  private final NewSemantic startSemantic;
 
   /**
    * Current state of timer
@@ -93,7 +94,7 @@ public class TimerImpl {
    *
    * @see TimeFormatter
    */
-  private TimeFormatter timeFormatter;
+  private NewTimeFormatter timeFormatter;
 
   /**
    * Time formats to be applied in future
@@ -109,7 +110,7 @@ public class TimerImpl {
   private SortedSet<ActionsHolder> copyOfActionsHolders;
 
   @RestrictTo(Scope.LIBRARY)
-  TimerImpl(long startTime, Semantic startSemantic, TimeTickListener tickListener,
+  TimerImpl(long startTime, NewSemantic startSemantic, TimeTickListener tickListener,
       Action finishAction, SortedSet<NextFormatsHolder> nextFormatsHolders,
       SortedSet<ActionsHolder> nextActionsHolders) {
     this.startTime = startTime;
@@ -127,7 +128,7 @@ public class TimerImpl {
    * "10:00.00"
    */
   public CharSequence getFormattedStartTime() {
-    return new TimeFormatter(startSemantic).format(startTime);
+    return new NewTimeFormatter(startSemantic).format(startTime);
   }
 
   /**
@@ -181,8 +182,8 @@ public class TimerImpl {
         : 0;
   }
 
-  private void applyFormat(Semantic semantic) {
-    timeFormatter = new TimeFormatter(semantic);
+  private void applyFormat(NewSemantic semantic) {
+    timeFormatter = new NewTimeFormatter(semantic);
     interval = timeFormatter.getOptimizedDelay();
   }
 

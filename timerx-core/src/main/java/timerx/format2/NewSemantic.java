@@ -3,7 +3,7 @@ package timerx.format2;
 import androidx.annotation.NonNull;
 import timerx.TimeUnit;
 
-class NewSemantic {
+public class NewSemantic {
 
   Position hoursPosition;
   Position minutesPosition;
@@ -25,6 +25,10 @@ class NewSemantic {
     this.format = format;
     this.strippedFormat = strippedFormat;
     this.smallestAvailableUnit = smallestAvailableUnit;
+  }
+
+  public String getFormat() {
+    return strippedFormat;
   }
 
   boolean has(TimeUnit unitType) {

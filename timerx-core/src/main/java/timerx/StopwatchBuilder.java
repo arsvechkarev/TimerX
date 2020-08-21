@@ -6,9 +6,9 @@ import androidx.annotation.NonNull;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.format.Analyzer;
-import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
+import timerx.format2.NewAnalyzer;
+import timerx.format2.NewSemantic;
 import timerx.util.Checker;
 
 /**
@@ -40,7 +40,7 @@ import timerx.util.Checker;
  */
 public class StopwatchBuilder {
 
-  private Semantic startSemantic;
+  private NewSemantic startSemantic;
   private TimeTickListener tickListener;
   private final SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>();
   private final SortedSet<ActionsHolder> actionsHolder = new TreeSet<>();
@@ -49,7 +49,7 @@ public class StopwatchBuilder {
    * Set start time format to stopwatch
    */
   public StopwatchBuilder startFormat(@NonNull String format) {
-    startSemantic = Analyzer.create(format);
+    startSemantic = NewAnalyzer.analyze(format);
     return this;
   }
 
@@ -68,7 +68,7 @@ public class StopwatchBuilder {
   public StopwatchBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
     assertTimeNotNegative(time);
-    Semantic semantic = Analyzer.create(newFormat);
+    NewSemantic semantic = NewAnalyzer.analyze(newFormat);
     long millis = timeUnit.toMillis(time);
     nextFormatsHolder.add(new NextFormatsHolder(millis, semantic));
     return this;

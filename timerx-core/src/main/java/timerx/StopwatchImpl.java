@@ -14,8 +14,9 @@ import androidx.annotation.RestrictTo.Scope;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
+import timerx.format2.NewSemantic;
+import timerx.format2.NewTimeFormatter;
 
 /**
  * Stopwatch with base functions like {@link #start() start}, {@link #stop() stop}, etc.
@@ -73,7 +74,7 @@ public class StopwatchImpl {
   private final TimeTickListener tickListener;
 
   // Semantic of start format
-  private final Semantic startSemantic;
+  private final NewSemantic startSemantic;
 
   /**
    * Current state of stopwatch
@@ -87,7 +88,7 @@ public class StopwatchImpl {
    *
    * @see TimeFormatter
    */
-  private TimeFormatter timeFormatter;
+  private NewTimeFormatter timeFormatter;
 
   /**
    * Time formats to be applied in future
@@ -103,7 +104,7 @@ public class StopwatchImpl {
   private SortedSet<ActionsHolder> copyOfActionsHolder;
 
   @RestrictTo(Scope.LIBRARY)
-  StopwatchImpl(Semantic startSemantic, TimeTickListener tickListener,
+  StopwatchImpl(NewSemantic startSemantic, TimeTickListener tickListener,
       SortedSet<NextFormatsHolder> nextFormatsHolder,
       SortedSet<ActionsHolder> actionsHolder) {
     this.startSemantic = startSemantic;
@@ -117,7 +118,7 @@ public class StopwatchImpl {
    * example, if start format is "MM:SS.LL", then result is "00:00.00"
    */
   public CharSequence getFormattedStartTime() {
-    return new TimeFormatter(startSemantic).format(0L);
+    return new NewTimeFormatter(startSemantic).format(0L);
   }
 
   /**
@@ -169,8 +170,8 @@ public class StopwatchImpl {
     return timeUnit.convert(currentTime, TimeUnit.MILLISECONDS);
   }
 
-  private void applyFormat(Semantic semantic) {
-    timeFormatter = new TimeFormatter(semantic);
+  private void applyFormat(NewSemantic semantic) {
+    timeFormatter = new NewTimeFormatter(semantic);
     delay = timeFormatter.getOptimizedDelay();
   }
 
