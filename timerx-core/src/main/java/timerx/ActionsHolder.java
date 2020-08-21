@@ -3,14 +3,7 @@ package timerx;
 import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
-import java.util.concurrent.TimeUnit;
 
-/**
- * Holder of actions and times when formers should be executed
- *
- * @see TimerBuilder#actionWhen(long, TimeUnit, Action)
- * @see StopwatchBuilder#actionWhen(long, TimeUnit, Action)
- */
 @RestrictTo(Scope.LIBRARY)
 class ActionsHolder implements Comparable<ActionsHolder> {
 

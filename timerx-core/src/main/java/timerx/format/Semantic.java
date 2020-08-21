@@ -1,7 +1,10 @@
 package timerx.format;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
 
+@RestrictTo(Scope.LIBRARY)
 public class Semantic {
 
   Position hoursPosition;

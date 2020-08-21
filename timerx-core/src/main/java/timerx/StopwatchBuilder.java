@@ -11,7 +11,7 @@ import timerx.format.Semantic;
 import timerx.util.Checker;
 
 /**
- * Builder to configure and instantiate {@link StopwatchImpl}.<br/> Usage example:
+ * Builder to configure and instantiate {@link Stopwatch}.<br/> Usage example:
  * <pre>
  *   Stopwatch stopwatch = new StopwatchBuilder()
  *         // Set the start format of timer
@@ -62,8 +62,21 @@ public class StopwatchBuilder {
   }
 
   /**
-   * Schedules changing format at certain time. This method can be invokes many times, all
-   * received formats will be scheduled.
+   * Schedules changing format at a certain time. Format is applied as soon as stopwatch
+   * reaches given time. This method can be called many times, all received formats will
+   * be scheduled. When called with the same time, only first invocation is scheduled
+   * Examples:
+   * <pre>
+   * StopwatchBuilder builder = new StopwatchBuilder();
+   *
+   * // When the time is equal to 1 minute, then format will be changed to "M:SS:LL"
+   * builder.changeFormatWhen(1, TimeUnits.MINUTES, "M:SS:LL");
+   *
+   * // When the time is equal to 10 minutes, then format will be changed to "MM:SS:LL"
+   * builder.changeFormatWhen(10, TimeUnits.MINUTES, "MM:SS:LL");
+   *
+   *  ...
+   * </pre>
    */
   @NonNull
   public StopwatchBuilder changeFormatWhen(long time, @NonNull TimeUnit timeUnit,
@@ -76,8 +89,18 @@ public class StopwatchBuilder {
   }
 
   /**
-   * Like {@link #changeFormatWhen(long, TimeUnit, String)}, but schedules action at a
-   * certain time.<br/>
+   * Like {@link #changeFormatWhen(long, TimeUnit, String)}, but schedules an action at a
+   * certain time.<br/> Example:
+   * <pre>
+   * StopwatchBuilder builder = new StopwatchBuilder();
+   *
+   * // When the time is equal to 1 minute, show toast
+   * builder.actionWhen(1, TimeUnits.MINUTES, () -> {
+   *     Toast.makeText(getContext(), "1 minute past", Toast.LENGTH_SHORT).show();
+   * })
+   *
+   * ...
+   * </pre>
    */
   @NonNull
   public StopwatchBuilder actionWhen(long time, @NonNull TimeUnit timeUnit,

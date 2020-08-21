@@ -1,11 +1,12 @@
 package timerx.exceptions;
 
 /**
- * Exception thrown when symbols in input format are in unacceptable combination, e.g.
- * when format contains only hours and seconds, and not contains minutes, like "HH:SS", or
- * format contains only minutes and milliseconds and does not contain seconds, like "MM:LLL".
- * Such formats are considered wrong, because there is no definite way to format remaining
- * time, and in most cases these formats are not needed.<br/><br/>
+ * This exception is thrown when symbols in input format are in unacceptable combination,
+ * e.g. when format contains only hours and seconds, and does not contains minutes, like
+ * "HH:SS", or when format contains only minutes and milliseconds and does not contain
+ * seconds, like "MM:LLL". Such formats are considered wrong, because there is no definite
+ * way to format remaining time, and in most cases these formats are not
+ * needed.<br/><br/>
  *
  * Full list of unsupported symbols combination presented below, but there are two notes
  * to this:

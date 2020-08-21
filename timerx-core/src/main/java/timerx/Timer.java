@@ -10,7 +10,7 @@ import timerx.format.TimeFormatter;
  * time. See {@link TimeFormatter} to find out how to use format syntax. Use {@link
  * TimerBuilder} to configure and instantiate the timer.
  *
- * @author Arseny Svechkarev
+ * @author Arseniy Svechkarev
  * @see TimerBuilder
  * @see Stopwatch
  */
@@ -27,16 +27,15 @@ public interface Timer {
   /**
    * Depending on the state of the timer there are three possible variants of behavior:
    * <p> - If timer hasn't been started yet or {@link #reset()} was called, then
-   * the timer starts from start time</p>
+   * the timer starts from the start time</p>
    * <p> - If timer has been started, and method {@link #stop()} was called, then
    * the timer continues running</p>
-   * <p> - If timer is running now, then calling the method does nothing</p>
+   * <p> - If timer is running, then the method does nothing</p>
    */
   void start();
 
   /**
-   * Stops timer if it is active. If it isn't active, then calling the method does
-   * nothing
+   * Stops timer if it is active. If it isn't active, then the method does nothing
    */
   void stop();
 

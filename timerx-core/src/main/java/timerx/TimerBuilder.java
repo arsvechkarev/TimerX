@@ -1,9 +1,5 @@
 package timerx;
 
-import static timerx.util.Checker.assertNotNull;
-import static timerx.util.Checker.assertTimeInitialized;
-import static timerx.util.Checker.assertTimeNotNegative;
-
 import androidx.annotation.NonNull;
 import java.util.Collections;
 import java.util.SortedSet;
@@ -15,7 +11,7 @@ import timerx.util.Checker;
 import timerx.util.Constants.TimeValues;
 
 /**
- * Builder to configure and instantiate {@link TimerImpl}.<br/> Usage example:
+ * Builder to configure and instantiate {@link Timer}.<br/> Usage example:
  * <pre>{@code
  *   Timer timer = new TimerBuilder()
  *         // Set the start format of the timer
@@ -60,7 +56,7 @@ public class TimerBuilder {
    * Set the start format to timer
    *
    * @param format Format for timer. See {@link timerx.format.TimeFormatter} to find out
-   * what are valid formats
+   * about formats
    */
   @NonNull
   public TimerBuilder startFormat(@NonNull String format) {
@@ -69,14 +65,14 @@ public class TimerBuilder {
   }
 
   /**
-   * Set start time to timer
+   * Set the start time to timer
    *
    * @param time Time to set
    * @param timeUnit Unit of the time
    */
   @NonNull
   public TimerBuilder startTime(long time, @NonNull TimeUnit timeUnit) {
-    assertTimeNotNegative(time);
+    Checker.assertTimeNotNegative(time);
     startTime = timeUnit.toMillis(time);
     return this;
   }
@@ -104,10 +100,10 @@ public class TimerBuilder {
   }
 
   /**
-   * Schedules changing format at a certain time. Format will be applied as soon as timer
-   * reaches given time. This method can be invokes many times, all received formats will
-   * be scheduled. Invoking with the same time schedules only <b>first</b>
-   * invocation.<br/> Examples:
+   * Schedules changing format at a certain time. Format is applied as soon as timer
+   * reaches given time. This method can be called many times, all received formats will
+   * be scheduled. When called with the same time, only first invocation is scheduled
+   * Examples:
    * <pre>
    * TimerBuilder builder = new TimerBuilder();
    *
@@ -125,7 +121,7 @@ public class TimerBuilder {
   @NonNull
   public TimerBuilder changeFormatWhen(long time, @NonNull TimeUnit timeUnit,
       @NonNull String newFormat) {
-    assertTimeNotNegative(time);
+    Checker.assertTimeNotNegative(time);
     Semantic semantic = Analyzer.analyze(newFormat);
     long millis = timeUnit.toMillis(time);
     nextFormatsHolder.add(new NextFormatsHolder(millis, semantic));
@@ -133,14 +129,14 @@ public class TimerBuilder {
   }
 
   /**
-   * Like {@link #changeFormatWhen(long, TimeUnit, String)}, but schedules action at a
+   * Like {@link #changeFormatWhen(long, TimeUnit, String)}, but schedules an action at a
    * certain time.<br/> Example:
    * <pre>
    * TimerBuilder builder = new TimerBuilder();
    *
    * // When the remaining time is equal to 1 minute, show toast
    * builder.actionWhen(1, TimeUnits.MINUTES, () -> {
-   *     Toast.makeText(getContext(), "1 minute past", Toast.LENGTH_SHORT).show();
+   *     Toast.makeText(getContext(), "1 minute left", Toast.LENGTH_SHORT).show();
    * })
    *
    * ...
@@ -149,8 +145,8 @@ public class TimerBuilder {
   @NonNull
   public TimerBuilder actionWhen(long time, @NonNull TimeUnit timeUnit,
       @NonNull Action action) {
-    assertTimeNotNegative(time);
-    assertNotNull(action);
+    Checker.assertTimeNotNegative(time);
+    Checker.assertNotNull(action);
     long millis = timeUnit.toMillis(time);
     nextActionsHolder.add(new ActionsHolder(millis, action));
     return this;
@@ -162,7 +158,7 @@ public class TimerBuilder {
   @NonNull
   public Timer build() {
     Checker.assertNotNull(startSemantic, "Start format should be initialized");
-    assertTimeInitialized(startTime, "Time should be initialized");
+    Checker.assertTimeInitialized(startTime, "Time should be initialized");
     return new TimerImpl(startTime, startSemantic, tickListener, finishAction,
         nextFormatsHolder,
         nextActionsHolder);

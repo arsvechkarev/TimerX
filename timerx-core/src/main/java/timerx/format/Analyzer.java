@@ -1,12 +1,15 @@
 package timerx.format;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
 import androidx.annotation.VisibleForTesting;
 import timerx.exceptions.IllegalSymbolsCombinationException;
 import timerx.exceptions.NoNecessarySymbolsException;
 import timerx.exceptions.NonContiguousFormatSymbolsException;
 import timerx.util.Constants.Symbols;
 
+@RestrictTo(Scope.LIBRARY)
 public class Analyzer {
 
   @NonNull
