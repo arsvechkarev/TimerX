@@ -1,5 +1,8 @@
 package timerx;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -8,6 +11,7 @@ import java.util.concurrent.TimeUnit;
  * @see TimerBuilder#actionWhen(long, TimeUnit, Action)
  * @see StopwatchBuilder#actionWhen(long, TimeUnit, Action)
  */
+@RestrictTo(Scope.LIBRARY)
 class ActionsHolder implements Comparable<ActionsHolder> {
 
   private final long millis;
@@ -22,6 +26,7 @@ class ActionsHolder implements Comparable<ActionsHolder> {
     return millis;
   }
 
+  @NonNull
   Action getAction() {
     return action;
   }

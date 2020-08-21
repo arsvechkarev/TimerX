@@ -1,16 +1,20 @@
 package timerx.util;
 
+import androidx.annotation.Nullable;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
 import timerx.util.Constants.TimeValues;
 
+@RestrictTo(Scope.LIBRARY)
 public class Checker {
 
-  public static void assertNotNull(Object o) {
+  public static void assertNotNull(@Nullable Object o) {
     if (o == null) {
       throw new IllegalArgumentException("Value is null");
     }
   }
 
-  public static void assertNotNull(Object o, String failMsg) {
+  public static void assertNotNull(@Nullable Object o, String failMsg) {
     if (o == null) {
       throw new IllegalArgumentException(failMsg);
     }

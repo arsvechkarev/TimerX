@@ -1,38 +1,44 @@
 package timerx.format;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import timerx.TimeUnit;
 import timerx.exceptions.IllegalSymbolsCombinationException;
 import timerx.exceptions.NoNecessarySymbolsException;
 import timerx.exceptions.NonContiguousFormatSymbolsException;
+import timerx.util.Constants.Symbols;
 
 public class Analyzer {
 
+  @NonNull
   public static Semantic analyze(String input) {
-    Position hours = checkPositionOf(TimeUnit.HOURS, input);
-    Position minutes = checkPositionOf(TimeUnit.MINUTES, input);
-    Position seconds = checkPositionOf(TimeUnit.SECONDS, input);
-    Position rMillis = checkPositionOf(TimeUnit.R_MILLISECONDS, input);
+    Position hours = checkPositionOf(TimeUnitType.HOURS, input);
+    Position minutes = checkPositionOf(TimeUnitType.MINUTES, input);
+    Position seconds = checkPositionOf(TimeUnitType.SECONDS, input);
+    Position rMillis = checkPositionOf(TimeUnitType.R_MILLISECONDS, input);
     validatePositions(hours, minutes, seconds, rMillis);
     validateCombinations(hours, minutes, seconds, rMillis);
-    TimeUnit smallestUnit = getSmallestAvailableUnit(hours, minutes, seconds, rMillis);
+    TimeUnitType smallestUnit = getSmallestAvailableUnit(minutes, seconds,
+        rMillis);
     String strippedFormat = stripFormat(input);
     return new Semantic(hours, minutes, seconds, rMillis, input, strippedFormat,
         smallestUnit);
   }
 
   @VisibleForTesting
-  static Position checkPositionOf(TimeUnit timeUnit, String input) {
-    char timeUnitChar = timeUnit.getValue();
+  @NonNull
+  static Position checkPositionOf(TimeUnitType timeUnitType, String input) {
+    char timeUnitChar = timeUnitType.getValue();
     int start = -1;
     int end = -1;
     for (int i = 0; i < input.length(); i++) {
       char c = input.charAt(i);
-      if (isSymbolNotEscapedAndEqualTo(timeUnit, input, i)
+      if (isSymbolNotEscapedAndEqualTo(timeUnitType, input, i)
           && start != -1
           && i - 2 > 0
-          && !isSymbolNotEscapedAndEqualTo(timeUnit, input, i - 1)) {
-        throw new NonContiguousFormatSymbolsException("Wrong pattern");
+          && !isSymbolNotEscapedAndEqualTo(timeUnitType, input, i - 1)) {
+        throw new NonContiguousFormatSymbolsException(
+            "Time unit " + timeUnitType.getValue()
+                + " was found several times in the format");
       }
       if (c == timeUnitChar) {
         if (i == 0) {
@@ -50,20 +56,24 @@ public class Analyzer {
     return new Position(start, end);
   }
 
-  private static boolean isSymbolNotEscapedAndEqualTo(TimeUnit timeUnit, String input,
+  private static boolean isSymbolNotEscapedAndEqualTo(TimeUnitType timeUnitType,
+      String input,
       int position) {
     if (position - 1 < 0) {
       return false;
     }
     char symbol = input.charAt(position);
     char prev = input.charAt(position - 1);
-    return prev != '#' && symbol == timeUnit.getValue();
+    return prev != Symbols.SYMBOL_ESCAPE && symbol == timeUnitType.getValue();
   }
 
   private static void validatePositions(Position hours, Position minutes,
       Position seconds, Position rMillis) {
     if (hours.isEmpty() && minutes.isEmpty() && seconds.isEmpty() && rMillis.isEmpty()) {
-      throw new NoNecessarySymbolsException("No necessary symbols");
+      throw new NoNecessarySymbolsException(
+          "No special symbols like " + Symbols.SYMBOL_HOURS + ", "
+              + Symbols.SYMBOL_MINUTES + ",  " + Symbols.SYMBOL_SECONDS + " or "
+              + Symbols.SYMBOL_REM_MILLIS + "was found in the format");
     }
   }
 
@@ -89,24 +99,26 @@ public class Analyzer {
     }
   }
 
-  private static TimeUnit getSmallestAvailableUnit(Position hours, Position minutes,
+  @NonNull
+  private static TimeUnitType getSmallestAvailableUnit(Position minutes,
       Position seconds, Position rMillis) {
-    TimeUnit smallestAvailableUnit = TimeUnit.HOURS;
-    if (minutes.isNotEmpty()) smallestAvailableUnit = TimeUnit.MINUTES;
-    if (seconds.isNotEmpty()) smallestAvailableUnit = TimeUnit.SECONDS;
-    if (rMillis.isNotEmpty()) smallestAvailableUnit = TimeUnit.R_MILLISECONDS;
+    TimeUnitType smallestAvailableUnit = TimeUnitType.HOURS;
+    if (minutes.isNotEmpty()) smallestAvailableUnit = TimeUnitType.MINUTES;
+    if (seconds.isNotEmpty()) smallestAvailableUnit = TimeUnitType.SECONDS;
+    if (rMillis.isNotEmpty()) smallestAvailableUnit = TimeUnitType.R_MILLISECONDS;
     return smallestAvailableUnit;
   }
 
+  @NonNull
   private static String stripFormat(String format) {
-    return format.replace("#", "");
+    return format.replace(String.valueOf(Symbols.SYMBOL_ESCAPE), "");
   }
 
   private static int numberOfEscapeSymbolsBefore(String input, int position) {
     int count = 0;
     for (int i = 0; i < position; i++) {
       char symbol = input.charAt(i);
-      if (symbol == '#') {
+      if (symbol == Symbols.SYMBOL_ESCAPE) {
         count++;
       }
     }

@@ -1,5 +1,7 @@
 package timerx;
 
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
 import java.util.concurrent.TimeUnit;
 import timerx.format.Semantic;
 
@@ -10,6 +12,7 @@ import timerx.format.Semantic;
  * @see TimerBuilder#changeFormatWhen(long, TimeUnit, String)
  * @see StopwatchBuilder#changeFormatWhen(long, TimeUnit, String)
  */
+@RestrictTo(Scope.LIBRARY)
 class NextFormatsHolder implements Comparable<NextFormatsHolder> {
 
   private final long millis;

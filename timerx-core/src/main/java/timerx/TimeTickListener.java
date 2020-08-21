@@ -1,10 +1,11 @@
 package timerx;
 
+import androidx.annotation.NonNull;
+
 /**
- * Action that will be executed as soon as time in {@link TimerImpl} or {@link
- * StopwatchImpl} changes
+ * Tick listener for receiving formatted time
  */
 public interface TimeTickListener {
 
-  void onTick(CharSequence time);
+  void onTick(@NonNull CharSequence time);
 }

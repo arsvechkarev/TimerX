@@ -1,7 +1,12 @@
 package timerx.util;
 
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
+
+@RestrictTo(Scope.LIBRARY)
 public class Constants {
 
+  @RestrictTo(Scope.LIBRARY)
   public static class Symbols {
 
     public static final char SYMBOL_HOURS = 'H';
@@ -11,6 +16,7 @@ public class Constants {
     public static final char SYMBOL_ESCAPE = '#';
   }
 
+  @RestrictTo(Scope.LIBRARY)
   public static class TimeValues {
 
     public static final long SECONDS_IN_MINUTE = 60;

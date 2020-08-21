@@ -1,9 +1,13 @@
 package timerx;
 
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
+
 /**
  * Current state of either timer or stopwatch
  */
-public enum TimeCountingState {
+@RestrictTo(Scope.LIBRARY)
+enum TimeCountingState {
   RESUMED,
   PAUSED,
   INACTIVE

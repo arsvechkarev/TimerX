@@ -8,6 +8,7 @@ import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
 import java.util.SortedSet;
@@ -16,42 +17,9 @@ import java.util.concurrent.TimeUnit;
 import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
 
-/**
- * Represents standard timer with base functions like {@link #start() start}, {@link
- * #stop() stop}, etc. Also allows format time by specific pattern and executing actions
- * at a certain time. See {@link TimeFormatter} to know about format syntax. Use {@link
- * TimerBuilder} to configure and instantiate the stopwatch.
- * <p>Example of usage:</p>
- * <pre>{@code
- *   Timer timer = new timerBuilder()
- *         // Set start format of time
- *         .startFormat("SS:LL")
- *         // Set tick listener that receives formatted time
- *         .tickListener(time -> textViewTime.setText(time))
- *         // Executing the action at a certain time
- *         .actionWhen(30, TimeUnit.SECONDS, () -> {
- *            Toast.makeText(context, "30 seconds past!", Toast.LENGTH_SHORT).show();
- *         })
- *         // When time will be equal to one minute, change format to "MM:SS:LL"
- *         .changeFormatWhen(1, TimeUnit.MINUTES, "MM:SS:LL")
- *         .build();
- *
- *   timer.start();
- *   timer.stop();
- *   timer.start();
- *   timer.stop();
- *   long resultMillis = timer.getRemainingTimeIn(TimeUnit.MILLISECONDS);
- *   timer.reset();
- * }</pre>
- *
- * @author Arseny Svechkarev
- * @see TimerBuilder
- */
-public class TimerImpl {
+@RestrictTo(Scope.LIBRARY)
+class TimerImpl implements Timer {
 
-  /**
-   * Message id for {@link #handler}
-   */
   private final int MSG = 3;
 
   // Start time in milliseconds
@@ -66,47 +34,18 @@ public class TimerImpl {
   // Interval for timer
   private long interval;
 
-  /**
-   * Listener to notify about changing time
-   *
-   * @see TimeTickListener
-   */
   private final TimeTickListener tickListener;
-
-  /**
-   * Listener to notify user when timer finishes counting
-   */
   private final Action finishAction;
-
-  // Semantic of start format
   private final Semantic startSemantic;
 
-  /**
-   * Current state of timer
-   *
-   * @see TimeCountingState
-   */
   private TimeCountingState state = INACTIVE;
-
-  /**
-   * Formatter for formatting {@link #currentTime} according to particular format
-   */
   private TimeFormatter timeFormatter;
 
-  /**
-   * Time formats to be applied in future
-   */
   private final SortedSet<NextFormatsHolder> nextFormatsHolders;
-
-  /**
-   * Actions to execute in future
-   */
   private final SortedSet<ActionsHolder> nextActionsHolders;
-
   private SortedSet<NextFormatsHolder> copyOfFormatsHolders;
   private SortedSet<ActionsHolder> copyOfActionsHolders;
 
-  @RestrictTo(Scope.LIBRARY)
   TimerImpl(long startTime, Semantic startSemantic, TimeTickListener tickListener,
       Action finishAction, SortedSet<NextFormatsHolder> nextFormatsHolders,
       SortedSet<ActionsHolder> nextActionsHolders) {
@@ -119,23 +58,13 @@ public class TimerImpl {
     currentTime = startTime;
   }
 
-  /**
-   * Returns the start time formatted according to the start format<br/> For example, if
-   * the start format is "MM:SS.LL", and start time is 10 minutes then result will be
-   * "10:00.00"
-   */
+  @NonNull
+  @Override
   public CharSequence getFormattedStartTime() {
     return new TimeFormatter(startSemantic).format(startTime);
   }
 
-  /**
-   * Depending on state of timer there are three possible variants of behaviour:
-   * <p> - If timer hasn't been started yet or {@link #reset()} was called, then
-   * timer just starts</p>
-   * <p> - If timer has been started, and method {@link #stop()} was called, then
-   * timer continues time counting</p>
-   * <p> - If timer is running now, then the method does nothing</p>
-   */
+  @Override
   public void start() {
     if (state != RESUMED) {
       if (state == INACTIVE) {
@@ -152,27 +81,21 @@ public class TimerImpl {
     }
   }
 
-  /**
-   * Stops timer if it is active
-   */
+  @Override
   public void stop() {
     state = PAUSED;
     handler.removeMessages(MSG);
   }
 
-  /**
-   * Stops timer and resets time to zero
-   */
+  @Override
   public void reset() {
     state = INACTIVE;
     handler.removeMessages(MSG);
     applyFormat(startSemantic);
   }
 
-  /**
-   * Returns remaining time in particular unit
-   */
-  public long getRemainingTimeIn(TimeUnit timeUnit) {
+  @Override
+  public long getRemainingTimeIn(@NonNull TimeUnit timeUnit) {
     long timeToFormat = currentTime + timeFormatter.minimumUnitInMillis();
     return (currentTime > 0)
         ? timeUnit.convert(timeToFormat, TimeUnit.MILLISECONDS)

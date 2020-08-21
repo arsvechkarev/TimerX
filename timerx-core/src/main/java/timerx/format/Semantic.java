@@ -1,7 +1,6 @@
 package timerx.format;
 
 import androidx.annotation.NonNull;
-import timerx.TimeUnit;
 
 public class Semantic {
 
@@ -9,7 +8,7 @@ public class Semantic {
   Position minutesPosition;
   Position secondsPosition;
   Position rMillisPosition;
-  TimeUnit smallestAvailableUnit;
+  TimeUnitType smallestAvailableUnit;
 
   String format;
   String strippedFormat;
@@ -17,7 +16,7 @@ public class Semantic {
   Semantic(@NonNull Position hoursPosition, @NonNull Position minutesPosition,
       @NonNull Position secondsPosition, @NonNull Position rMillisPosition,
       String format, String strippedFormat,
-      TimeUnit smallestAvailableUnit) {
+      TimeUnitType smallestAvailableUnit) {
     this.hoursPosition = hoursPosition;
     this.minutesPosition = minutesPosition;
     this.secondsPosition = secondsPosition;
@@ -27,11 +26,12 @@ public class Semantic {
     this.smallestAvailableUnit = smallestAvailableUnit;
   }
 
+  @NonNull
   public String getFormat() {
     return strippedFormat;
   }
 
-  boolean has(TimeUnit unitType) {
+  boolean has(@NonNull TimeUnitType unitType) {
     switch (unitType) {
       case HOURS:
         return hoursPosition.isNotEmpty();

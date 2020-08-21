@@ -1,9 +1,9 @@
 package timerx.format;
 
-import static timerx.TimeUnit.HOURS;
-import static timerx.TimeUnit.MINUTES;
-import static timerx.TimeUnit.R_MILLISECONDS;
-import static timerx.TimeUnit.SECONDS;
+import static timerx.format.TimeUnitType.HOURS;
+import static timerx.format.TimeUnitType.MINUTES;
+import static timerx.format.TimeUnitType.R_MILLISECONDS;
+import static timerx.format.TimeUnitType.SECONDS;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_HOUR;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_MINUTE;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_SECOND;
@@ -12,7 +12,6 @@ import static timerx.util.Constants.TimeValues.NONE;
 import static timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 
 import androidx.annotation.NonNull;
-import timerx.TimeUnit;
 
 public class TimeFormatter {
 
@@ -20,7 +19,7 @@ public class TimeFormatter {
   private final TimeContainer timeContainer = new TimeContainer();
   private final StringBuilder mutableString;
 
-  public TimeFormatter(Semantic semantic) {
+  public TimeFormatter(@NonNull Semantic semantic) {
     this.semantic = semantic;
     mutableString = new StringBuilder(semantic.strippedFormat.length());
     mutableString.append(semantic.strippedFormat);
@@ -54,6 +53,7 @@ public class TimeFormatter {
     return MILLIS_IN_HOUR;
   }
 
+  @NonNull
   public CharSequence format(long millis) {
     TimeContainer units = timeUnitsOf(millis);
     long millisToShow = NONE;
@@ -75,6 +75,7 @@ public class TimeFormatter {
     return applyFormat(millisToShow, secondsToShow, minutesToShow, hoursToShow);
   }
 
+  @NonNull
   private TimeContainer timeUnitsOf(long millis) {
     long seconds = millis / MILLIS_IN_SECOND;
     long minutes = seconds / SECONDS_IN_MINUTE;
@@ -92,6 +93,7 @@ public class TimeFormatter {
         .setRemMinutes(remMinutes);
   }
 
+  @NonNull
   private CharSequence applyFormat(long millisToShow, long secondsToShow,
       long minutesToShow, long hoursToShow) {
     if (millisToShow != NONE) updateString(millisToShow, R_MILLISECONDS);
@@ -101,10 +103,10 @@ public class TimeFormatter {
     return mutableString;
   }
 
-  private void updateString(long time, TimeUnit timeUnit) {
-    Position position = positionOfUnit(timeUnit);
+  private void updateString(long time, TimeUnitType timeUnitType) {
+    Position position = positionOfUnit(timeUnitType);
     int timeLength = lengthOf(time);
-    if (!semantic.hasOnlyRMillis() && timeUnit == R_MILLISECONDS) {
+    if (!semantic.hasOnlyRMillis() && timeUnitType == R_MILLISECONDS) {
       if (semantic.rMillisPosition.length() < 3 && timeLength < 3) {
         int difference = 3 - semantic.rMillisPosition.length();
         time /= Math.pow(10, difference);
@@ -127,8 +129,9 @@ public class TimeFormatter {
     }
   }
 
-  private Position positionOfUnit(TimeUnit timeUnit) {
-    switch (timeUnit) {
+  @NonNull
+  private Position positionOfUnit(TimeUnitType timeUnitType) {
+    switch (timeUnitType) {
       case HOURS:
         return semantic.hoursPosition;
       case MINUTES:

@@ -4,14 +4,13 @@ import static org.junit.Assert.assertSame;
 import static timerx.TestHelper.updateFormatIfNecessary;
 
 import org.junit.Test;
-import timerx.TimeUnit;
 import timerx.exceptions.IllegalSymbolsCombinationException;
 import timerx.exceptions.NoNecessarySymbolsException;
 import timerx.exceptions.NonContiguousFormatSymbolsException;
 
 public class AnalyzerTest {
 
-  public TimeUnit smallestAvailableUnitOf(String format) {
+  public TimeUnitType smallestAvailableUnitOf(String format) {
     return analyze(format).smallestAvailableUnit;
   }
 
@@ -21,73 +20,74 @@ public class AnalyzerTest {
 
   @Test
   public void positiveTest1() {
-    assertSame(TimeUnit.R_MILLISECONDS, smallestAvailableUnitOf("HH:MM:SS.LLL"));
+    assertSame(TimeUnitType.R_MILLISECONDS, smallestAvailableUnitOf("HH:MM:SS.LLL"));
   }
 
   @Test
   public void positiveTest2() {
-    assertSame(TimeUnit.SECONDS, smallestAvailableUnitOf("HhSMM"));
+    assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("HhSMM"));
   }
 
   @Test
   public void positiveTest3() {
-    assertSame(TimeUnit.R_MILLISECONDS, smallestAvailableUnitOf("ssMMmSSmLLl"));
+    assertSame(TimeUnitType.R_MILLISECONDS, smallestAvailableUnitOf("ssMMmSSmLLl"));
   }
 
   @Test
   public void positiveTest4() {
-    assertSame(TimeUnit.MINUTES, smallestAvailableUnitOf("H/\\*)MMMM"));
+    assertSame(TimeUnitType.MINUTES, smallestAvailableUnitOf("H/\\*)MMMM"));
   }
 
   @Test
   public void positiveTest5() {
-    assertSame(TimeUnit.SECONDS, smallestAvailableUnitOf("MMMM%^:SS#$&*"));
+    assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("MMMM%^:SS#$&*"));
   }
 
   @Test
   public void positiveTest6() {
-    assertSame(TimeUnit.R_MILLISECONDS, smallestAvailableUnitOf(":SS::LL::#$&*"));
+    assertSame(TimeUnitType.R_MILLISECONDS, smallestAvailableUnitOf(":SS::LL::#$&*"));
   }
 
   @Test
   public void positiveTest7() {
-    assertSame(TimeUnit.SECONDS, smallestAvailableUnitOf("SSS"));
+    assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("SSS"));
   }
 
   @Test
   public void positiveTestWithEscaping1() {
-    assertSame(TimeUnit.R_MILLISECONDS,
+    assertSame(TimeUnitType.R_MILLISECONDS,
         smallestAvailableUnitOf("H#HMM#M:SS#S:LL#E#Ls##"));
   }
 
   @Test
   public void positiveTestWithEscaping2() {
-    assertSame(TimeUnit.SECONDS, smallestAvailableUnitOf("HH#H - MM#MSS@#S"));
+    assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("HH#H - MM#MSS@#S"));
   }
 
   @Test
   public void positiveTestWithEscaping3() {
-    assertSame(TimeUnit.R_MILLISECONDS, smallestAvailableUnitOf("ssM#MmmSS#Sh#LL#h"));
+    assertSame(TimeUnitType.R_MILLISECONDS, smallestAvailableUnitOf("ssM#MmmSS#Sh#LL#h"));
   }
 
   @Test
   public void positiveTestWithEscaping4() {
-    assertSame(TimeUnit.MINUTES, smallestAvailableUnitOf("H####H/#M#M#MM"));
+    assertSame(TimeUnitType.MINUTES, smallestAvailableUnitOf("H####H/#M#M#MM"));
   }
 
   @Test
   public void positiveTestWithEscaping5() {
-    assertSame(TimeUnit.SECONDS, smallestAvailableUnitOf("MM#####M#M%^:SS#$&*"));
+    assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("MM#####M#M%^:SS#$&*"));
   }
 
   @Test
   public void positiveTestWithEscaping6() {
-    assertSame(TimeUnit.R_MILLISECONDS, smallestAvailableUnitOf(":SS#S==:##LL::#$&*"));
+    assertSame(TimeUnitType.R_MILLISECONDS,
+        smallestAvailableUnitOf(":SS#S==:##LL::#$&*"));
   }
 
   @Test
   public void positiveTestWithEscaping7() {
-    assertSame(TimeUnit.SECONDS, smallestAvailableUnitOf("#S#SS#S#S"));
+    assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("#S#SS#S#S"));
   }
 
   @Test(expected = NoNecessarySymbolsException.class)
