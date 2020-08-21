@@ -50,4 +50,10 @@ public interface Stopwatch {
    * @param timeUnit time unit to witch current time time will be converted
    */
   long getTimeIn(@NonNull TimeUnit timeUnit);
+
+  /**
+   * Stops stopwatch and removes all tick and actions listeners. After that stopwatch
+   * should be recreated again
+   */
+  void release();
 }

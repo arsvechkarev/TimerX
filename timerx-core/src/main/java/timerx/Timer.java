@@ -50,4 +50,10 @@ public interface Timer {
    * @param timeUnit time unit to witch time will be converted
    */
   long getRemainingTimeIn(@NonNull TimeUnit timeUnit);
+
+  /**
+   * Stops timer and removes all tick and actions listeners. After that timer should be
+   * recreated again
+   */
+  void release();
 }

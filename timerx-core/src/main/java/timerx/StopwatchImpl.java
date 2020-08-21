@@ -35,22 +35,22 @@ class StopwatchImpl implements Stopwatch {
 
   private TimeCountingState state = INACTIVE;
 
-  private final TimeTickListener tickListener;
   private final Semantic startSemantic;
+  private TimeTickListener tickListener;
   private TimeFormatter timeFormatter;
 
-  private final SortedSet<NextFormatsHolder> nextFormatsHolder;
-  private final SortedSet<ActionsHolder> actionsHolder;
-  private SortedSet<NextFormatsHolder> copyOfFormatsHolder;
-  private SortedSet<ActionsHolder> copyOfActionsHolder;
+  private final SortedSet<NextFormatsHolder> nextFormatsHolders;
+  private final SortedSet<ActionsHolder> nextActionsHolders;
+  private SortedSet<NextFormatsHolder> copyOfNextFormatsHolder;
+  private SortedSet<ActionsHolder> copyOfNextActionsHolders;
 
   StopwatchImpl(Semantic startSemantic, TimeTickListener tickListener,
-      SortedSet<NextFormatsHolder> nextFormatsHolder,
-      SortedSet<ActionsHolder> actionsHolder) {
+      SortedSet<NextFormatsHolder> nextFormatsHolders,
+      SortedSet<ActionsHolder> nextActionsHolders) {
     this.startSemantic = startSemantic;
     this.tickListener = tickListener;
-    this.nextFormatsHolder = nextFormatsHolder;
-    this.actionsHolder = actionsHolder;
+    this.nextFormatsHolders = nextFormatsHolders;
+    this.nextActionsHolders = nextActionsHolders;
   }
 
   @Override
@@ -63,8 +63,8 @@ class StopwatchImpl implements Stopwatch {
   public void start() {
     if (state != RESUMED) {
       if (state == INACTIVE) {
-        copyOfFormatsHolder = new TreeSet<>(nextFormatsHolder);
-        copyOfActionsHolder = new TreeSet<>(actionsHolder);
+        copyOfNextFormatsHolder = new TreeSet<>(nextFormatsHolders);
+        copyOfNextActionsHolders = new TreeSet<>(nextActionsHolders);
         applyFormat(startSemantic);
         baseTime = SystemClock.elapsedRealtime();
       } else {
@@ -95,13 +95,24 @@ class StopwatchImpl implements Stopwatch {
     return timeUnit.convert(currentTime, TimeUnit.MILLISECONDS);
   }
 
+  @Override
+  public void release() {
+    nextFormatsHolders.clear();
+    copyOfNextFormatsHolder.clear();
+    nextActionsHolders.clear();
+    copyOfNextActionsHolders.clear();
+    tickListener = null;
+    handler.removeCallbacksAndMessages(null);
+    handler = null;
+  }
+
   public void applyFormat(Semantic semantic) {
     timeFormatter = new TimeFormatter(semantic);
     delay = timeFormatter.getOptimizedDelay();
   }
 
   @SuppressLint("HandlerLeak")
-  private final Handler handler = new Handler() {
+  private Handler handler = new Handler() {
     @Override
     public void handleMessage(Message msg) {
       synchronized (StopwatchImpl.this) {
@@ -120,20 +131,20 @@ class StopwatchImpl implements Stopwatch {
   };
 
   private void notifyActionIfNeeded() {
-    if (copyOfActionsHolder.size() > 0
-        && currentTime >= copyOfActionsHolder.first().getMillis()) {
-      copyOfActionsHolder.first().getAction().run();
-      copyOfActionsHolder.remove(copyOfActionsHolder.first());
+    if (copyOfNextActionsHolders.size() > 0
+        && currentTime >= copyOfNextActionsHolders.first().getMillis()) {
+      copyOfNextActionsHolders.first().getAction().run();
+      copyOfNextActionsHolders.remove(copyOfNextActionsHolders.first());
     }
   }
 
   private void changeFormatIfNeeded() {
-    if (copyOfFormatsHolder.size() > 0
+    if (copyOfNextFormatsHolder.size() > 0
         && !timeFormatter.currentFormat()
-        .equals(copyOfFormatsHolder.first().getSemantic().getFormat())
-        && currentTime >= copyOfFormatsHolder.first().getMillis()) {
-      applyFormat(copyOfFormatsHolder.first().getSemantic());
-      copyOfFormatsHolder.remove(copyOfFormatsHolder.first());
+        .equals(copyOfNextFormatsHolder.first().getSemantic().getFormat())
+        && currentTime >= copyOfNextFormatsHolder.first().getMillis()) {
+      applyFormat(copyOfNextFormatsHolder.first().getSemantic());
+      copyOfNextFormatsHolder.remove(copyOfNextFormatsHolder.first());
     }
   }
 }

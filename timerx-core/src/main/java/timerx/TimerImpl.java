@@ -34,7 +34,7 @@ class TimerImpl implements Timer {
   // Interval for timer
   private long interval;
 
-  private final TimeTickListener tickListener;
+  private TimeTickListener tickListener;
   private final Action finishAction;
   private final Semantic startSemantic;
 
@@ -44,7 +44,7 @@ class TimerImpl implements Timer {
   private final SortedSet<NextFormatsHolder> nextFormatsHolders;
   private final SortedSet<ActionsHolder> nextActionsHolders;
   private SortedSet<NextFormatsHolder> copyOfFormatsHolders;
-  private SortedSet<ActionsHolder> copyOfActionsHolders;
+  private SortedSet<ActionsHolder> copyOfNextActionsHolders;
 
   TimerImpl(long startTime, Semantic startSemantic, TimeTickListener tickListener,
       Action finishAction, SortedSet<NextFormatsHolder> nextFormatsHolders,
@@ -70,7 +70,7 @@ class TimerImpl implements Timer {
       if (state == INACTIVE) {
         currentTime = startTime;
         copyOfFormatsHolders = new TreeSet<>(nextFormatsHolders);
-        copyOfActionsHolders = new TreeSet<>(nextActionsHolders);
+        copyOfNextActionsHolders = new TreeSet<>(nextActionsHolders);
         applyFormat(startSemantic);
         millisInFuture = SystemClock.elapsedRealtime() + startTime;
       } else {
@@ -102,13 +102,24 @@ class TimerImpl implements Timer {
         : 0;
   }
 
+  @Override
+  public void release() {
+    nextFormatsHolders.clear();
+    copyOfFormatsHolders.clear();
+    nextActionsHolders.clear();
+    copyOfNextActionsHolders.clear();
+    tickListener = null;
+    handler.removeCallbacksAndMessages(null);
+    handler = null;
+  }
+
   private void applyFormat(Semantic semantic) {
     timeFormatter = new TimeFormatter(semantic);
     interval = timeFormatter.getOptimizedDelay();
   }
 
   @SuppressLint("HandlerLeak")
-  private final Handler handler = new Handler() {
+  private Handler handler = new Handler() {
 
     @Override
     public void handleMessage(Message msg) {
@@ -143,10 +154,10 @@ class TimerImpl implements Timer {
   }
 
   private void makeActionIfNeed() {
-    if (copyOfActionsHolders.size() > 0
-        && currentTime <= copyOfActionsHolders.first().getMillis()) {
-      copyOfActionsHolders.first().getAction().run();
-      copyOfActionsHolders.remove(copyOfActionsHolders.first());
+    if (copyOfNextActionsHolders.size() > 0
+        && currentTime <= copyOfNextActionsHolders.first().getMillis()) {
+      copyOfNextActionsHolders.first().getAction().run();
+      copyOfNextActionsHolders.remove(copyOfNextActionsHolders.first());
     }
   }
 
