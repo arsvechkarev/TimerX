@@ -1,9 +1,9 @@
 package timerx.format;
 
-import static timerx.TimeUnits.HOURS;
-import static timerx.TimeUnits.MINUTES;
-import static timerx.TimeUnits.R_MILLISECONDS;
-import static timerx.TimeUnits.SECONDS;
+import static timerx.TimeUnit.HOURS;
+import static timerx.TimeUnit.MINUTES;
+import static timerx.TimeUnit.R_MILLISECONDS;
+import static timerx.TimeUnit.SECONDS;
 import static timerx.util.Checker.expect;
 import static timerx.util.Constants.Patterns.ESCAPED_HOURS;
 import static timerx.util.Constants.Patterns.ESCAPED_MINUTES;
@@ -17,8 +17,8 @@ import static timerx.util.Constants.Patterns.PATTERN_HAS_SECONDS;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import timerx.exceptions.IllegalSymbolsCombinationException;
-import timerx.exceptions.IllegalSymbolsPositionException;
 import timerx.exceptions.NoNecessarySymbolsException;
+import timerx.exceptions.NonContiguousFormatSymbolsException;
 
 /**
  * Class for validating and analyzing input format and builds a {@link Semantic} of the
@@ -41,7 +41,7 @@ public class Analyzer {
    * @param format Format to check
    * @return Semantic with information about format
    */
-  public static Semantic check(String format) {
+  public static Semantic create(String format) {
     Semantic semantic = new Semantic(format);
     Analyzer analyzer = new Analyzer(semantic);
     analyzer.processFormat(semantic.getFormat());
@@ -155,7 +155,7 @@ public class Analyzer {
   // TODO: 26.07.2019 Translate below
 
   private void throwIncorrectPositionEx() {
-    throw new IllegalSymbolsPositionException(
+    throw new NonContiguousFormatSymbolsException(
         "Some check symbol contains many times in format");
   }
 

@@ -1,17 +1,17 @@
 package timerx.format;
 
 import static org.junit.Assert.assertSame;
-import static timerx.TestHelper.updateFormat;
-import static timerx.format.Analyzer.check;
+import static timerx.TestHelper.updateFormatIfNecessary;
+import static timerx.format.Analyzer.create;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import org.junit.Test;
-import timerx.TimeUnits;
+import timerx.TimeUnit;
 import timerx.exceptions.IllegalSymbolsCombinationException;
-import timerx.exceptions.IllegalSymbolsPositionException;
 import timerx.exceptions.NoNecessarySymbolsException;
+import timerx.exceptions.NonContiguousFormatSymbolsException;
 
 @SuppressWarnings("SpellCheckingInspection")
 public class AnalyzerTest {
@@ -59,145 +59,145 @@ public class AnalyzerTest {
 
   @Test
   public void positiveTest1() {
-    Semantic semantic = check(updateFormat("HH:MM:SS.LLL"));
-    assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("HH:MM:SS.LLL"));
+    assertSame(TimeUnit.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest2() {
-    Semantic semantic = check(updateFormat("HhSMM"));
-    assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("HhSMM"));
+    assertSame(TimeUnit.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest3() {
-    Semantic semantic = check(updateFormat("ssMMmSSmLLl"));
-    assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("ssMMmSSmLLl"));
+    assertSame(TimeUnit.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest4() {
-    Semantic semantic = check(updateFormat("H/\\*)MMMM"));
-    assertSame(TimeUnits.MINUTES, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("H/\\*)MMMM"));
+    assertSame(TimeUnit.MINUTES, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest5() {
-    Semantic semantic = check(updateFormat("MMMM%^:SS#$&*"));
-    assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("MMMM%^:SS#$&*"));
+    assertSame(TimeUnit.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest6() {
-    Semantic semantic = check(updateFormat(":SS::LL::#$&*"));
-    assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary(":SS::LL::#$&*"));
+    assertSame(TimeUnit.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTest7() {
-    Semantic semantic = check(updateFormat("SSS"));
-    assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("SSS"));
+    assertSame(TimeUnit.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping1() {
-    Semantic semantic = check(updateFormat("H#HMM#M:SS#S:LL#E#Ls##"));
-    assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("H#HMM#M:SS#S:LL#E#Ls##"));
+    assertSame(TimeUnit.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping2() {
-    Semantic semantic = check(updateFormat("HH#H - MM#MSS@#S"));
-    assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("HH#H - MM#MSS@#S"));
+    assertSame(TimeUnit.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping3() {
-    Semantic semantic = check(updateFormat("ssM#MmmSS#Sh#LL#h"));
-    assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("ssM#MmmSS#Sh#LL#h"));
+    assertSame(TimeUnit.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping4() {
-    Semantic semantic = check(updateFormat("H####H/#M#M#MM"));
-    assertSame(TimeUnits.MINUTES, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("H####H/#M#M#MM"));
+    assertSame(TimeUnit.MINUTES, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping5() {
-    Semantic semantic = check(updateFormat("MM#####M#M%^:SS#$&*"));
-    assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("MM#####M#M%^:SS#$&*"));
+    assertSame(TimeUnit.SECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping6() {
-    Semantic semantic = check(updateFormat(":SS#S==:##LL::#$&*"));
-    assertSame(TimeUnits.R_MILLISECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary(":SS#S==:##LL::#$&*"));
+    assertSame(TimeUnit.R_MILLISECONDS, semantic.minimumUnit());
   }
 
   @Test
   public void positiveTestWithEscaping7() {
-    Semantic semantic = check(updateFormat("#S#SS#S#S"));
-    assertSame(TimeUnits.SECONDS, semantic.minimumUnit());
+    Semantic semantic = create(updateFormatIfNecessary("#S#SS#S#S"));
+    assertSame(TimeUnit.SECONDS, semantic.minimumUnit());
   }
 
   @Test(expected = NoNecessarySymbolsException.class)
   public void negativeTestWithNoElements() {
-    check(updateFormat("qwerty lol! ###"));
+    create(updateFormatIfNecessary("qwerty lol! ###"));
   }
 
   @Test(expected = NoNecessarySymbolsException.class)
   public void negativeTestWithAllCommentedElements() {
-    check(updateFormat("#H#Hs#S#L"));
+    create(updateFormatIfNecessary("#H#Hs#S#L"));
   }
 
-  @Test(expected = IllegalSymbolsPositionException.class)
+  @Test(expected = NonContiguousFormatSymbolsException.class)
   public void negativeTestWithIncorrectPositions1() {
-    check(updateFormat("H#HH"));
+    create(updateFormatIfNecessary("H#HH"));
   }
 
-  @Test(expected = IllegalSymbolsPositionException.class)
+  @Test(expected = NonContiguousFormatSymbolsException.class)
   public void negativeTestWithIncorrectPositions2() {
-    check(updateFormat("HH:MM:SSqwertyH"));
+    create(updateFormatIfNecessary("HH:MM:SSqwertyH"));
   }
 
-  @Test(expected = IllegalSymbolsPositionException.class)
+  @Test(expected = NonContiguousFormatSymbolsException.class)
   public void negativeTestWithIncorrectPositions3() {
-    check(updateFormat("HH#HSSS %^&*sS"));
+    create(updateFormatIfNecessary("HH#HSSS %^&*sS"));
   }
 
-  @Test(expected = IllegalSymbolsPositionException.class)
+  @Test(expected = NonContiguousFormatSymbolsException.class)
   public void negativeTestWithIncorrectPositions4() {
-    check(updateFormat("LLasfdLH^&sdHasdL"));
+    create(updateFormatIfNecessary("LLasfdLH^&sdHasdL"));
   }
 
-  @Test(expected = IllegalSymbolsPositionException.class)
+  @Test(expected = NonContiguousFormatSymbolsException.class)
   public void negativeTestWithIncorrectPositions5() {
-    check(updateFormat("M#M#H#H098/M"));
+    create(updateFormatIfNecessary("M#M#H#H098/M"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination1() {
-    check(updateFormat("HH:MM:L"));
+    create(updateFormatIfNecessary("HH:MM:L"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination2() {
-    check(updateFormat("HH:SS:L"));
+    create(updateFormatIfNecessary("HH:SS:L"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination3() {
-    check(updateFormat("HH:SS"));
+    create(updateFormatIfNecessary("HH:SS"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination4() {
-    check(updateFormat("LLLL:H"));
+    create(updateFormatIfNecessary("LLLL:H"));
   }
 
   @Test(expected = IllegalSymbolsCombinationException.class)
   public void negativeTestWithIncorrectCombination5() {
-    check(updateFormat(":M#ME#::LL"));
+    create(updateFormatIfNecessary(":M#ME#::LL"));
   }
 }

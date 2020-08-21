@@ -12,7 +12,7 @@ import timerx.format.TimeFormatter;
 import timerx.util.Checker;
 
 /**
- * Builder to configure and instantiate {@link Stopwatch}.<br/> Usage example:
+ * Builder to configure and instantiate {@link StopwatchImpl}.<br/> Usage example:
  * <pre>
  *  Stopwatch stopwatch = new StopwatchBuilder()
  *          // Set start format to stopwatch. Format syntax explaining {@link TimeFormatter here}
@@ -36,7 +36,7 @@ import timerx.util.Checker;
  *          .build();
  * </pre>
  *
- * @see Stopwatch
+ * @see StopwatchImpl
  */
 public class StopwatchBuilder {
 
@@ -49,7 +49,7 @@ public class StopwatchBuilder {
    * Set start time format to stopwatch
    */
   public StopwatchBuilder startFormat(@NonNull String format) {
-    startSemantic = Analyzer.check(format);
+    startSemantic = Analyzer.create(format);
     return this;
   }
 
@@ -68,7 +68,7 @@ public class StopwatchBuilder {
   public StopwatchBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
     assertTimeNotNegative(time);
-    Semantic semantic = Analyzer.check(newFormat);
+    Semantic semantic = Analyzer.create(newFormat);
     long millis = timeUnit.toMillis(time);
     nextFormatsHolder.add(new NextFormatsHolder(millis, semantic));
     return this;
@@ -88,9 +88,9 @@ public class StopwatchBuilder {
   /**
    * Creates and returns stopwatch instance
    */
-  public Stopwatch build() {
+  public StopwatchImpl build() {
     Checker.assertNotNull(startSemantic, "Start format should be initialized");
-    return new Stopwatch(startSemantic, tickListener, nextFormatsHolder,
+    return new StopwatchImpl(startSemantic, tickListener, nextFormatsHolder,
         actionsHolder);
   }
 }

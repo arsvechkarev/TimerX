@@ -16,7 +16,7 @@ import timerx.util.Checker;
 import timerx.util.Constants.TimeValues;
 
 /**
- * Builder to configure and instantiate {@link Timer}.<br/> Usage example:
+ * Builder to configure and instantiate {@link TimerImpl}.<br/> Usage example:
  * <pre>
  *  Timer timer = new TimerBuilder()
  *        // Set start format to timer. Format syntax explaining {@link TimeFormatter here}
@@ -34,7 +34,7 @@ import timerx.util.Constants.TimeValues;
  *        .build();
  * </pre>
  *
- * @see Timer
+ * @see TimerImpl
  */
 public class TimerBuilder {
 
@@ -54,7 +54,7 @@ public class TimerBuilder {
    * Set start format to timer
    */
   public TimerBuilder startFormat(@NonNull String format) {
-    this.startSemantic = Analyzer.check(format);
+    this.startSemantic = Analyzer.create(format);
     return this;
   }
 
@@ -104,7 +104,7 @@ public class TimerBuilder {
   public TimerBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
     assertTimeNotNegative(time);
-    Semantic semantic = Analyzer.check(newFormat);
+    Semantic semantic = Analyzer.create(newFormat);
     long millis = timeUnit.toMillis(time);
     nextFormatsHolder.add(new NextFormatsHolder(millis, semantic));
     return this;
@@ -140,10 +140,10 @@ public class TimerBuilder {
   /**
    * Creates and returns timer instance
    */
-  public Timer build() {
+  public TimerImpl build() {
     Checker.assertNotNull(startSemantic, "Start format should be initialized");
     assertTimeInitialized(startTime, "Time should be initialized");
-    return new Timer(startTime, startSemantic, tickListener, finishAction,
+    return new TimerImpl(startTime, startSemantic, tickListener, finishAction,
         nextFormatsHolder,
         nextActionsHolder);
   }

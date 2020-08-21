@@ -1,9 +1,9 @@
 package timerx.format;
 
-import static timerx.TimeUnits.HOURS;
-import static timerx.TimeUnits.MINUTES;
-import static timerx.TimeUnits.R_MILLISECONDS;
-import static timerx.TimeUnits.SECONDS;
+import static timerx.TimeUnit.HOURS;
+import static timerx.TimeUnit.MINUTES;
+import static timerx.TimeUnit.R_MILLISECONDS;
+import static timerx.TimeUnit.SECONDS;
 import static timerx.util.Constants.EMPTY_STRING;
 import static timerx.util.Constants.Patterns.STR_HOURS;
 import static timerx.util.Constants.Patterns.STR_MINUTES;
@@ -18,8 +18,8 @@ import static timerx.util.Constants.TimeValues.NONE;
 import static timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 
 import androidx.annotation.NonNull;
-import java.util.concurrent.TimeUnit;
-import timerx.TimeUnits;
+import timerx.TimeUnit;
+import timerx.exceptions.NonContiguousFormatSymbolsException;
 
 /**
  * Main class for formatting input milliseconds into string representation according to
@@ -69,7 +69,7 @@ import timerx.TimeUnits;
  * </p>
  * <p>
  * 2. Formats that contain same special symbols in different positions. Example: "HH:HH",
- * or "MM:SS ML" (See {@link timerx.exceptions.IllegalSymbolsPositionException} for more
+ * or "MM:SS ML" (See {@link NonContiguousFormatSymbolsException} for more
  * detailed information)
  * </p>
  * <p>
@@ -116,8 +116,7 @@ import timerx.TimeUnits;
 public class TimeFormatter {
 
   private final Semantic semantic;
-  private final TimeContainer timeContainer;
-  private String format;
+  private final TimeContainer timeContainer = new TimeContainer();
 
   /**
    * Helper method if you want to just format the particular time, without timer or
@@ -128,13 +127,11 @@ public class TimeFormatter {
    * }</pre>
    */
   public static TimeFormatter with(String format) {
-    return new TimeFormatter(Analyzer.check(format));
+    return new TimeFormatter(Analyzer.create(format));
   }
 
   public TimeFormatter(@NonNull Semantic semantic) {
     this.semantic = semantic;
-    this.format = semantic.getFormat();
-    timeContainer = new TimeContainer();
   }
 
   public long getOptimizedDelay() {
@@ -173,7 +170,7 @@ public class TimeFormatter {
    * convenient usage. Used primary together with {@link #with(String)} method
    */
   @NonNull
-  public String format(long time, TimeUnit timeUnit) {
+  public CharSequence format(long time, java.util.concurrent.TimeUnit timeUnit) {
     return format(timeUnit.toMillis(time));
   }
 
@@ -184,7 +181,7 @@ public class TimeFormatter {
    * @return Formatted time
    */
   @NonNull
-  public String format(long time) {
+  public CharSequence format(long time) {
     TimeContainer units = timeUnitsOf(time);
     long millisToShow = NONE;
     long secondsToShow = NONE;
@@ -224,14 +221,15 @@ public class TimeFormatter {
 
   private String applyFormatOf(long millisToShow, long secondsToShow,
       long minutesToShow, long hoursToShow) {
-    String strHours = getFormatOf(hoursToShow, HOURS);
-    String strMinutes = getFormatOf(minutesToShow, MINUTES);
-    String strSeconds = getFormatOf(secondsToShow, SECONDS);
-    String strMillis = getFormatOf(millisToShow, R_MILLISECONDS);
+    String strHours = getFormattedUnit(HOURS, hoursToShow);
+    String strMinutes = getFormattedUnit(MINUTES, minutesToShow);
+    String strSeconds = getFormattedUnit(SECONDS, secondsToShow);
+    String strMillis = getFormattedUnit(R_MILLISECONDS, millisToShow);
 
     // I have no the hell idea why there should be a new format variable, but without
     // this nothing works
-    String format = semantic.patternHours.matcher(this.format).replaceAll(strHours);
+    String format = semantic.patternHours.matcher(semantic.getFormat())
+        .replaceAll(strHours);
     format = semantic.patternMinutes.matcher(format).replaceAll(strMinutes);
     format = semantic.patternSeconds.matcher(format).replaceAll(strSeconds);
     format = semantic.patternRMillis.matcher(format).replaceAll(strMillis);
@@ -244,15 +242,15 @@ public class TimeFormatter {
     return format;
   }
 
-  private String getFormatOf(long number, TimeUnits numberType) {
+  private String getFormattedUnit(TimeUnit unitType, long number) {
     if (number != NONE) {
       if (number == 0) {
-        return zerosBy(semantic.countOf(numberType));
+        return zerosBy(semantic.countOf(unitType));
       }
-      int semanticCount = semantic.countOf(numberType);
+      int semanticCount = semantic.countOf(unitType);
       int numberLength = lengthOf(number);
       int diff = semanticCount - numberLength;
-      if (numberType == R_MILLISECONDS && !semantic.hasOnlyRMillis()) {
+      if (unitType == R_MILLISECONDS && !semantic.hasOnlyRMillis()) {
         // Format contains millis and something else, so formatting millis as rem_millis
         return formatRemMillis(number, semanticCount);
       }
@@ -262,7 +260,7 @@ public class TimeFormatter {
       // Diff < 0, so just returning number
       return number + EMPTY_STRING;
     }
-    // Time is NONE, i.e it does not contained in format
+    // Time is NONE, i.e it is not contained in format
     return EMPTY_STRING;
   }
 

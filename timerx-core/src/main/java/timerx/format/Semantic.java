@@ -1,7 +1,7 @@
 package timerx.format;
 
 import java.util.regex.Pattern;
-import timerx.TimeUnits;
+import timerx.TimeUnit;
 
 /**
  * Provides information about input format
@@ -28,7 +28,7 @@ public class Semantic {
   Pattern patternEscapedSeconds;
   Pattern patternEscapedRMillis;
 
-  private TimeUnits minimumUnit;
+  private TimeUnit minimumUnit;
 
   Semantic(String format) {
     this.format = format;
@@ -50,11 +50,11 @@ public class Semantic {
     this.rMillisCount = rMillisCount;
   }
 
-  void setMinimumUnit(TimeUnits unit) {
+  void setMinimumUnit(TimeUnit unit) {
     this.minimumUnit = unit;
   }
 
-  TimeUnits minimumUnit() {
+  TimeUnit minimumUnit() {
     return minimumUnit;
   }
 
@@ -62,7 +62,7 @@ public class Semantic {
     return format;
   }
 
-  boolean has(TimeUnits unitType) {
+  boolean has(TimeUnit unitType) {
     switch (unitType) {
       case HOURS:
         return hoursCount > 0;
@@ -82,7 +82,7 @@ public class Semantic {
         && minutesCount == 0 && hoursCount == 0);
   }
 
-  int countOf(TimeUnits unitType) {
+  int countOf(TimeUnit unitType) {
     switch (unitType) {
       case HOURS:
         return hoursCount;
@@ -96,5 +96,4 @@ public class Semantic {
         throw new IllegalArgumentException("Incorrect type of unit");
     }
   }
-
 }

@@ -4,7 +4,7 @@ import timerx.util.Constants.Patterns;
 
 public final class TestHelper {
 
-  public static String updateFormat(String inputFormat) {
+  public static String updateFormatIfNecessary(String inputFormat) {
     return inputFormat
         .replaceAll("H", Patterns.STR_HOURS)
         .replaceAll("M", Patterns.STR_MINUTES)

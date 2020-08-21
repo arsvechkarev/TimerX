@@ -47,7 +47,7 @@ import timerx.format.TimeFormatter;
  * @author Arseny Svechkarev
  * @see TimerBuilder
  */
-public class Timer {
+public class TimerImpl {
 
   /**
    * Message id for {@link #handler}
@@ -109,7 +109,7 @@ public class Timer {
   private SortedSet<ActionsHolder> copyOfActionsHolders;
 
   @RestrictTo(Scope.LIBRARY)
-  Timer(long startTime, Semantic startSemantic, TimeTickListener tickListener,
+  TimerImpl(long startTime, Semantic startSemantic, TimeTickListener tickListener,
       Action finishAction, SortedSet<NextFormatsHolder> nextFormatsHolders,
       SortedSet<ActionsHolder> nextActionsHolders) {
     this.startTime = startTime;
@@ -126,7 +126,7 @@ public class Timer {
    * the start format is "MM:SS.LL", and start time is 10 minutes then result will be
    * "10:00.00"
    */
-  public String getFormattedStartTime() {
+  public CharSequence getFormattedStartTime() {
     return new TimeFormatter(startSemantic).format(startTime);
   }
 
@@ -191,7 +191,7 @@ public class Timer {
 
     @Override
     public void handleMessage(Message msg) {
-      synchronized (Timer.this) {
+      synchronized (TimerImpl.this) {
         long startExecution = SystemClock.elapsedRealtime();
         currentTime = millisInFuture - SystemClock.elapsedRealtime();
         changeFormatIfNeed();
@@ -201,8 +201,8 @@ public class Timer {
           return;
         }
         long timeToFormat = defineFormatTime();
-        String formattedTime = timeFormatter.format(timeToFormat);
         if (tickListener != null) {
+          CharSequence formattedTime = timeFormatter.format(timeToFormat);
           tickListener.onTick(formattedTime);
         }
         long executionTime = SystemClock.elapsedRealtime() - startExecution;

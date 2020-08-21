@@ -1,4 +1,4 @@
-package timerx.format;
+package timerx.format2;
 
 import static org.junit.Assert.assertEquals;
 import static timerx.TestHelper.updateFormatIfNecessary;
@@ -6,18 +6,24 @@ import static timerx.util.Constants.TimeValues.MILLIS_IN_HOUR;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_MINUTE;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_SECOND;
 
-import java.util.concurrent.TimeUnit;
 import org.junit.Test;
+import timerx.format.Analyzer;
+import timerx.format.Semantic;
+import timerx.format.TimeFormatter;
 
-@SuppressWarnings("SpellCheckingInspection")
-public class TimeFormattingTest {
+public class NewTimeFormatterTest {
 
-  private static TimeFormatter formatTime(String format) {
-    return new TimeFormatter(Analyzer.create(updateFormatIfNecessary(format)));
+  public NewTimeFormatter create(String input) {
+    NewSemantic semantic = NewAnalyzer.analyze(input);
+    return new NewTimeFormatter(semantic);
+  }
+
+  private static NewTimeFormatter formatTime(String format) {
+    return new NewTimeFormatter(NewAnalyzer.analyze(updateFormatIfNecessary(format)));
   }
 
   private String formatTime(String format, long millis) {
-    return new TimeFormatter(Analyzer.create(updateFormatIfNecessary(format)))
+    return new NewTimeFormatter(NewAnalyzer.analyze(updateFormatIfNecessary(format)))
         .format(millis).toString();
   }
 
@@ -30,12 +36,6 @@ public class TimeFormattingTest {
     return result;
   }
 
-  @Test
-  public void straightForwardFormatTest() {
-    String format = "MM:SS.L";
-    assertEquals("01:00.0",
-        TimeFormatter.with(format).format(1, TimeUnit.MINUTES).toString());
-  }
 
   @Test
   public void optimizedDelayTest1() {
@@ -241,4 +241,5 @@ public class TimeFormattingTest {
     long millis = millisOf(0, 8, 5, 23);
     assertEquals("LALALA : 08-05", formatTime(format, millis));
   }
+
 }

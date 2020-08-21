@@ -18,10 +18,10 @@ import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
 
 /**
- * Stopwatch with base functions like {@link #start() start}, {@link
- * #stop() stop}, etc. Also allows to format time by specific pattern and executing actions
- * at a certain time. See {@link TimeFormatter} to find out how to user syntax. Use {@link
- * StopwatchBuilder} to configure and instantiate the stopwatch.
+ * Stopwatch with base functions like {@link #start() start}, {@link #stop() stop}, etc.
+ * Also allows to format time by specific pattern and executing actions at a certain time.
+ * See {@link TimeFormatter} to find out how to user syntax. Use {@link StopwatchBuilder}
+ * to configure and instantiate the stopwatch.
  * <p>Example of usage:</p>
  * <pre>
  *   Stopwatch stopwatch = new StopwatchBuilder()
@@ -47,9 +47,9 @@ import timerx.format.TimeFormatter;
  *
  * @author Arseny Svechkarev
  * @see StopwatchBuilder
- * @see Timer
+ * @see TimerImpl
  */
-public class Stopwatch {
+public class StopwatchImpl {
 
   // Message id for handler
   private static final int MSG = 2;
@@ -103,7 +103,7 @@ public class Stopwatch {
   private SortedSet<ActionsHolder> copyOfActionsHolder;
 
   @RestrictTo(Scope.LIBRARY)
-  Stopwatch(Semantic startSemantic, TimeTickListener tickListener,
+  StopwatchImpl(Semantic startSemantic, TimeTickListener tickListener,
       SortedSet<NextFormatsHolder> nextFormatsHolder,
       SortedSet<ActionsHolder> actionsHolder) {
     this.startSemantic = startSemantic;
@@ -116,7 +116,7 @@ public class Stopwatch {
    * Returns start time (in this case, 0) formatted according to start format<br/> For
    * example, if start format is "MM:SS.LL", then result is "00:00.00"
    */
-  public String getFormattedStartTime() {
+  public CharSequence getFormattedStartTime() {
     return new TimeFormatter(startSemantic).format(0L);
   }
 
@@ -139,7 +139,7 @@ public class Stopwatch {
         expect(state == PAUSED);
         baseTime = SystemClock.elapsedRealtime() - currentTime;
       }
-      handler.sendMessage(handler.obtainMessage(MSG));
+      handler.sendEmptyMessage(MSG);
       state = RESUMED;
     }
   }
@@ -178,22 +178,22 @@ public class Stopwatch {
   private final Handler handler = new Handler() {
     @Override
     public void handleMessage(Message msg) {
-      synchronized (Stopwatch.this) {
+      synchronized (StopwatchImpl.this) {
         long executionStartedTime = SystemClock.elapsedRealtime();
         currentTime = SystemClock.elapsedRealtime() - baseTime;
-        changeFormatIfNeed();
-        makeActionIfNeed();
-        String format = timeFormatter.format(currentTime);
+        changeFormatIfNeeded();
+        notifyActionIfNeeded();
         if (tickListener != null) {
+          CharSequence format = timeFormatter.format(currentTime);
           tickListener.onTick(format);
         }
         long executionDelay = SystemClock.elapsedRealtime() - executionStartedTime;
-        sendMessageDelayed(obtainMessage(MSG), delay - executionDelay);
+        sendEmptyMessageDelayed(MSG, delay - executionDelay);
       }
     }
   };
 
-  private void makeActionIfNeed() {
+  private void notifyActionIfNeeded() {
     if (copyOfActionsHolder.size() > 0
         && currentTime >= copyOfActionsHolder.first().getMillis()) {
       copyOfActionsHolder.first().getAction().run();
@@ -201,7 +201,7 @@ public class Stopwatch {
     }
   }
 
-  private void changeFormatIfNeed() {
+  private void changeFormatIfNeeded() {
     if (copyOfFormatsHolder.size() > 0
         && !timeFormatter.currentFormat()
         .equals(copyOfFormatsHolder.first().getSemantic().getFormat())
