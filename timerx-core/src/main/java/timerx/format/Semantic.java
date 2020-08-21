@@ -1,99 +1,52 @@
 package timerx.format;
 
-import java.util.regex.Pattern;
+import androidx.annotation.NonNull;
 import timerx.TimeUnit;
 
-/**
- * Provides information about input format
- *
- * @see Analyzer
- * @see TimeFormatter
- */
 public class Semantic {
 
-  private final String format;
+  Position hoursPosition;
+  Position minutesPosition;
+  Position secondsPosition;
+  Position rMillisPosition;
+  TimeUnit smallestAvailableUnit;
 
-  private int hoursCount = 0;
-  private int minutesCount = 0;
-  private int secondsCount = 0;
-  private int rMillisCount = 0;
+  String format;
+  String strippedFormat;
 
-  Pattern patternHours;
-  Pattern patternMinutes;
-  Pattern patternSeconds;
-  Pattern patternRMillis;
-
-  Pattern patternEscapedHours;
-  Pattern patternEscapedMinutes;
-  Pattern patternEscapedSeconds;
-  Pattern patternEscapedRMillis;
-
-  private TimeUnit minimumUnit;
-
-  Semantic(String format) {
+  Semantic(@NonNull Position hoursPosition, @NonNull Position minutesPosition,
+      @NonNull Position secondsPosition, @NonNull Position rMillisPosition,
+      String format, String strippedFormat,
+      TimeUnit smallestAvailableUnit) {
+    this.hoursPosition = hoursPosition;
+    this.minutesPosition = minutesPosition;
+    this.secondsPosition = secondsPosition;
+    this.rMillisPosition = rMillisPosition;
     this.format = format;
-  }
-
-  void setHoursCount(int hoursCount) {
-    this.hoursCount = hoursCount;
-  }
-
-  void setMinutesCount(int minutesCount) {
-    this.minutesCount = minutesCount;
-  }
-
-  void setSecondsCount(int secondsCount) {
-    this.secondsCount = secondsCount;
-  }
-
-  void setRMillisCount(int rMillisCount) {
-    this.rMillisCount = rMillisCount;
-  }
-
-  void setMinimumUnit(TimeUnit unit) {
-    this.minimumUnit = unit;
-  }
-
-  TimeUnit minimumUnit() {
-    return minimumUnit;
+    this.strippedFormat = strippedFormat;
+    this.smallestAvailableUnit = smallestAvailableUnit;
   }
 
   public String getFormat() {
-    return format;
+    return strippedFormat;
   }
 
   boolean has(TimeUnit unitType) {
     switch (unitType) {
       case HOURS:
-        return hoursCount > 0;
+        return hoursPosition.isNotEmpty();
       case MINUTES:
-        return minutesCount > 0;
+        return minutesPosition.isNotEmpty();
       case SECONDS:
-        return secondsCount > 0;
+        return secondsPosition.isNotEmpty();
       case R_MILLISECONDS:
-        return rMillisCount > 0;
-      default:
-        throw new IllegalArgumentException("Incorrect type of unit");
+        return rMillisPosition.isNotEmpty();
     }
+    throw new IllegalArgumentException("Incorrect type of unit");
   }
 
   boolean hasOnlyRMillis() {
-    return (rMillisCount > 0 && secondsCount == 0
-        && minutesCount == 0 && hoursCount == 0);
-  }
-
-  int countOf(TimeUnit unitType) {
-    switch (unitType) {
-      case HOURS:
-        return hoursCount;
-      case MINUTES:
-        return minutesCount;
-      case SECONDS:
-        return secondsCount;
-      case R_MILLISECONDS:
-        return rMillisCount;
-      default:
-        throw new IllegalArgumentException("Incorrect type of unit");
-    }
+    return (rMillisPosition.isNotEmpty() && secondsPosition.isEmpty()
+        && minutesPosition.isEmpty() && hoursPosition.isEmpty());
   }
 }

@@ -9,9 +9,9 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import timerx.format.Analyzer;
+import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
-import timerx.format2.NewAnalyzer;
-import timerx.format2.NewSemantic;
 import timerx.util.Checker;
 import timerx.util.Constants.TimeValues;
 
@@ -38,7 +38,7 @@ import timerx.util.Constants.TimeValues;
  */
 public class TimerBuilder {
 
-  private NewSemantic startSemantic;
+  private Semantic startSemantic;
 
   private long startTime = TimeValues.NONE;
 
@@ -54,7 +54,7 @@ public class TimerBuilder {
    * Set start format to timer
    */
   public TimerBuilder startFormat(@NonNull String format) {
-    this.startSemantic = NewAnalyzer.analyze(format);
+    this.startSemantic = Analyzer.analyze(format);
     return this;
   }
 
@@ -104,7 +104,7 @@ public class TimerBuilder {
   public TimerBuilder changeFormatWhen(long time, TimeUnit timeUnit,
       @NonNull String newFormat) {
     assertTimeNotNegative(time);
-    NewSemantic semantic = NewAnalyzer.analyze(newFormat);
+    Semantic semantic = Analyzer.analyze(newFormat);
     long millis = timeUnit.toMillis(time);
     nextFormatsHolder.add(new NextFormatsHolder(millis, semantic));
     return this;

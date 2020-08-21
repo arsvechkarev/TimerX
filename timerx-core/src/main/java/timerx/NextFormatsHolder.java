@@ -1,7 +1,7 @@
 package timerx;
 
 import java.util.concurrent.TimeUnit;
-import timerx.format2.NewSemantic;
+import timerx.format.Semantic;
 
 /**
  * Holder of formats and times when former should be applied in {@link TimerImpl} and
@@ -13,9 +13,9 @@ import timerx.format2.NewSemantic;
 class NextFormatsHolder implements Comparable<NextFormatsHolder> {
 
   private final long millis;
-  private final NewSemantic semantic;
+  private final Semantic semantic;
 
-  NextFormatsHolder(long millis, NewSemantic semantic) {
+  NextFormatsHolder(long millis, Semantic semantic) {
     this.millis = millis;
     this.semantic = semantic;
   }
@@ -24,7 +24,7 @@ class NextFormatsHolder implements Comparable<NextFormatsHolder> {
     return millis;
   }
 
-  public NewSemantic getSemantic() {
+  public Semantic getSemantic() {
     return semantic;
   }
 

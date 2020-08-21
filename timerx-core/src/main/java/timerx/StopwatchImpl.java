@@ -3,7 +3,7 @@ package timerx;
 import static timerx.TimeCountingState.INACTIVE;
 import static timerx.TimeCountingState.PAUSED;
 import static timerx.TimeCountingState.RESUMED;
-import static timerx.util.Checker.expect;
+import static timerx.util.Checker.assertThat;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
@@ -14,9 +14,8 @@ import androidx.annotation.RestrictTo.Scope;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
+import timerx.format.Semantic;
 import timerx.format.TimeFormatter;
-import timerx.format2.NewSemantic;
-import timerx.format2.NewTimeFormatter;
 
 /**
  * Stopwatch with base functions like {@link #start() start}, {@link #stop() stop}, etc.
@@ -74,7 +73,7 @@ public class StopwatchImpl {
   private final TimeTickListener tickListener;
 
   // Semantic of start format
-  private final NewSemantic startSemantic;
+  private final Semantic startSemantic;
 
   /**
    * Current state of stopwatch
@@ -85,10 +84,8 @@ public class StopwatchImpl {
 
   /**
    * Formatter for formatting {@link #currentTime} according to particular format
-   *
-   * @see TimeFormatter
    */
-  private NewTimeFormatter timeFormatter;
+  private TimeFormatter timeFormatter;
 
   /**
    * Time formats to be applied in future
@@ -104,7 +101,7 @@ public class StopwatchImpl {
   private SortedSet<ActionsHolder> copyOfActionsHolder;
 
   @RestrictTo(Scope.LIBRARY)
-  StopwatchImpl(NewSemantic startSemantic, TimeTickListener tickListener,
+  StopwatchImpl(Semantic startSemantic, TimeTickListener tickListener,
       SortedSet<NextFormatsHolder> nextFormatsHolder,
       SortedSet<ActionsHolder> actionsHolder) {
     this.startSemantic = startSemantic;
@@ -118,7 +115,7 @@ public class StopwatchImpl {
    * example, if start format is "MM:SS.LL", then result is "00:00.00"
    */
   public CharSequence getFormattedStartTime() {
-    return new NewTimeFormatter(startSemantic).format(0L);
+    return new TimeFormatter(startSemantic).format(0L);
   }
 
   /**
@@ -137,7 +134,7 @@ public class StopwatchImpl {
         applyFormat(startSemantic);
         baseTime = SystemClock.elapsedRealtime();
       } else {
-        expect(state == PAUSED);
+        assertThat(state == PAUSED);
         baseTime = SystemClock.elapsedRealtime() - currentTime;
       }
       handler.sendEmptyMessage(MSG);
@@ -170,8 +167,8 @@ public class StopwatchImpl {
     return timeUnit.convert(currentTime, TimeUnit.MILLISECONDS);
   }
 
-  private void applyFormat(NewSemantic semantic) {
-    timeFormatter = new NewTimeFormatter(semantic);
+  private void applyFormat(Semantic semantic) {
+    timeFormatter = new TimeFormatter(semantic);
     delay = timeFormatter.getOptimizedDelay();
   }
 

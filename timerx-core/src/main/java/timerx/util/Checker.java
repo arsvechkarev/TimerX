@@ -28,10 +28,9 @@ public class Checker {
     }
   }
 
-  public static void expect(boolean condition) {
+  public static void assertThat(boolean condition) {
     if (!condition) {
       throw new AssertionError();
     }
   }
-
 }

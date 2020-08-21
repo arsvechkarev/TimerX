@@ -1,4 +1,4 @@
-package timerx.format2;
+package timerx.format;
 
 /**
  * Represents position indices of special symbols in a format. {@link #start} and {@link

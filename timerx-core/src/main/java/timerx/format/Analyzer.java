@@ -1,170 +1,115 @@
 package timerx.format;
 
-import static timerx.TimeUnit.HOURS;
-import static timerx.TimeUnit.MINUTES;
-import static timerx.TimeUnit.R_MILLISECONDS;
-import static timerx.TimeUnit.SECONDS;
-import static timerx.util.Checker.expect;
-import static timerx.util.Constants.Patterns.ESCAPED_HOURS;
-import static timerx.util.Constants.Patterns.ESCAPED_MINUTES;
-import static timerx.util.Constants.Patterns.ESCAPED_REM_MILLIS;
-import static timerx.util.Constants.Patterns.ESCAPED_SECONDS;
-import static timerx.util.Constants.Patterns.PATTERN_HAS_HOURS;
-import static timerx.util.Constants.Patterns.PATTERN_HAS_MINUTES;
-import static timerx.util.Constants.Patterns.PATTERN_HAS_REM_MILLIS;
-import static timerx.util.Constants.Patterns.PATTERN_HAS_SECONDS;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import androidx.annotation.VisibleForTesting;
+import timerx.TimeUnit;
 import timerx.exceptions.IllegalSymbolsCombinationException;
 import timerx.exceptions.NoNecessarySymbolsException;
 import timerx.exceptions.NonContiguousFormatSymbolsException;
 
-/**
- * Class for validating and analyzing input format and builds a {@link Semantic} of the
- * format
- *
- * @see Semantic
- * @see TimeFormatter
- */
 public class Analyzer {
 
-  private final Semantic semantic;
-
-  private Analyzer(Semantic semantic) {
-    this.semantic = semantic;
+  public static Semantic analyze(String input) {
+    Position hours = checkPositionOf(TimeUnit.HOURS, input);
+    Position minutes = checkPositionOf(TimeUnit.MINUTES, input);
+    Position seconds = checkPositionOf(TimeUnit.SECONDS, input);
+    Position rMillis = checkPositionOf(TimeUnit.R_MILLISECONDS, input);
+    validatePositions(hours, minutes, seconds, rMillis);
+    validateCombinations(hours, minutes, seconds, rMillis);
+    TimeUnit smallestUnit = getSmallestAvailableUnit(hours, minutes, seconds, rMillis);
+    String strippedFormat = stripFormat(input);
+    return new Semantic(hours, minutes, seconds, rMillis, input, strippedFormat,
+        smallestUnit);
   }
 
-  /**
-   * Checks and validates input format
-   *
-   * @param format Format to check
-   * @return Semantic with information about format
-   */
-  public static Semantic create(String format) {
-    Semantic semantic = new Semantic(format);
-    Analyzer analyzer = new Analyzer(semantic);
-    analyzer.processFormat(semantic.getFormat());
-    return semantic;
-  }
-
-  private void processFormat(String format) {
-    int formatOccurs = positionalCheckOf(format);
-    if (formatOccurs == 0) {
-      throwNoSymbolsEx();
-    } else {
-      executeCombinationCheck();
-      assignEscapedPatterns();
-    }
-  }
-
-  private int positionalCheckOf(String format) {
-    int formatOccurs = 0;
-    for (int type = 0; type < 4; type++) {
-      String strPattern = nextPatternOf(type);
-      Pattern pattern = Pattern.compile(strPattern);
-      assignPattern(type, pattern);
-      Matcher matcher = pattern.matcher(format);
-      int counter = 0;
-      while (matcher.find()) {
-        updateAppropriateField(type, matcher.group().length());
-        formatOccurs++;
-        counter++;
-        if (counter > 1) {
-          throwIncorrectPositionEx();
+  @VisibleForTesting
+  static Position checkPositionOf(TimeUnit timeUnit, String input) {
+    char timeUnitChar = timeUnit.getValue();
+    int start = -1;
+    int end = -1;
+    for (int i = 0; i < input.length(); i++) {
+      char c = input.charAt(i);
+      if (isSymbolNotEscapedAndEqualTo(timeUnit, input, i)
+          && start != -1
+          && i - 2 > 0
+          && !isSymbolNotEscapedAndEqualTo(timeUnit, input, i - 1)) {
+        throw new NonContiguousFormatSymbolsException("Wrong pattern");
+      }
+      if (c == timeUnitChar) {
+        if (i == 0) {
+          start = end = i;
+        } else if (input.charAt(i - 1) != '#') {
+          if (start == -1) {
+            start = i;
+          }
+          end = i;
         }
       }
     }
-    return formatOccurs;
+    start -= numberOfEscapeSymbolsBefore(input, start);
+    end -= numberOfEscapeSymbolsBefore(input, end);
+    return new Position(start, end);
   }
 
-  private void assignPattern(int type, Pattern pattern) {
-    if (type == 0) {
-      semantic.patternHours = pattern;
-    } else if (type == 1) {
-      semantic.patternMinutes = pattern;
-    } else if (type == 2) {
-      semantic.patternSeconds = pattern;
-    } else if (type == 3) {
-      semantic.patternRMillis = pattern;
-    } else {
-      throw new IllegalArgumentException("What was that?");
+  private static boolean isSymbolNotEscapedAndEqualTo(TimeUnit timeUnit, String input,
+      int position) {
+    if (position - 1 < 0) {
+      return false;
+    }
+    char symbol = input.charAt(position);
+    char prev = input.charAt(position - 1);
+    return prev != '#' && symbol == timeUnit.getValue();
+  }
+
+  private static void validatePositions(Position hours, Position minutes,
+      Position seconds, Position rMillis) {
+    if (hours.isEmpty() && minutes.isEmpty() && seconds.isEmpty() && rMillis.isEmpty()) {
+      throw new NoNecessarySymbolsException("No necessary symbols");
     }
   }
 
-  private void updateAppropriateField(int type, int count) {
-    expect(count != 0);
-    if (type == 0) {
-      semantic.setHoursCount(count);
-      semantic.setMinimumUnit(HOURS);
-    } else if (type == 1) {
-      semantic.setMinutesCount(count);
-      semantic.setMinimumUnit(MINUTES);
-    } else if (type == 2) {
-      semantic.setSecondsCount(count);
-      semantic.setMinimumUnit(SECONDS);
-    } else if (type == 3) {
-      semantic.setRMillisCount(count);
-      semantic.setMinimumUnit(R_MILLISECONDS);
-    } else {
-      throw new IllegalArgumentException("No number to match");
-    }
-  }
-
-  private void executeCombinationCheck() {
-    boolean hasHours = semantic.has(HOURS);
-    boolean hasMinutes = semantic.has(MINUTES);
-    boolean hasSeconds = semantic.has(SECONDS);
-    boolean hasRMillis = semantic.has(R_MILLISECONDS);
+  private static void validateCombinations(Position hours, Position minutes,
+      Position seconds, Position rMillis) {
+    boolean hasHours = hours.isNotEmpty();
+    boolean hasMinutes = minutes.isNotEmpty();
+    boolean hasSeconds = seconds.isNotEmpty();
+    boolean hasRMillis = rMillis.isNotEmpty();
     if (hasHours) {
       if ((hasSeconds || hasRMillis) && !hasMinutes) {
-        throwCombinationEx();
+        throw new IllegalSymbolsCombinationException(
+            "Input format has hours with seconds or milliseconds, but does not have minutes");
       } else if (hasMinutes && hasRMillis && !hasSeconds) {
-        throwCombinationEx();
+        throw new IllegalSymbolsCombinationException(
+            "Input format has hours, minutes, and milliseconds, but does not have seconds");
       }
     } else {
       if (hasMinutes && hasRMillis && !hasSeconds) {
-        throwCombinationEx();
+        throw new IllegalSymbolsCombinationException(
+            "Input format has minutes and milliseconds, but does not have seconds");
       }
     }
   }
 
-  private void assignEscapedPatterns() {
-    semantic.patternEscapedHours = Pattern.compile(ESCAPED_HOURS);
-    semantic.patternEscapedMinutes = Pattern.compile(ESCAPED_MINUTES);
-    semantic.patternEscapedSeconds = Pattern.compile(ESCAPED_SECONDS);
-    semantic.patternEscapedRMillis = Pattern.compile(ESCAPED_REM_MILLIS);
+  private static TimeUnit getSmallestAvailableUnit(Position hours, Position minutes,
+      Position seconds, Position rMillis) {
+    TimeUnit smallestAvailableUnit = TimeUnit.HOURS;
+    if (minutes.isNotEmpty()) smallestAvailableUnit = TimeUnit.MINUTES;
+    if (seconds.isNotEmpty()) smallestAvailableUnit = TimeUnit.SECONDS;
+    if (rMillis.isNotEmpty()) smallestAvailableUnit = TimeUnit.R_MILLISECONDS;
+    return smallestAvailableUnit;
   }
 
-  private String nextPatternOf(int pos) {
-    switch (pos) {
-      case 0:
-        return PATTERN_HAS_HOURS;
-      case 1:
-        return PATTERN_HAS_MINUTES;
-      case 2:
-        return PATTERN_HAS_SECONDS;
-      case 3:
-        return PATTERN_HAS_REM_MILLIS;
-      default:
-        // TODO: 26.07.2019 Translate
-        throw new IllegalArgumentException("No pattern to match");
+  private static String stripFormat(String format) {
+    return format.replace("#", "");
+  }
+
+  private static int numberOfEscapeSymbolsBefore(String input, int position) {
+    int count = 0;
+    for (int i = 0; i < position; i++) {
+      char symbol = input.charAt(i);
+      if (symbol == '#') {
+        count++;
+      }
     }
-  }
-
-  // TODO: 26.07.2019 Translate below
-
-  private void throwIncorrectPositionEx() {
-    throw new NonContiguousFormatSymbolsException(
-        "Some check symbol contains many times in format");
-  }
-
-  private void throwNoSymbolsEx() {
-    throw new NoNecessarySymbolsException("Format hasn't any necessary symbols");
-  }
-
-  private void throwCombinationEx() {
-    throw new IllegalSymbolsCombinationException(
-        "Different symbols in format has incompatible order");
+    return count;
   }
 }

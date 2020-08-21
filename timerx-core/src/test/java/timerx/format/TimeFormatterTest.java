@@ -6,18 +6,21 @@ import static timerx.util.Constants.TimeValues.MILLIS_IN_HOUR;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_MINUTE;
 import static timerx.util.Constants.TimeValues.MILLIS_IN_SECOND;
 
-import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
-@SuppressWarnings("SpellCheckingInspection")
-public class TimeFormattingTest {
+public class TimeFormatterTest {
+
+  public TimeFormatter create(String input) {
+    Semantic semantic = Analyzer.analyze(input);
+    return new TimeFormatter(semantic);
+  }
 
   private static TimeFormatter formatTime(String format) {
-    return new TimeFormatter(Analyzer.create(updateFormatIfNecessary(format)));
+    return new TimeFormatter(Analyzer.analyze(updateFormatIfNecessary(format)));
   }
 
   private String formatTime(String format, long millis) {
-    return new TimeFormatter(Analyzer.create(updateFormatIfNecessary(format)))
+    return new TimeFormatter(Analyzer.analyze(updateFormatIfNecessary(format)))
         .format(millis).toString();
   }
 
@@ -30,12 +33,6 @@ public class TimeFormattingTest {
     return result;
   }
 
-  @Test
-  public void straightForwardFormatTest() {
-    String format = "MM:SS.L";
-    assertEquals("01:00.0",
-        TimeFormatter.with(format).format(1, TimeUnit.MINUTES).toString());
-  }
 
   @Test
   public void optimizedDelayTest1() {
@@ -69,35 +66,35 @@ public class TimeFormattingTest {
 
   @Test
   public void minimumUnitInMillis1() {
-    Semantic semantic = Analyzer.create("HH");
+    Semantic semantic = Analyzer.analyze("HH");
     TimeFormatter timeFormatter = new TimeFormatter(semantic);
     assertEquals(MILLIS_IN_HOUR, timeFormatter.minimumUnitInMillis());
   }
 
   @Test
   public void minimumUnitInMillis2() {
-    Semantic semantic = Analyzer.create("HH - MM");
+    Semantic semantic = Analyzer.analyze("HH - MM");
     TimeFormatter timeFormatter = new TimeFormatter(semantic);
     assertEquals(MILLIS_IN_MINUTE, timeFormatter.minimumUnitInMillis());
   }
 
   @Test
   public void minimumUnitInMillis3() {
-    Semantic semantic = Analyzer.create("MM:SS");
+    Semantic semantic = Analyzer.analyze("MM:SS");
     TimeFormatter timeFormatter = new TimeFormatter(semantic);
     assertEquals(MILLIS_IN_SECOND, timeFormatter.minimumUnitInMillis());
   }
 
   @Test
   public void minimumUnitInMillis4() {
-    Semantic semantic = Analyzer.create("HH:MM:SS:LL");
+    Semantic semantic = Analyzer.analyze("HH:MM:SS:LL");
     TimeFormatter timeFormatter = new TimeFormatter(semantic);
     assertEquals(1, timeFormatter.minimumUnitInMillis());
   }
 
   @Test
   public void currentFormatTest() {
-    Semantic semantic = Analyzer.create("MM:SS");
+    Semantic semantic = Analyzer.analyze("MM:SS");
     TimeFormatter timeFormatter = new TimeFormatter(semantic);
     assertEquals("MM:SS", timeFormatter.currentFormat());
   }
@@ -241,4 +238,5 @@ public class TimeFormattingTest {
     long millis = millisOf(0, 8, 5, 23);
     assertEquals("LALALA : 08-05", formatTime(format, millis));
   }
+
 }
