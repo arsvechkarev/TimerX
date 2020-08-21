@@ -1,7 +1,7 @@
 package timerx;
 
 /**
- * Action that will be executed as soon as time in {@link Timer} or {@link StopwatchImpl}
+ * Action that will be executed as soon as time in {@link Timer} or {@link Stopwatch}
  * changes
  */
 public interface TimeTickListener {

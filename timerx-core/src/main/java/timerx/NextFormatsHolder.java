@@ -5,7 +5,7 @@ import timerx.format.Semantic;
 
 /**
  * Holder of formats and times when former should be applied in {@link Timer} and {@link
- * StopwatchImpl}
+ * Stopwatch}
  *
  * @see TimerBuilder#changeFormatWhen(long, TimeUnit, String)
  * @see StopwatchBuilder#changeFormatWhen(long, TimeUnit, String)
