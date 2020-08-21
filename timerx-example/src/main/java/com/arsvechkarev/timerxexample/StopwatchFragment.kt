@@ -32,8 +32,6 @@ class StopwatchFragment : Fragment() {
         .actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }
         .actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
         .actionWhen(20, TimeUnit.SECONDS) { showToast("20s passed") }
-        .changeFormatWhen(5, TimeUnit.SECONDS, "SSs LLms")
-        .changeFormatWhen(10, TimeUnit.SECONDS, "MM#M - SS#S")
         .onTick { time ->
           text_time.text = time
         }

@@ -49,7 +49,7 @@ import timerx.format.TimeFormatter;
  * @see StopwatchBuilder
  * @see Timer
  */
-public class Stopwatch {
+public class StopwatchImpl {
 
   // Message id for handler
   private static final int MSG = 2;
@@ -103,7 +103,7 @@ public class Stopwatch {
   private SortedSet<ActionsHolder> copyOfActionsHolder;
 
   @RestrictTo(Scope.LIBRARY)
-  Stopwatch(Semantic startSemantic, TimeTickListener tickListener,
+  StopwatchImpl(Semantic startSemantic, TimeTickListener tickListener,
       SortedSet<NextFormatsHolder> nextFormatsHolder,
       SortedSet<ActionsHolder> actionsHolder) {
     this.startSemantic = startSemantic;
@@ -178,7 +178,7 @@ public class Stopwatch {
   private final Handler handler = new Handler() {
     @Override
     public void handleMessage(Message msg) {
-      synchronized (Stopwatch.this) {
+      synchronized (StopwatchImpl.this) {
         long executionStartedTime = SystemClock.elapsedRealtime();
         currentTime = SystemClock.elapsedRealtime() - baseTime;
         changeFormatIfNeed();

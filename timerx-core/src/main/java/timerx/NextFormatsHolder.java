@@ -4,8 +4,8 @@ import java.util.concurrent.TimeUnit;
 import timerx.format.Semantic;
 
 /**
- * Holder of formats and times when former should be applied in {@link Timer} and
- * {@link Stopwatch}
+ * Holder of formats and times when former should be applied in {@link Timer} and {@link
+ * StopwatchImpl}
  *
  * @see TimerBuilder#changeFormatWhen(long, TimeUnit, String)
  * @see StopwatchBuilder#changeFormatWhen(long, TimeUnit, String)

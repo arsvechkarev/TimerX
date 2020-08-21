@@ -76,7 +76,7 @@ public class Timer {
   /**
    * Listener to notify user when timer finishes counting
    */
-  private final TimeFinishListener finishListener;
+  private final Action finishAction;
 
   // Semantic of start format
   private final Semantic startSemantic;
@@ -110,12 +110,12 @@ public class Timer {
 
   @RestrictTo(Scope.LIBRARY)
   Timer(long startTime, Semantic startSemantic, TimeTickListener tickListener,
-      TimeFinishListener finishListener, SortedSet<NextFormatsHolder> nextFormatsHolders,
+      Action finishAction, SortedSet<NextFormatsHolder> nextFormatsHolders,
       SortedSet<ActionsHolder> nextActionsHolders) {
     this.startTime = startTime;
     this.startSemantic = startSemantic;
     this.tickListener = tickListener;
-    this.finishListener = finishListener;
+    this.finishAction = finishAction;
     this.nextFormatsHolders = nextFormatsHolders;
     this.nextActionsHolders = nextActionsHolders;
     currentTime = startTime;
@@ -242,8 +242,8 @@ public class Timer {
     if (tickListener != null) {
       tickListener.onTick(timeFormatter.format(currentTime));
     }
-    if (finishListener != null) {
-      finishListener.onFinish();
+    if (finishAction != null) {
+      finishAction.run();
     }
     reset();
   }

@@ -43,7 +43,7 @@ public class TimerBuilder {
   private long startTime = TimeValues.NONE;
 
   private TimeTickListener tickListener;
-  private TimeFinishListener finishListener;
+  private Action finishAction;
 
   private final SortedSet<NextFormatsHolder> nextFormatsHolder = new TreeSet<>(
       Collections.reverseOrder());
@@ -78,8 +78,8 @@ public class TimerBuilder {
   /**
    * Set tick listener to be notified when timer ends
    */
-  public TimerBuilder onFinish(@NonNull TimeFinishListener finishListener) {
-    this.finishListener = finishListener;
+  public TimerBuilder onFinish(@NonNull Action finishAction) {
+    this.finishAction = finishAction;
     return this;
   }
 
@@ -143,7 +143,7 @@ public class TimerBuilder {
   public Timer build() {
     Checker.assertNotNull(startSemantic, "Start format should be initialized");
     assertTimeInitialized(startTime, "Time should be initialized");
-    return new Timer(startTime, startSemantic, tickListener, finishListener,
+    return new Timer(startTime, startSemantic, tickListener, finishAction,
         nextFormatsHolder,
         nextActionsHolder);
   }
