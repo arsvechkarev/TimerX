@@ -16,7 +16,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import timerx.format.Semantic;
-import timerx.format.TimeFormatter;
+import timerx.format.StringBuilderTimeFormatter;
 
 @RestrictTo(Scope.LIBRARY)
 class StopwatchImpl implements Stopwatch {
@@ -37,7 +37,7 @@ class StopwatchImpl implements Stopwatch {
 
   private final Semantic startSemantic;
   private TimeTickListener tickListener;
-  private TimeFormatter timeFormatter;
+  private StringBuilderTimeFormatter timeFormatter;
 
   private final SortedSet<NextFormatsHolder> nextFormatsHolders;
   private final SortedSet<ActionsHolder> nextActionsHolders;
@@ -56,7 +56,7 @@ class StopwatchImpl implements Stopwatch {
   @Override
   @NonNull
   public CharSequence getFormattedStartTime() {
-    return new TimeFormatter(startSemantic).format(0L);
+    return new StringBuilderTimeFormatter(startSemantic).format(0L);
   }
 
   @Override
@@ -107,8 +107,8 @@ class StopwatchImpl implements Stopwatch {
   }
 
   public void applyFormat(Semantic semantic) {
-    timeFormatter = new TimeFormatter(semantic);
-    delay = timeFormatter.getOptimizedDelay();
+    timeFormatter = new StringBuilderTimeFormatter(semantic);
+    delay = timeFormatter.getOptimalDelay();
   }
 
   @SuppressLint("HandlerLeak")
@@ -140,7 +140,7 @@ class StopwatchImpl implements Stopwatch {
 
   private void changeFormatIfNeeded() {
     if (copyOfNextFormatsHolder.size() > 0
-        && !timeFormatter.currentFormat()
+        && !timeFormatter.getFormat()
         .equals(copyOfNextFormatsHolder.first().getSemantic().getFormat())
         && currentTime >= copyOfNextFormatsHolder.first().getMillis()) {
       applyFormat(copyOfNextFormatsHolder.first().getSemantic());

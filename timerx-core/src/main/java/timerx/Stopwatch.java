@@ -2,13 +2,13 @@ package timerx;
 
 import androidx.annotation.NonNull;
 import java.util.concurrent.TimeUnit;
-import timerx.format.TimeFormatter;
+import timerx.format.StringBuilderTimeFormatter;
 
 /**
  * Represents stopwatch with base functions like {@link #start() start}, {@link #stop()
  * stop}, etc. Also allows to format time with the specific pattern and run actions at a
- * certain time. See {@link TimeFormatter} to find out how to use format syntax. Use
- * {@link StopwatchBuilder} to configure and instantiate the stopwatch.
+ * certain time. See {@link StringBuilderTimeFormatter} to find out how to use format
+ * syntax. Use {@link StopwatchBuilder} to configure and instantiate the stopwatch.
  *
  * @author Arseniy Svechkarev
  * @see StopwatchBuilder

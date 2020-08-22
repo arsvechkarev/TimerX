@@ -1,7 +1,7 @@
 package timerx.format;
 
 import static org.junit.Assert.assertSame;
-import static timerx.TestHelper.updateFormatIfNecessary;
+import static timerx.TestHelper.updateFormatIfNeeded;
 
 import org.junit.Test;
 import timerx.exceptions.IllegalSymbolsCombinationException;
@@ -15,7 +15,7 @@ public class AnalyzerTest {
   }
 
   public Semantic analyze(String format) {
-    return Analyzer.analyze(updateFormatIfNecessary(format));
+    return Analyzer.analyze(updateFormatIfNeeded(format));
   }
 
   @Test

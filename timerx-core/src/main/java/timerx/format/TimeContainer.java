@@ -3,9 +3,7 @@ package timerx.format;
 import androidx.annotation.NonNull;
 
 /**
- * Class for temporary holding different time units
- *
- * @see TimeFormatter
+ * Temporary holds time in different time units
  */
 class TimeContainer {
 

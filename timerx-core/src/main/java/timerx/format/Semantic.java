@@ -4,6 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RestrictTo;
 import androidx.annotation.RestrictTo.Scope;
 
+/**
+ * Information about format, such as positions of different units, smallest available unit
+ * and stripped version of format without escape symbols
+ */
 @RestrictTo(Scope.LIBRARY)
 public class Semantic {
 
@@ -45,7 +49,7 @@ public class Semantic {
       case R_MILLISECONDS:
         return rMillisPosition.isNotEmpty();
     }
-    throw new IllegalArgumentException("Incorrect type of unit");
+    throw new IllegalArgumentException("Incorrect type of unit: " + unitType);
   }
 
   boolean hasOnlyRMillis() {

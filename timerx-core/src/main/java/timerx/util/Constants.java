@@ -14,6 +14,11 @@ public class Constants {
     public static final char SYMBOL_SECONDS = 'S';
     public static final char SYMBOL_REM_MILLIS = 'L';
     public static final char SYMBOL_ESCAPE = '#';
+
+    public static boolean isOneOfSpecialSymbols(char c) {
+      return c == SYMBOL_HOURS || c == SYMBOL_MINUTES || c == SYMBOL_SECONDS
+          || c == SYMBOL_REM_MILLIS;
+    }
   }
 
   @RestrictTo(Scope.LIBRARY)

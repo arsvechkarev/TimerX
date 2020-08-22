@@ -15,7 +15,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import timerx.format.Semantic;
-import timerx.format.TimeFormatter;
+import timerx.format.StringBuilderTimeFormatter;
 
 @RestrictTo(Scope.LIBRARY)
 class TimerImpl implements Timer {
@@ -39,7 +39,7 @@ class TimerImpl implements Timer {
   private final Semantic startSemantic;
 
   private TimeCountingState state = INACTIVE;
-  private TimeFormatter timeFormatter;
+  private StringBuilderTimeFormatter timeFormatter;
 
   private final SortedSet<NextFormatsHolder> nextFormatsHolders;
   private final SortedSet<ActionsHolder> nextActionsHolders;
@@ -61,7 +61,7 @@ class TimerImpl implements Timer {
   @NonNull
   @Override
   public CharSequence getFormattedStartTime() {
-    return new TimeFormatter(startSemantic).format(startTime);
+    return new StringBuilderTimeFormatter(startSemantic).format(startTime);
   }
 
   @Override
@@ -96,10 +96,7 @@ class TimerImpl implements Timer {
 
   @Override
   public long getRemainingTimeIn(@NonNull TimeUnit timeUnit) {
-    long timeToFormat = currentTime + timeFormatter.minimumUnitInMillis();
-    return (currentTime > 0)
-        ? timeUnit.convert(timeToFormat, TimeUnit.MILLISECONDS)
-        : 0;
+    return timeUnit.convert(currentTime, TimeUnit.MILLISECONDS);
   }
 
   @Override
@@ -114,8 +111,8 @@ class TimerImpl implements Timer {
   }
 
   private void applyFormat(Semantic semantic) {
-    timeFormatter = new TimeFormatter(semantic);
-    interval = timeFormatter.getOptimizedDelay();
+    timeFormatter = new StringBuilderTimeFormatter(semantic);
+    interval = timeFormatter.getOptimalDelay();
   }
 
   @SuppressLint("HandlerLeak")
@@ -132,9 +129,8 @@ class TimerImpl implements Timer {
           finishTimer();
           return;
         }
-        long timeToFormat = defineFormatTime();
         if (tickListener != null) {
-          CharSequence formattedTime = timeFormatter.format(timeToFormat);
+          CharSequence formattedTime = timeFormatter.format(currentTime);
           tickListener.onTick(formattedTime);
         }
         long executionTime = SystemClock.elapsedRealtime() - startExecution;
@@ -145,7 +141,7 @@ class TimerImpl implements Timer {
 
   private void changeFormatIfNeed() {
     if (copyOfFormatsHolders.size() > 0
-        && !timeFormatter.currentFormat()
+        && !timeFormatter.getFormat()
         .equals(copyOfFormatsHolders.first().getSemantic().getFormat())
         && currentTime <= copyOfFormatsHolders.first().getMillis()) {
       applyFormat(copyOfFormatsHolders.first().getSemantic());
@@ -158,14 +154,6 @@ class TimerImpl implements Timer {
         && currentTime <= copyOfNextActionsHolders.first().getMillis()) {
       copyOfNextActionsHolders.first().getAction().run();
       copyOfNextActionsHolders.remove(copyOfNextActionsHolders.first());
-    }
-  }
-
-  private long defineFormatTime() {
-    if (currentTime == startTime) {
-      return currentTime;
-    } else {
-      return currentTime + timeFormatter.minimumUnitInMillis();
     }
   }
 

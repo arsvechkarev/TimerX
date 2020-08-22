@@ -12,7 +12,7 @@ public final class TestHelper {
    * This allows to avoid rewriting tests every time one of the special symbols is
    * changed
    */
-  public static String updateFormatIfNecessary(String inputFormat) {
+  public static String updateFormatIfNeeded(String inputFormat) {
     return inputFormat
         .replace('H', Symbols.SYMBOL_HOURS)
         .replace('M', Symbols.SYMBOL_MINUTES)

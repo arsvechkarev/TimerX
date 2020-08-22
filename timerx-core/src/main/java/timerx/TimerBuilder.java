@@ -7,6 +7,7 @@ import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import timerx.format.Analyzer;
 import timerx.format.Semantic;
+import timerx.format.StringBuilderTimeFormatter;
 import timerx.util.Checker;
 import timerx.util.Constants.TimeValues;
 
@@ -55,7 +56,7 @@ public class TimerBuilder {
   /**
    * Set the start format to timer
    *
-   * @param format Format for timer. See {@link timerx.format.TimeFormatter} to find out
+   * @param format Format for timer. See {@link StringBuilderTimeFormatter} to find out
    * about formats
    */
   @NonNull

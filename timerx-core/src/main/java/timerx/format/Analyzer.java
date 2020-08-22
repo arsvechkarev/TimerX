@@ -13,17 +13,17 @@ import timerx.util.Constants.Symbols;
 public class Analyzer {
 
   @NonNull
-  public static Semantic analyze(String input) {
-    Position hours = checkPositionOf(TimeUnitType.HOURS, input);
-    Position minutes = checkPositionOf(TimeUnitType.MINUTES, input);
-    Position seconds = checkPositionOf(TimeUnitType.SECONDS, input);
-    Position rMillis = checkPositionOf(TimeUnitType.R_MILLISECONDS, input);
+  public static Semantic analyze(String format) {
+    Position hours = checkPositionOf(TimeUnitType.HOURS, format);
+    Position minutes = checkPositionOf(TimeUnitType.MINUTES, format);
+    Position seconds = checkPositionOf(TimeUnitType.SECONDS, format);
+    Position rMillis = checkPositionOf(TimeUnitType.R_MILLISECONDS, format);
     validatePositions(hours, minutes, seconds, rMillis);
     validateCombinations(hours, minutes, seconds, rMillis);
     TimeUnitType smallestUnit = getSmallestAvailableUnit(minutes, seconds,
         rMillis);
-    String strippedFormat = stripFormat(input);
-    return new Semantic(hours, minutes, seconds, rMillis, input, strippedFormat,
+    String strippedFormat = stripFormat(format);
+    return new Semantic(hours, minutes, seconds, rMillis, format, strippedFormat,
         smallestUnit);
   }
 
@@ -34,7 +34,7 @@ public class Analyzer {
     int start = -1;
     int end = -1;
     for (int i = 0; i < input.length(); i++) {
-      char c = input.charAt(i);
+      char symbol = input.charAt(i);
       if (isSymbolNotEscapedAndEqualTo(timeUnitType, input, i)
           && start != -1
           && i - 2 > 0
@@ -43,7 +43,7 @@ public class Analyzer {
             "Time unit " + timeUnitType.getValue()
                 + " was found several times in the format");
       }
-      if (c == timeUnitChar) {
+      if (symbol == timeUnitChar) {
         if (i == 0) {
           start = end = i;
         } else if (input.charAt(i - 1) != '#') {
@@ -114,14 +114,27 @@ public class Analyzer {
 
   @NonNull
   private static String stripFormat(String format) {
-    return format.replace(String.valueOf(Symbols.SYMBOL_ESCAPE), "");
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < format.length(); i++) {
+      char symbol = format.charAt(i);
+      if (symbol == Symbols.SYMBOL_ESCAPE && i < format.length() - 1) {
+        char next = format.charAt(i + 1);
+        if (Symbols.isOneOfSpecialSymbols(next)) {
+          // Do not add this symbol
+          continue;
+        }
+      }
+      builder.append(symbol);
+    }
+    return builder.toString();
   }
 
   private static int numberOfEscapeSymbolsBefore(String input, int position) {
     int count = 0;
-    for (int i = 0; i < position; i++) {
+    for (int i = 0; i < position - 1; i++) {
       char symbol = input.charAt(i);
-      if (symbol == Symbols.SYMBOL_ESCAPE) {
+      char next = input.charAt(i + 1);
+      if (symbol == Symbols.SYMBOL_ESCAPE && Symbols.isOneOfSpecialSymbols(next)) {
         count++;
       }
     }

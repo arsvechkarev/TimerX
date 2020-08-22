@@ -10,6 +10,10 @@ class Position {
   final int end;
 
   Position(int start, int end) {
+    if (start > end) {
+      throw new IllegalArgumentException(
+          "start value: " + start + " is more than end value: " + end);
+    }
     this.start = start;
     this.end = end;
   }
