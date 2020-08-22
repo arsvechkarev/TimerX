@@ -4,12 +4,12 @@ import androidx.annotation.NonNull;
 
 /**
  * Main class for formatting input milliseconds into char sequence representation
- * according to parse format. Parse format is a string that contains one of the following
- * characters:
+ * according to parse format. Parse format is a string may contain special symbols, such
+ * as:
  * <p>"H" - hours</p>
  * <p>"M" - minutes</p>
  * <p>"S" - seconds</p>
- * <p>"L" - can be milliseconds, centiseconds etc. (It depends on amount of the
+ * <p>"L" - can be milliseconds, hundredths of second, etc. (It depends on amount of the
  * symbols, detailed explanation later)</p><br/>
  *
  * For example, let's consider a format like "MM:SS". It contains minutes and seconds. If
@@ -59,12 +59,18 @@ import androidx.annotation.NonNull;
  * incompatible symbols, see {@link timerx.exceptions.IllegalSymbolsCombinationException}
  * </p><br/>
  *
- * Now, let's take a look to the character like "L". It can be formatted as milliseconds,
- * centiseconds, and decisecond, depending on amount and other characters. Consider format
- * "M:SS.LL" and time 36698 milliseconds (36 seconds and 698 milliseconds). In this case,
- * since amount of "L" characters is 2, last digit of 698 milliseconds will be omitted,
- * and the result will be "0:36.69". In case if there is no special symbols except "L", or
- * it amount is three or more, then it will be formatted as milliseconds.<br/><br/>
+ * Now, let's take a look at the character "L". It can be formatted as milliseconds,
+ * hundredths of second or tenths of second.<br/><br/>
+ *
+ * If there is no other special symbols then "L" is formatted as milliseconds. If
+ * there is other special symbols, then "L" is formatted depending on how many "L"
+ * characters are in the format. If there is one character - it is formatted as tenths of
+ * second, two - hundredths of second, three and more - milliseconds.<br/><br/>
+ *
+ * Consider format "M:SS.LL" and time 36698 milliseconds (36 seconds and 698
+ * milliseconds). In this case, since the amount of "L" characters in the format is 2,
+ * last digit of 698 milliseconds will be omitted, and the result will be
+ * "0:36.69".<br/><br/>
  *
  * Here some examples of formatting with "L" symbol:
  * <pre>
