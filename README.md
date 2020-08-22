@@ -1,7 +1,7 @@
 # TimerX
 A simple timer & stowatch library for android which allows you build customizable timer or stopwatch, set custom formats, and schedule actions.
 
-TimerX provides a simple api to apply different format to timer or stopwatch. For instance, you can create stopwatch, specify format as **HH:MM:SS** or **SS.LL** and time in stopwatch will be formating according to this format. 
+TimerX provides a simple api to apply different format to a timer or a stopwatch. For instance, you can create stopwatch, specify format as **HH:MM:SS** or **SS.LL** and time in the stopwatch will be formatted according to this format. 
 
 See javadoc for more detailed explanation.
 
@@ -9,7 +9,7 @@ See javadoc for more detailed explanation.
 Add following lines in your module-level build.gradle file:
 ```groovy
 dependencies {
-      implementation 'com.arsvechkarev:timerx:1.0.0'
+      implementation 'com.arsvechkarev:timerx:2.0.0'
 }
 ```
 
@@ -18,15 +18,15 @@ dependencies {
 #### Stopwatch:
 ```java
 Stopwatch stopwatch = new StopwatchBuilder()
-      // Set start format of time
+      // Set the initial format
       .startFormat("MM:SS")
-      // Set tick listener for displaying time
+      // Set the tick listener for displaying time
       .tickListener(time -> textViewStopwatch.setText(time)) 
       // When time is equal to one hour, change format to "HH:MM:SS"
       .changeFormatWhen(1, TimeUnit.HOURS, "HH:MM:SS")
       .build();
       
-// Start stopwatch
+// Start the stopwatch
 stowatch.start()
 ...
 ```
@@ -36,17 +36,17 @@ stowatch.start()
 Timer timer = new TimerBuilder()
       // Set start time
       .startTime(5, TimeUnit.MINUTES)
-      // Set start format of time
+      // Set the initial format
       .startFormat("MM:SS")
-      // Set tick listener that receives formatted time
+      // Set the tick listener that receives formatted time
       .tickListener(time -> textViewTimer.setText(time))
-      // Executing action when 30 seсonds remain
+      // Run an action when the remaining time is 30 seсonds
       .actionWhen(30, TimeUnit.SECONDS, () -> {
           Toast.makeText(context, "30 seconds left!", Toast.LENGTH_SHORT).show();
       })
       .build();
       
-// Start timer
+// Start the timer
 timer.start()
 ...
 ```
