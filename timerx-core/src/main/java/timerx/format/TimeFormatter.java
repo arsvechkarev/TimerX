@@ -62,10 +62,10 @@ import androidx.annotation.NonNull;
  * Now, let's take a look at the character "L". It can be formatted as milliseconds,
  * hundredths of second or tenths of second.<br/><br/>
  *
- * If there is no other special symbols then "L" is formatted as milliseconds. If
- * there is other special symbols, then "L" is formatted depending on how many "L"
- * characters are in the format. If there is one character - it is formatted as tenths of
- * second, two - hundredths of second, three and more - milliseconds.<br/><br/>
+ * If there is no other special symbols then "L" is formatted as milliseconds. If there is
+ * other special symbols, then "L" is formatted depending on how many "L" characters are
+ * in the format. If there is one character - it is formatted as tenths of second, two -
+ * hundredths of second, three and more - milliseconds.<br/><br/>
  *
  * Consider format "M:SS.LL" and time 36698 milliseconds (36 seconds and 698
  * milliseconds). In this case, since the amount of "L" characters in the format is 2,

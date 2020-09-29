@@ -10,10 +10,13 @@ import static timerx.util.Constants.TimeValues.NONE;
 import static timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RestrictTo;
+import androidx.annotation.RestrictTo.Scope;
 
 /**
  * Optimized time formatter based on string builder
  */
+@RestrictTo(Scope.LIBRARY)
 public class StringBuilderTimeFormatter extends TimeFormatter {
 
   private final Semantic semantic;
