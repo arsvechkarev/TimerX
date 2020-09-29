@@ -4,7 +4,7 @@ ext {
 
   groupId = 'com.arsvechkarev'
   artifactId = 'timerx'
-  publishVersion = '2.0.0'
+  publishVersion = '2.1.0'
 
   desc = 'Android timer and stopwatch library'
   website = 'https://github.com/arsvechkarev/TimerX'
