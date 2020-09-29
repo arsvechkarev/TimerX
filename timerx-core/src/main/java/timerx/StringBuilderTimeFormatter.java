@@ -1,35 +1,32 @@
-package timerx.format;
+package timerx;
 
-import static timerx.format.TimeUnitType.HOURS;
-import static timerx.format.TimeUnitType.MINUTES;
-import static timerx.format.TimeUnitType.R_MILLISECONDS;
-import static timerx.format.TimeUnitType.SECONDS;
-import static timerx.util.Constants.TimeValues.MILLIS_IN_SECOND;
-import static timerx.util.Constants.TimeValues.MINUTES_IN_HOUR;
-import static timerx.util.Constants.TimeValues.NONE;
-import static timerx.util.Constants.TimeValues.SECONDS_IN_MINUTE;
+import static timerx.Constants.TimeValues.MILLIS_IN_SECOND;
+import static timerx.Constants.TimeValues.MINUTES_IN_HOUR;
+import static timerx.Constants.TimeValues.NONE;
+import static timerx.Constants.TimeValues.SECONDS_IN_MINUTE;
+import static timerx.TimeUnitType.HOURS;
+import static timerx.TimeUnitType.MINUTES;
+import static timerx.TimeUnitType.R_MILLISECONDS;
+import static timerx.TimeUnitType.SECONDS;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.RestrictTo.Scope;
 
 /**
  * Optimized time formatter based on string builder
  */
-@RestrictTo(Scope.LIBRARY)
-public class StringBuilderTimeFormatter extends TimeFormatter {
+class StringBuilderTimeFormatter extends TimeFormatter {
 
   private final Semantic semantic;
   private final StringBuilder mutableString;
   private final TimeContainer timeContainer = new TimeContainer();
 
-  public StringBuilderTimeFormatter(@NonNull Semantic semantic) {
+  StringBuilderTimeFormatter(@NonNull Semantic semantic) {
     this.semantic = semantic;
     mutableString = new StringBuilder(semantic.strippedFormat.length());
     mutableString.append(semantic.strippedFormat);
   }
 
-  public long getOptimalDelay() {
+  long getOptimalDelay() {
     long delay = 100;
     if (semantic.has(R_MILLISECONDS)) {
       if (semantic.rMillisPosition.length() == 2) {
@@ -42,12 +39,12 @@ public class StringBuilderTimeFormatter extends TimeFormatter {
   }
 
   @NonNull
-  public String getFormat() {
+  String getFormat() {
     return semantic.getFormat();
   }
 
   @NonNull
-  public CharSequence format(long millis) {
+  CharSequence format(long millis) {
     TimeContainer units = timeUnitsOf(millis);
     long millisToShow = NONE;
     long secondsToShow = NONE;

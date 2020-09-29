@@ -1,24 +1,19 @@
 package timerx;
 
+import static timerx.Checker.assertThat;
 import static timerx.TimeCountingState.INACTIVE;
 import static timerx.TimeCountingState.PAUSED;
 import static timerx.TimeCountingState.RESUMED;
-import static timerx.util.Checker.assertThat;
 
 import android.annotation.SuppressLint;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import androidx.annotation.NonNull;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.RestrictTo.Scope;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.format.Semantic;
-import timerx.format.StringBuilderTimeFormatter;
 
-@RestrictTo(Scope.LIBRARY)
 class StopwatchImpl implements Stopwatch {
 
   // Message id for handler
@@ -106,7 +101,7 @@ class StopwatchImpl implements Stopwatch {
     handler = null;
   }
 
-  public void applyFormat(Semantic semantic) {
+  private void applyFormat(Semantic semantic) {
     timeFormatter = new StringBuilderTimeFormatter(semantic);
     delay = timeFormatter.getOptimalDelay();
   }

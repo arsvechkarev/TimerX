@@ -1,4 +1,4 @@
-package timerx.format;
+package timerx;
 
 import androidx.annotation.NonNull;
 

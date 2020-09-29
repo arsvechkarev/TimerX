@@ -1,4 +1,4 @@
-package timerx.exceptions;
+package timerx;
 
 /**
  * This exception is thrown when special symbols are contained multiple times in the input

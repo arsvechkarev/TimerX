@@ -1,4 +1,4 @@
-package timerx.exceptions;
+package timerx;
 
 /**
  * Exception thrown when input format does not contain any special symbols like "H", "M",

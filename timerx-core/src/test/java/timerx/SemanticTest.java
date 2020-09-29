@@ -1,12 +1,12 @@
-package timerx.format;
+package timerx;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static timerx.format.TimeUnitType.HOURS;
-import static timerx.format.TimeUnitType.MINUTES;
-import static timerx.format.TimeUnitType.R_MILLISECONDS;
-import static timerx.format.TimeUnitType.SECONDS;
+import static timerx.TimeUnitType.HOURS;
+import static timerx.TimeUnitType.MINUTES;
+import static timerx.TimeUnitType.R_MILLISECONDS;
+import static timerx.TimeUnitType.SECONDS;
 
 import org.junit.Test;
 

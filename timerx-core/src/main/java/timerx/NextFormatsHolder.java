@@ -1,11 +1,7 @@
 package timerx;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.RestrictTo.Scope;
-import timerx.format.Semantic;
 
-@RestrictTo(Scope.LIBRARY)
 class NextFormatsHolder implements Comparable<NextFormatsHolder> {
 
   private final long millis;
@@ -21,7 +17,7 @@ class NextFormatsHolder implements Comparable<NextFormatsHolder> {
   }
 
   @NonNull
-  public Semantic getSemantic() {
+  Semantic getSemantic() {
     return semantic;
   }
 

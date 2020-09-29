@@ -1,10 +1,7 @@
 package timerx;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.RestrictTo.Scope;
 
-@RestrictTo(Scope.LIBRARY)
 class ActionsHolder implements Comparable<ActionsHolder> {
 
   private final long millis;

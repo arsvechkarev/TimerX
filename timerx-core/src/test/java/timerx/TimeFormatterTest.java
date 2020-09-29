@@ -1,10 +1,10 @@
-package timerx.format;
+package timerx;
 
 import static org.junit.Assert.assertEquals;
+import static timerx.Constants.TimeValues.MILLIS_IN_HOUR;
+import static timerx.Constants.TimeValues.MILLIS_IN_MINUTE;
+import static timerx.Constants.TimeValues.MILLIS_IN_SECOND;
 import static timerx.TestHelper.updateFormatIfNeeded;
-import static timerx.util.Constants.TimeValues.MILLIS_IN_HOUR;
-import static timerx.util.Constants.TimeValues.MILLIS_IN_MINUTE;
-import static timerx.util.Constants.TimeValues.MILLIS_IN_SECOND;
 
 import org.junit.Test;
 

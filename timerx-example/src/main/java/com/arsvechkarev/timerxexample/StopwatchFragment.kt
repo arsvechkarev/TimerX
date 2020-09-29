@@ -26,7 +26,7 @@ class StopwatchFragment : Fragment() {
   
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    
+  
     val timer = StopwatchBuilder()
         .startFormat("SS:LLL")
         .actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }

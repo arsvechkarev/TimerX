@@ -3,7 +3,7 @@ package timerx;
 import androidx.annotation.NonNull;
 
 /**
- * Tick listener for receiving formatted time
+ * Tick listener that receives formatted time
  */
 public interface TimeTickListener {
 

@@ -1,6 +1,6 @@
 package timerx;
 
-import timerx.util.Constants.Symbols;
+import timerx.Constants.Symbols;
 
 /**
  * Helper class for tests

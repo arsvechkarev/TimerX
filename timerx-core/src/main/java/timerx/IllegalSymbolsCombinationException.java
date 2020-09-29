@@ -1,4 +1,4 @@
-package timerx.exceptions;
+package timerx;
 
 // @formatter_off
 /**

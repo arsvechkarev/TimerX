@@ -1,12 +1,9 @@
-package timerx.format;
+package timerx;
 
 import static org.junit.Assert.assertSame;
 import static timerx.TestHelper.updateFormatIfNeeded;
 
 import org.junit.Test;
-import timerx.exceptions.IllegalSymbolsCombinationException;
-import timerx.exceptions.NoNecessarySymbolsException;
-import timerx.exceptions.NonContiguousFormatSymbolsException;
 
 public class AnalyzerTest {
 

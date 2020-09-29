@@ -1,4 +1,4 @@
-package timerx.format;
+package timerx;
 
 import androidx.annotation.NonNull;
 
@@ -51,12 +51,12 @@ import androidx.annotation.NonNull;
  * </p>
  * <p>
  * 2. Formats that contain same special symbols in different positions. Example: "HH:HH",
- * or "MM:SS ML" (See {@link timerx.exceptions.NonContiguousFormatSymbolsException} for
+ * or "MM:SS ML" (See {@link NonContiguousFormatSymbolsException} for
  * more detailed explanation)
  * </p>
  * <p>
  * 3. Formats that contain <b>incompatible</b> symbols together. To find out what is
- * incompatible symbols, see {@link timerx.exceptions.IllegalSymbolsCombinationException}
+ * incompatible symbols, see {@link IllegalSymbolsCombinationException}
  * </p><br/>
  *
  * Now, let's take a look at the character "L". It can be formatted as milliseconds,

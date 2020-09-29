@@ -5,11 +5,7 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.format.Analyzer;
-import timerx.format.Semantic;
-import timerx.format.StringBuilderTimeFormatter;
-import timerx.util.Checker;
-import timerx.util.Constants.TimeValues;
+import timerx.Constants.TimeValues;
 
 /**
  * Builder to configure and instantiate {@link Timer}.<br/> Usage example:
@@ -56,8 +52,7 @@ public class TimerBuilder {
   /**
    * Set the start format to timer
    *
-   * @param format Format for timer. See {@link StringBuilderTimeFormatter} to find out
-   * about formats
+   * @param format Format for timer. See {@link TimeFormatter} to find out about formats
    */
   @NonNull
   public TimerBuilder startFormat(@NonNull String format) {
@@ -158,8 +153,8 @@ public class TimerBuilder {
    */
   @NonNull
   public Timer build() {
-    Checker.assertNotNull(startSemantic, "Start format should be initialized");
-    Checker.assertTimeInitialized(startTime, "Time should be initialized");
+    Checker.assertNotNull(startSemantic, "Start format is not provided");
+    Checker.assertThat(startTime != TimeValues.NONE, "Start time is not provided");
     return new TimerImpl(startTime, startSemantic, tickListener, finishAction,
         nextFormatsHolder,
         nextActionsHolder);

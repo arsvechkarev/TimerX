@@ -1,15 +1,12 @@
-package timerx.format;
+package timerx;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.RestrictTo.Scope;
 
 /**
  * Information about format, such as positions of different units, smallest available unit
  * and stripped version of format without escape symbols
  */
-@RestrictTo(Scope.LIBRARY)
-public class Semantic {
+class Semantic {
 
   Position hoursPosition;
   Position minutesPosition;
@@ -34,7 +31,7 @@ public class Semantic {
   }
 
   @NonNull
-  public String getFormat() {
+  String getFormat() {
     return strippedFormat;
   }
 

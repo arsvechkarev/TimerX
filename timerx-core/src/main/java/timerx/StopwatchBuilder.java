@@ -1,14 +1,11 @@
 package timerx;
 
-import static timerx.util.Checker.assertTimeNotNegative;
+import static timerx.Checker.assertTimeNotNegative;
 
 import androidx.annotation.NonNull;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.format.Analyzer;
-import timerx.format.Semantic;
-import timerx.util.Checker;
 
 /**
  * Builder to configure and instantiate {@link Stopwatch}.<br/> Usage example:

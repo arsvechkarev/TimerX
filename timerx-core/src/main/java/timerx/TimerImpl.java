@@ -9,15 +9,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import androidx.annotation.NonNull;
-import androidx.annotation.RestrictTo;
-import androidx.annotation.RestrictTo.Scope;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
-import timerx.format.Semantic;
-import timerx.format.StringBuilderTimeFormatter;
 
-@RestrictTo(Scope.LIBRARY)
 class TimerImpl implements Timer {
 
   private final int MSG = 3;

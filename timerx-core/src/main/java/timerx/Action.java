@@ -1,7 +1,7 @@
 package timerx;
 
 /**
- * Interface to run some action at the certain time
+ * Interface to run an action at a certain time
  *
  * @see TimerBuilder
  * @see StopwatchBuilder
