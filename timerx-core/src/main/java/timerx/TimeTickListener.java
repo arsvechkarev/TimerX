@@ -7,5 +7,5 @@ import androidx.annotation.NonNull;
  */
 public interface TimeTickListener {
 
-  void onTick(@NonNull CharSequence time);
+  void onTick(@NonNull CharSequence time, long millis);
 }

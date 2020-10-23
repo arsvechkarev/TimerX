@@ -117,7 +117,7 @@ class StopwatchImpl implements Stopwatch {
         notifyActionIfNeeded();
         if (tickListener != null) {
           CharSequence format = timeFormatter.format(currentTime);
-          tickListener.onTick(format);
+          tickListener.onTick(format, currentTime);
         }
         long executionDelay = SystemClock.elapsedRealtime() - executionStartedTime;
         sendEmptyMessageDelayed(MSG, delay - executionDelay);

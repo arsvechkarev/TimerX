@@ -126,7 +126,7 @@ class TimerImpl implements Timer {
         }
         if (tickListener != null) {
           CharSequence formattedTime = timeFormatter.format(currentTime);
-          tickListener.onTick(formattedTime);
+          tickListener.onTick(formattedTime, currentTime);
         }
         long executionTime = SystemClock.elapsedRealtime() - startExecution;
         sendMessageDelayed(obtainMessage(MSG), interval - executionTime);
@@ -155,7 +155,7 @@ class TimerImpl implements Timer {
   private void finishTimer() {
     currentTime = 0;
     if (tickListener != null) {
-      tickListener.onTick(timeFormatter.format(currentTime));
+      tickListener.onTick(timeFormatter.format(currentTime), currentTime);
     }
     if (finishAction != null) {
       finishAction.run();
