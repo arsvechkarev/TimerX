@@ -34,7 +34,7 @@ class TimerFragment : Fragment() {
         .actionWhen(5, SECONDS) { showToast("5s left") }
         .changeFormatWhen(20, SECONDS, "MM.SS.LL")
         .changeFormatWhen(10, SECONDS, "SSs LLLms")
-        .onTick { time ->
+        .onTick { time, millis ->
           text_time.text = time
         }
         .onFinish {

@@ -32,7 +32,7 @@ class StopwatchFragment : Fragment() {
         .actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }
         .actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
         .actionWhen(20, TimeUnit.SECONDS) { showToast("20s passed") }
-        .onTick { time ->
+        .onTick { time, millis ->
           text_time.text = time
         }
         .build()
