@@ -27,13 +27,8 @@ class TimerFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     
     val timer = TimerBuilder()
-        .startFormat("HH:MM:SS:LL")
-        .startTime(30, SECONDS)
-        .actionWhen(20, SECONDS) { showToast("20s left") }
-        .actionWhen(10, SECONDS) { showToast("10s left") }
-        .actionWhen(5, SECONDS) { showToast("5s left") }
-        .changeFormatWhen(20, SECONDS, "MM.SS.LL")
-        .changeFormatWhen(10, SECONDS, "SSs LLLms")
+        .startFormat("MM:SS")
+        .startTime(60, SECONDS)
         .onTick { time, millis ->
           text_time.text = time
         }
