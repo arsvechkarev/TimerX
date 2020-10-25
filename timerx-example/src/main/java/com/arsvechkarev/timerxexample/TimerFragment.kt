@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.fragment_timer.btn_reset
 import kotlinx.android.synthetic.main.fragment_timer.btn_start
 import kotlinx.android.synthetic.main.fragment_timer.btn_stop
 import kotlinx.android.synthetic.main.fragment_timer.text_time
+import timerx.Timer
 import timerx.TimerBuilder
 import java.util.concurrent.TimeUnit.SECONDS
 
@@ -17,6 +18,8 @@ import java.util.concurrent.TimeUnit.SECONDS
  * Example of using a timer
  */
 class TimerFragment : Fragment() {
+  
+  private lateinit var timer: Timer
   
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                             savedInstanceState: Bundle?): View? {
@@ -26,7 +29,7 @@ class TimerFragment : Fragment() {
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
     
-    val timer = TimerBuilder()
+    timer = TimerBuilder()
         .startFormat("MM:SS")
         .startTime(60, SECONDS)
         .onTick { time, millis ->
@@ -50,6 +53,10 @@ class TimerFragment : Fragment() {
       text_time.text = timer.formattedStartTime
       timer.reset()
     }
-    
+  }
+  
+  override fun onDestroyView() {
+    super.onDestroyView()
+    timer.release()
   }
 }

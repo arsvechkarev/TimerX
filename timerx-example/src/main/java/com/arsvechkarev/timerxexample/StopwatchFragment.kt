@@ -10,6 +10,7 @@ import kotlinx.android.synthetic.main.fragment_stopwatch.btn_reset
 import kotlinx.android.synthetic.main.fragment_stopwatch.btn_start
 import kotlinx.android.synthetic.main.fragment_stopwatch.btn_stop
 import kotlinx.android.synthetic.main.fragment_stopwatch.text_time
+import timerx.Stopwatch
 import timerx.StopwatchBuilder
 import java.util.concurrent.TimeUnit
 
@@ -19,6 +20,8 @@ import java.util.concurrent.TimeUnit
 class StopwatchFragment : Fragment() {
   
   
+  private lateinit var stopwatch: Stopwatch
+  
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                             savedInstanceState: Bundle?): View? {
     return inflater.inflate(R.layout.fragment_stopwatch, container, false)
@@ -26,8 +29,8 @@ class StopwatchFragment : Fragment() {
   
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-  
-    val timer = StopwatchBuilder()
+    
+    stopwatch = StopwatchBuilder()
         .startFormat("SS:LLL")
         .actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }
         .actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
@@ -37,18 +40,23 @@ class StopwatchFragment : Fragment() {
         }
         .build()
     
-    text_time.text = timer.formattedStartTime
+    text_time.text = stopwatch.formattedStartTime
     
-    btn_start.setOnClickListener { timer.start() }
+    btn_start.setOnClickListener { stopwatch.start() }
     
     btn_stop.setOnClickListener {
-      timer.stop()
-      showToast("Current time in seconds = " + timer.getTimeIn(TimeUnit.SECONDS))
+      stopwatch.stop()
+      showToast("Current time in seconds = " + stopwatch.getTimeIn(TimeUnit.SECONDS))
     }
     
     btn_reset.setOnClickListener {
-      text_time.text = timer.formattedStartTime
-      timer.reset()
+      text_time.text = stopwatch.formattedStartTime
+      stopwatch.reset()
     }
+  }
+  
+  override fun onDestroyView() {
+    super.onDestroyView()
+    stopwatch.release()
   }
 }

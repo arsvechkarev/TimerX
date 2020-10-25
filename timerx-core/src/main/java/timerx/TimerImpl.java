@@ -38,8 +38,8 @@ class TimerImpl implements Timer {
 
   private final SortedSet<NextFormatsHolder> nextFormatsHolders;
   private final SortedSet<ActionsHolder> nextActionsHolders;
-  private SortedSet<NextFormatsHolder> copyOfFormatsHolders;
-  private SortedSet<ActionsHolder> copyOfNextActionsHolders;
+  private final SortedSet<NextFormatsHolder> copyOfFormatsHolders;
+  private final SortedSet<ActionsHolder> copyOfNextActionsHolders;
 
   TimerImpl(long startTime, Semantic startSemantic, TimeTickListener tickListener,
       Action finishAction, SortedSet<NextFormatsHolder> nextFormatsHolders,
@@ -51,6 +51,8 @@ class TimerImpl implements Timer {
     this.nextFormatsHolders = nextFormatsHolders;
     this.nextActionsHolders = nextActionsHolders;
     currentTime = startTime;
+    copyOfFormatsHolders = new TreeSet<>(nextFormatsHolders);
+    copyOfNextActionsHolders = new TreeSet<>(nextActionsHolders);
   }
 
   @NonNull
@@ -64,8 +66,6 @@ class TimerImpl implements Timer {
     if (state != RESUMED) {
       if (state == INACTIVE) {
         currentTime = startTime;
-        copyOfFormatsHolders = new TreeSet<>(nextFormatsHolders);
-        copyOfNextActionsHolders = new TreeSet<>(nextActionsHolders);
         applyFormat(startSemantic);
         millisInFuture = SystemClock.elapsedRealtime() + startTime;
       } else {

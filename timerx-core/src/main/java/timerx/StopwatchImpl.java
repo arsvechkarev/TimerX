@@ -36,8 +36,8 @@ class StopwatchImpl implements Stopwatch {
 
   private final SortedSet<NextFormatsHolder> nextFormatsHolders;
   private final SortedSet<ActionsHolder> nextActionsHolders;
-  private SortedSet<NextFormatsHolder> copyOfNextFormatsHolder;
-  private SortedSet<ActionsHolder> copyOfNextActionsHolders;
+  private final SortedSet<NextFormatsHolder> copyOfNextFormatsHolder;
+  private final SortedSet<ActionsHolder> copyOfNextActionsHolders;
 
   StopwatchImpl(Semantic startSemantic, TimeTickListener tickListener,
       SortedSet<NextFormatsHolder> nextFormatsHolders,
@@ -46,6 +46,8 @@ class StopwatchImpl implements Stopwatch {
     this.tickListener = tickListener;
     this.nextFormatsHolders = nextFormatsHolders;
     this.nextActionsHolders = nextActionsHolders;
+    copyOfNextFormatsHolder = new TreeSet<>(nextFormatsHolders);
+    copyOfNextActionsHolders = new TreeSet<>(nextActionsHolders);
   }
 
   @Override
@@ -58,8 +60,6 @@ class StopwatchImpl implements Stopwatch {
   public void start() {
     if (state != RESUMED) {
       if (state == INACTIVE) {
-        copyOfNextFormatsHolder = new TreeSet<>(nextFormatsHolders);
-        copyOfNextActionsHolders = new TreeSet<>(nextActionsHolders);
         applyFormat(startSemantic);
         baseTime = SystemClock.elapsedRealtime();
       } else {
