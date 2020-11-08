@@ -19,7 +19,6 @@ import java.util.concurrent.TimeUnit
  */
 class StopwatchFragment : Fragment() {
   
-  
   private lateinit var stopwatch: Stopwatch
   
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -35,7 +34,7 @@ class StopwatchFragment : Fragment() {
         .actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }
         .actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
         .actionWhen(20, TimeUnit.SECONDS) { showToast("20s passed") }
-        .onTick { time, millis ->
+        .onTick { time ->
           text_time.text = time
         }
         .build()

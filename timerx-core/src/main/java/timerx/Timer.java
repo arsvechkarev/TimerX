@@ -39,7 +39,7 @@ public interface Timer {
   void stop();
 
   /**
-   * Stops timer and resets time to zero. Subsequent calls have no effect
+   * Stops timer and resets time to initial time. Subsequent calls have no effect
    */
   void reset();
 

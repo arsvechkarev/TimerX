@@ -1,6 +1,5 @@
 package com.arsvechkarev.timerxexample
 
-
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -32,7 +31,7 @@ class TimerFragment : Fragment() {
     timer = TimerBuilder()
         .startFormat("MM:SS")
         .startTime(60, SECONDS)
-        .onTick { time, millis ->
+        .onTick { time ->
           text_time.text = time
         }
         .onFinish {
