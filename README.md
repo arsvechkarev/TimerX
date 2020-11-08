@@ -20,7 +20,7 @@ allprojects {
 And then, add following lines in your module-level build.gradle file:
 ```groovy
 dependencies {
-      implementation 'com.arsvechkarev:timerx:2.1.0'
+      implementation 'com.arsvechkarev:timerx:2.3.2'
 }
 ```
 
