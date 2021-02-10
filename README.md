@@ -32,13 +32,13 @@ Stopwatch stopwatch = new StopwatchBuilder()
       // Set the initial format
       .startFormat("MM:SS")
       // Set the tick listener for displaying time
-      .tickListener(time -> textViewStopwatch.setText(time)) 
+      .onTick(time -> textViewStopwatch.setText(time)) 
       // When time is equal to one hour, change format to "HH:MM:SS"
       .changeFormatWhen(1, TimeUnit.HOURS, "HH:MM:SS")
       .build();
       
 // Start the stopwatch
-stowatch.start()
+stopwatch.start()
 ...
 ```
 
@@ -50,7 +50,7 @@ Timer timer = new TimerBuilder()
       // Set the initial format
       .startFormat("MM:SS")
       // Set the tick listener that receives formatted time
-      .tickListener(time -> textViewTimer.setText(time))
+      .onTick(time -> textViewTimer.setText(time))
       // Run an action when the remaining time is 30 seсonds
       .actionWhen(30, TimeUnit.SECONDS, () -> {
           Toast.makeText(context, "30 seconds left!", Toast.LENGTH_SHORT).show();
