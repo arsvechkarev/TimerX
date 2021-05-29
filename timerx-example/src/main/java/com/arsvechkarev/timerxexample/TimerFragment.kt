@@ -10,7 +10,7 @@ import kotlinx.android.synthetic.main.fragment_timer.btn_start
 import kotlinx.android.synthetic.main.fragment_timer.btn_stop
 import kotlinx.android.synthetic.main.fragment_timer.text_time
 import timerx.Timer
-import timerx.TimerBuilder
+import timerx.buildTimer
 import java.util.concurrent.TimeUnit.SECONDS
 
 /**
@@ -27,22 +27,18 @@ class TimerFragment : Fragment() {
   
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    
-    timer = TimerBuilder()
-        .startFormat("MM:SS")
-        .startTime(60, SECONDS)
-        .onTick { time ->
-          text_time.text = time
-        }
-        .onFinish {
-          showToast("Finished!")
-        }
-        .build()
-    
+  
+    timer = buildTimer {
+      startFormat("MM:SS")
+      startTime(60, SECONDS)
+      onTick { time -> text_time.text = time }
+      onFinish { showToast("Finished!") }
+    }
+  
     text_time.text = timer.formattedStartTime
-    
+  
     btn_start.setOnClickListener { timer.start() }
-    
+  
     btn_stop.setOnClickListener {
       timer.stop()
       showToast("Remaining time in seconds = " + timer.getRemainingTimeIn(SECONDS))

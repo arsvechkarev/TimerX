@@ -11,7 +11,7 @@ import kotlinx.android.synthetic.main.fragment_stopwatch.btn_start
 import kotlinx.android.synthetic.main.fragment_stopwatch.btn_stop
 import kotlinx.android.synthetic.main.fragment_stopwatch.text_time
 import timerx.Stopwatch
-import timerx.StopwatchBuilder
+import timerx.buildStopwatch
 import java.util.concurrent.TimeUnit
 
 /**
@@ -28,21 +28,19 @@ class StopwatchFragment : Fragment() {
   
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-    
-    stopwatch = StopwatchBuilder()
-        .startFormat("SS:LLL")
-        .actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }
-        .actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
-        .actionWhen(20, TimeUnit.SECONDS) { showToast("20s passed") }
-        .onTick { time ->
-          text_time.text = time
-        }
-        .build()
-    
+  
+    stopwatch = buildStopwatch {
+      startFormat("SS:LLL")
+      actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }
+      actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
+      actionWhen(20, TimeUnit.SECONDS) { showToast("20s passed") }
+      onTick { time -> text_time.text = time }
+    }
+  
     text_time.text = stopwatch.formattedStartTime
-    
+  
     btn_start.setOnClickListener { stopwatch.start() }
-    
+  
     btn_stop.setOnClickListener {
       stopwatch.stop()
       showToast("Current time in seconds = " + stopwatch.getTimeIn(TimeUnit.SECONDS))

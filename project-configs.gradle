@@ -1,19 +1,9 @@
 ext {
-
   applicationId = "com.arsvechkarev.timerxexample"
   compileSdkVersion = 28
-  minSdkVersion = 14
+  minSdkVersion = 19
   targetSdkVersion = 28
   versionCode = 1
   versionName = "1.0"
   testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-
-  gradleToolsVersion = "3.4.2"
-  novodaVersion = "0.9.1"
-
-  build = [
-      gradleTools: "com.android.tools.build:gradle:$gradleToolsVersion",
-      novoda: "com.novoda:bintray-release:$novodaVersion"
-  ]
-
 }

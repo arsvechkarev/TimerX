@@ -1,4 +1,4 @@
-package timerx;
+package timerx
 
 /**
  * This exception is thrown when special symbols are contained multiple times in the input
@@ -10,9 +10,4 @@ package timerx;
  * If you want to use special symbols as a regular letters, you can escape them with
  * symbol "#". Examples: "#Hello HH:MM:SS", "HH#H MM#M SS#S"
  */
-public class NonContiguousFormatSymbolsException extends RuntimeException {
-
-  public NonContiguousFormatSymbolsException(String message) {
-    super(message);
-  }
-}
+public class NonContiguousFormatSymbolsException(message: String?) : RuntimeException(message)
