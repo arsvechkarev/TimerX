@@ -26,6 +26,11 @@ public interface Stopwatch {
   public val currentTimeInMillis: Long
   
   /**
+   * Returns current time formatted according to current format
+   */
+  public val currentFormattedTime: CharSequence
+  
+  /**
    * Depending on the state of the stopwatch there are three possible variants of
    * behavior:
    *
@@ -45,7 +50,8 @@ public interface Stopwatch {
   public fun stop()
   
   /**
-   * Sets time of the stopwatch
+   * Sets time to the stopwatch. Time will be set whether stopwatch is running or not. Note that
+   * calling this **will not** result on onTickListener() callback invocation
    */
   public fun setTimeTo(time: Long, timeUnit: TimeUnit)
   

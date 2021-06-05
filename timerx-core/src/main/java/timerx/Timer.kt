@@ -22,9 +22,14 @@ public interface Timer {
   public val formattedStartTime: CharSequence
   
   /**
-   * Returns current time of the timer in milliseconds
+   * Returns remaining time of the timer in milliseconds
    */
-  public val currentTimeInMillis: Long
+  public val remainingTimeInMillis: Long
+  
+  /**
+   * Returns current time formatted according to current format
+   */
+  public val remainingFormattedTime: CharSequence
   
   /**
    * Depending on the state of the timer there are three possible variants of behavior:
@@ -45,7 +50,8 @@ public interface Timer {
   public fun stop()
   
   /**
-   * Sets time of the timer
+   * Sets time to the timer. Time will be set whether timer is running or not. Note that
+   * calling this **will not** result on onTickListener() callback invocation
    */
   public fun setTimeTo(time: Long, timeUnit: TimeUnit)
   
@@ -53,13 +59,6 @@ public interface Timer {
    * Stops timer and resets time to initial value. Subsequent calls have no effect
    */
   public fun reset()
-  
-  /**
-   * Returns remaining time in specified unit
-   *
-   * @param timeUnit time unit to witch time will be converted
-   */
-  public fun getRemainingTimeIn(timeUnit: TimeUnit): Long
   
   /**
    * Stops timer and removes all tick and actions listeners and there is no guarantee that timer

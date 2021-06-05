@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Message
 import android.os.SystemClock
+import timerx.Constants.TimeValues
+import timerx.TimeCountingState.INACTIVE
+import timerx.TimeCountingState.PAUSED
+import timerx.TimeCountingState.RESUMED
 import java.util.SortedSet
 import java.util.TreeSet
 import java.util.concurrent.TimeUnit
@@ -21,55 +25,58 @@ internal class TimerImpl(
   private var currentTime: Long = startTime
   
   // Millis when timer should stop
-  private var millisInFuture: Long = 0
+  private var millisInFuture: Long = TimeValues.NONE
   
   // Interval for timer
   private var interval: Long = 0
   
-  private var state = TimeCountingState.INACTIVE
-  private var timeFormatter: StringBuilderTimeFormatter? = null
+  private var state = INACTIVE
+  private var timeFormatter = StringBuilderTimeFormatter(startSemantic)
   private val copyOfSemanticsHolders: SortedSet<SemanticsHolder> = TreeSet(semanticsHolders)
   private val copyOfNextActionsHolders: SortedSet<ActionsHolder> = TreeSet(nextActionsHolders)
   
   override val formattedStartTime: CharSequence
     get() = StringBuilderTimeFormatter(startSemantic).format(startTime)
   
-  override val currentTimeInMillis: Long get() = currentTime
+  override val remainingTimeInMillis: Long
+    get() = currentTime
+  
+  override val remainingFormattedTime: CharSequence
+    get() = timeFormatter.format(currentTime)
   
   override fun start() {
-    if (state != TimeCountingState.RESUMED) {
-      if (state == TimeCountingState.INACTIVE) {
-        currentTime = startTime
-        applyFormat(startSemantic)
-        millisInFuture = SystemClock.elapsedRealtime() + startTime
-      } else {
-        millisInFuture = SystemClock.elapsedRealtime() + currentTime
-      }
-      handler!!.sendMessage(handler!!.obtainMessage())
-      state = TimeCountingState.RESUMED
+    if (state == RESUMED) return
+    if (millisInFuture == TimeValues.NONE) {
+      currentTime = startTime
+      applyFormat(startSemantic)
+      millisInFuture = SystemClock.elapsedRealtime() + startTime
+    } else {
+      millisInFuture = SystemClock.elapsedRealtime() + currentTime
     }
+    handler!!.sendMessage(handler!!.obtainMessage())
+    state = RESUMED
   }
   
   override fun stop() {
-    state = TimeCountingState.PAUSED
+    state = PAUSED
     handler!!.removeCallbacksAndMessages(null)
   }
   
   override fun setTimeTo(time: Long, timeUnit: TimeUnit) {
+    val millis = timeUnit.toMillis(time)
+    millisInFuture = SystemClock.elapsedRealtime() + millis
+    currentTime = millis
   }
   
   override fun reset() {
-    state = TimeCountingState.INACTIVE
+    millisInFuture = TimeValues.NONE
+    state = INACTIVE
     copyOfNextActionsHolders.clear()
     copyOfSemanticsHolders.clear()
     copyOfNextActionsHolders.addAll(nextActionsHolders)
     copyOfSemanticsHolders.addAll(semanticsHolders)
     handler!!.removeCallbacksAndMessages(null)
     applyFormat(startSemantic)
-  }
-  
-  override fun getRemainingTimeIn(timeUnit: TimeUnit): Long {
-    return timeUnit.convert(currentTime, TimeUnit.MILLISECONDS)
   }
   
   override fun release() {
@@ -84,7 +91,7 @@ internal class TimerImpl(
   
   private fun applyFormat(semantic: Semantic) {
     timeFormatter = StringBuilderTimeFormatter(semantic)
-    interval = timeFormatter!!.optimalDelay
+    interval = timeFormatter.optimalDelay
   }
   
   @SuppressLint("HandlerLeak")
@@ -100,7 +107,7 @@ internal class TimerImpl(
           finishTimer()
           return
         }
-        tickListener?.onTick(timeFormatter!!.format(currentTime))
+        tickListener?.onTick(timeFormatter.format(currentTime))
         val executionTime = SystemClock.elapsedRealtime() - startExecution
         sendMessageDelayed(obtainMessage(), interval - executionTime)
       }
@@ -108,7 +115,7 @@ internal class TimerImpl(
   }
   
   private fun changeFormatIfNeed() {
-    if (copyOfSemanticsHolders.size > 0 && timeFormatter!!.format != copyOfSemanticsHolders.first().semantic.format
+    if (copyOfSemanticsHolders.size > 0 && timeFormatter.format != copyOfSemanticsHolders.first().semantic.format
         && currentTime <= copyOfSemanticsHolders.first().millis) {
       applyFormat(copyOfSemanticsHolders.first().semantic)
       copyOfSemanticsHolders.remove(copyOfSemanticsHolders.first())
@@ -125,9 +132,7 @@ internal class TimerImpl(
   
   private fun finishTimer() {
     currentTime = 0
-    if (tickListener != null) {
-      tickListener!!.onTick(timeFormatter!!.format(currentTime))
-    }
+    tickListener?.onTick(timeFormatter.format(currentTime))
     finishAction?.run()
     reset()
   }

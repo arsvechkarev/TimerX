@@ -28,6 +28,12 @@
     android:text="Stop" />
 
   <Button
+    android:id="@+id/btn_set_time"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Set time to 15 seconds"/>
+
+  <Button
     android:id="@+id/btn_reset"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"

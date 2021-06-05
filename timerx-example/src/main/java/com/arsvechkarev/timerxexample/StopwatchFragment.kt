@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.fragment_stopwatch.btn_reset
+import kotlinx.android.synthetic.main.fragment_stopwatch.btn_set_time
 import kotlinx.android.synthetic.main.fragment_stopwatch.btn_start
 import kotlinx.android.synthetic.main.fragment_stopwatch.btn_stop
 import kotlinx.android.synthetic.main.fragment_stopwatch.text_time
@@ -45,6 +46,14 @@ class StopwatchFragment : Fragment() {
     btn_stop.setOnClickListener {
       stopwatch.stop()
       showToast("Current time in milliseconds = " + stopwatch.currentTimeInMillis)
+    }
+    
+    btn_set_time.setOnClickListener {
+      stopwatch.setTimeTo(25, TimeUnit.SECONDS)
+      // Since call to setTimeTo() does not result in invoking onTick() callback,
+      // we are setting time to textView manually so that it appears there even if
+      // stopwatch is paused now
+      text_time.text = stopwatch.currentFormattedTime
     }
     
     btn_reset.setOnClickListener {
