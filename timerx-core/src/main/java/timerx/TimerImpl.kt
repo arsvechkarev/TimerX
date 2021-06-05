@@ -53,6 +53,9 @@ internal class TimerImpl(
     handler!!.removeCallbacksAndMessages(null)
   }
   
+  override fun setTimeTo(time: Long, timeUnit: TimeUnit) {
+  }
+  
   override fun reset() {
     state = TimeCountingState.INACTIVE
     copyOfNextActionsHolders.clear()

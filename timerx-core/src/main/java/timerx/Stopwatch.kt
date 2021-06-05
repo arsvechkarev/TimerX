@@ -24,13 +24,13 @@ public interface Stopwatch {
    * Depending on the state of the stopwatch there are three possible variants of
    * behavior:
    *
-   *  - If stopwatch hasn't been started yet or [.reset] was called, then
+   * - If stopwatch hasn't been started yet or [.reset] was called, then
    * stopwatch starts from 0
    *
-   *  - If stopwatch has been started, and method [.stop] was called, then
+   * - If stopwatch has been started, and method [.stop] was called, then
    * stopwatch continues from previously stopped time
    *
-   *  - If stopwatch is running, then this method does nothing
+   * - If stopwatch is running, then this method does nothing
    */
   public fun start()
   
@@ -40,7 +40,12 @@ public interface Stopwatch {
   public fun stop()
   
   /**
-   * Stops stopwatch and resets time to zero. Subsequent calls have no effect
+   * Sets time of the stopwatch
+   */
+  public fun setTimeTo(time: Long, timeUnit: TimeUnit)
+  
+  /**
+   * Stops stopwatch and resets time to initial time. Subsequent calls have no effect
    */
   public fun reset()
   

@@ -30,25 +30,32 @@ internal class StopwatchImpl(
   private val copyOfNextActionsHolders: SortedSet<ActionsHolder> = TreeSet(nextActionsHolders)
   
   override val formattedStartTime: CharSequence
-    get() = StringBuilderTimeFormatter(startSemantic).format(0L)
+    get() = StringBuilderTimeFormatter(startSemantic).format(startTime)
   
   override fun start() {
-    if (state != TimeCountingState.RESUMED) {
-      initialTime = if (state == TimeCountingState.INACTIVE) {
+    initialTime = when (state) {
+      TimeCountingState.RESUMED -> return
+      TimeCountingState.INACTIVE -> {
         applyFormat(startSemantic)
-        SystemClock.elapsedRealtime()
-      } else {
-        require(state == TimeCountingState.PAUSED)
+        SystemClock.elapsedRealtime() - startTime
+      }
+      TimeCountingState.PAUSED -> {
         SystemClock.elapsedRealtime() - currentTime
       }
-      handler!!.sendMessage(handler!!.obtainMessage())
-      state = TimeCountingState.RESUMED
     }
+    handler!!.sendMessage(handler!!.obtainMessage())
+    state = TimeCountingState.RESUMED
   }
   
   override fun stop() {
     state = TimeCountingState.PAUSED
     handler!!.removeCallbacksAndMessages(null)
+  }
+  
+  override fun setTimeTo(time: Long, timeUnit: TimeUnit) {
+    val newTime = timeUnit.toMillis(time)
+    initialTime = SystemClock.elapsedRealtime() - newTime
+    currentTime = newTime
   }
   
   override fun reset() {

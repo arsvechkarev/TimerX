@@ -24,13 +24,13 @@ public interface Timer {
   /**
    * Depending on the state of the timer there are three possible variants of behavior:
    *
-   *  - If timer hasn't been started yet or [reset] was called, then
+   * - If timer hasn't been started yet or [reset] was called, then
    * the timer starts from the initial time
    *
-   *  - If timer has been started, and method [stop] was called, then
+   * - If timer has been started, and method [stop] was called, then
    * the timer continues running
    *
-   *  - If timer is running, then the method does nothing
+   * - If timer is running, then the method does nothing
    */
   public fun start()
   
@@ -38,6 +38,11 @@ public interface Timer {
    * Stops timer if it is active. If it isn't active, then the method does nothing
    */
   public fun stop()
+  
+  /**
+   * Sets time of the timer
+   */
+  public fun setTimeTo(time: Long, timeUnit: TimeUnit)
   
   /**
    * Stops timer and resets time to initial time. Subsequent calls have no effect

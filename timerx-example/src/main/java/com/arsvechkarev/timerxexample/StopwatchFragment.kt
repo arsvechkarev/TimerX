@@ -28,21 +28,22 @@ class StopwatchFragment : Fragment() {
   
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
-  
+    
     stopwatch = buildStopwatch {
+      startTime(5, TimeUnit.SECONDS)
       startFormat("SS:LLL")
       actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }
       actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
       actionWhen(20, TimeUnit.SECONDS) { showToast("20s passed") }
       onTick { time -> text_time.text = time }
     }
-  
+    
     text_time.text = stopwatch.formattedStartTime
-  
+    
     btn_start.setOnClickListener { stopwatch.start() }
-  
+    
     btn_stop.setOnClickListener {
-      stopwatch.stop()
+      stopwatch.setTimeTo(95, TimeUnit.SECONDS)
       showToast("Current time in seconds = " + stopwatch.getTimeIn(TimeUnit.SECONDS))
     }
     
