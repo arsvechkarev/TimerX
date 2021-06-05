@@ -10,17 +10,19 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
   
   private val timeContainer = TimeContainer()
   
-  private val mutableString = StringBuilder(semantic.strippedFormat.length).apply {
+  private var mutableString = StringBuilder(semantic.strippedFormat.length).apply {
     append(semantic.strippedFormat)
   }
+  
+  private var currentLargestAvailableUnitLength = semantic.largestAvailableUnitLength
   
   override val optimalDelay: Long
     get() {
       var delay: Long = 100
       if (semantic.has(TimeUnitType.R_MILLISECONDS)) {
-        if (semantic.rMillisPosition.length() == 2) {
+        if (semantic.rMillisPosition.length == 2) {
           delay = 10
-        } else if (semantic.rMillisPosition.length() > 2) {
+        } else if (semantic.rMillisPosition.length > 2) {
           delay = 1
         }
       }
@@ -72,23 +74,46 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
   
   private fun applyFormat(millisToShow: Long, secondsToShow: Long,
                           minutesToShow: Long, hoursToShow: Long) {
-    if (millisToShow != TimeValues.NONE) updateString(millisToShow, TimeUnitType.R_MILLISECONDS)
-    if (secondsToShow != TimeValues.NONE) updateString(secondsToShow, TimeUnitType.SECONDS)
-    if (minutesToShow != TimeValues.NONE) updateString(minutesToShow, TimeUnitType.MINUTES)
-    if (hoursToShow != TimeValues.NONE) updateString(hoursToShow, TimeUnitType.HOURS)
+    if (millisToShow != TimeValues.NONE) {
+      updateString(millisToShow, TimeUnitType.R_MILLISECONDS)
+    }
+    if (secondsToShow != TimeValues.NONE) {
+      updateString(secondsToShow, TimeUnitType.SECONDS)
+    }
+    if (minutesToShow != TimeValues.NONE) {
+      updateString(minutesToShow, TimeUnitType.MINUTES)
+    }
+    if (hoursToShow != TimeValues.NONE) {
+      updateString(hoursToShow, TimeUnitType.HOURS)
+    }
   }
   
   private fun updateString(time: Long, timeUnitType: TimeUnitType) {
     var timeVar = time
-    val position = positionOfUnit(timeUnitType)
     val timeLength = lengthOf(timeVar)
+    val position = if (semantic.largestAvailableUnit == timeUnitType) {
+      val position = semantic.getPositionOf(timeUnitType)
+      val howMuchZerosToAdd = (timeLength - currentLargestAvailableUnitLength).coerceAtLeast(0)
+      if (currentLargestAvailableUnitLength < timeLength) {
+        currentLargestAvailableUnitLength = timeLength
+        mutableString = StringBuilder(mutableString).apply {
+          repeat(howMuchZerosToAdd) { insert(0, ' ') }
+        }
+      }
+      val length = semantic.getPositionOf(semantic.largestAvailableUnit).length
+      val diff = (timeLength - length).coerceAtLeast(0)
+      position.copy(end = position.end + diff)
+    } else {
+      semantic.getPositionOf(timeUnitType)
+          .offsetBy(mutableString.length - semantic.strippedFormat.length)
+    }
     if (!semantic.hasOnlyRMillis() && timeUnitType === TimeUnitType.R_MILLISECONDS) {
-      if (semantic.rMillisPosition.length() < 3 && timeLength < 3) {
-        val difference = 3 - semantic.rMillisPosition.length()
+      if (semantic.rMillisPosition.length < 3 && timeLength < 3) {
+        val difference = 3 - semantic.rMillisPosition.length
         timeVar /= 10.0.pow(difference.toDouble()).toLong()
       }
-      if (semantic.rMillisPosition.length() < timeLength) {
-        val difference = timeLength - semantic.rMillisPosition.length()
+      if (semantic.rMillisPosition.length < timeLength) {
+        val difference = timeLength - semantic.rMillisPosition.length
         timeVar /= 10.0.pow(difference.toDouble()).toLong()
       }
     }
@@ -96,21 +121,9 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
     val range = (position.end - position.start).coerceAtLeast(updatedTimeLength - 1)
     for (i in position.end downTo position.end - range) {
       val ch = ('0'.code.toLong() + timeVar % 10).toInt().toChar()
-      if (i >= position.start) {
-        mutableString.setCharAt(i, ch)
-      } else {
-        mutableString.insert((i + 1).coerceAtLeast(0), ch)
-      }
+      require(i >= position.start)
+      mutableString.setCharAt(i, ch)
       timeVar /= 10
-    }
-  }
-  
-  private fun positionOfUnit(timeUnitType: TimeUnitType): Position {
-    return when (timeUnitType) {
-      TimeUnitType.HOURS -> semantic.hoursPosition
-      TimeUnitType.MINUTES -> semantic.minutesPosition
-      TimeUnitType.SECONDS -> semantic.secondsPosition
-      TimeUnitType.R_MILLISECONDS -> semantic.rMillisPosition
     }
   }
   

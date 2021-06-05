@@ -1,88 +1,108 @@
 package timerx
 
-import org.junit.Assert
+import org.junit.Assert.assertSame
 import org.junit.Test
+import timerx.TimeUnitType.HOURS
+import timerx.TimeUnitType.MINUTES
+import timerx.TimeUnitType.R_MILLISECONDS
+import timerx.TimeUnitType.SECONDS
 
 class AnalyzerTest {
   
-  private fun smallestAvailableUnitOf(format: String): TimeUnitType {
-    return analyze(format).smallestAvailableUnit
-  }
-  
-  private fun analyze(format: String): Semantic {
-    return Analyzer.analyze(TestHelper.updateFormatIfNeeded(format))
+  @Test
+  fun smallestAvailableUnitTest1() {
+    assertSame(R_MILLISECONDS, smallestAvailableUnitOf("HH:MM:SS.LLL"))
   }
   
   @Test
-  fun positiveTest1() {
-    Assert.assertSame(TimeUnitType.R_MILLISECONDS, smallestAvailableUnitOf("HH:MM:SS.LLL"))
+  fun smallestAvailableUnitTest2() {
+    assertSame(SECONDS, smallestAvailableUnitOf("HhSMM"))
   }
   
   @Test
-  fun positiveTest2() {
-    Assert.assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("HhSMM"))
+  fun smallestAvailableUnitTest3() {
+    assertSame(R_MILLISECONDS, smallestAvailableUnitOf("ssMMmSSmLLl"))
   }
   
   @Test
-  fun positiveTest3() {
-    Assert.assertSame(TimeUnitType.R_MILLISECONDS, smallestAvailableUnitOf("ssMMmSSmLLl"))
+  fun smallestAvailableUnitTest4() {
+    assertSame(MINUTES, smallestAvailableUnitOf("H/\\*)MMMM"))
   }
   
   @Test
-  fun positiveTest4() {
-    Assert.assertSame(TimeUnitType.MINUTES, smallestAvailableUnitOf("H/\\*)MMMM"))
+  fun smallestAvailableUnitTest5() {
+    assertSame(SECONDS, smallestAvailableUnitOf("MMMM%^:SS#$&*"))
   }
   
   @Test
-  fun positiveTest5() {
-    Assert.assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("MMMM%^:SS#$&*"))
+  fun smallestAvailableUnitTest6() {
+    assertSame(R_MILLISECONDS, smallestAvailableUnitOf(":SS::LL::#$&*"))
   }
   
   @Test
-  fun positiveTest6() {
-    Assert.assertSame(TimeUnitType.R_MILLISECONDS, smallestAvailableUnitOf(":SS::LL::#$&*"))
+  fun smallestAvailableUnitTest7() {
+    assertSame(SECONDS, smallestAvailableUnitOf("SSS"))
   }
   
   @Test
-  fun positiveTest7() {
-    Assert.assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("SSS"))
-  }
-  
-  @Test
-  fun positiveTestWithEscaping1() {
-    Assert.assertSame(TimeUnitType.R_MILLISECONDS,
+  fun smallestAvailableUnitTestWithEscaping1() {
+    assertSame(R_MILLISECONDS,
       smallestAvailableUnitOf("H#HMM#M:SS#S:LL#E#Ls##"))
   }
   
   @Test
-  fun positiveTestWithEscaping2() {
-    Assert.assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("HH#H - MM#MSS@#S"))
+  fun smallestAvailableUnitTestWithEscaping2() {
+    assertSame(SECONDS, smallestAvailableUnitOf("HH#H - MM#MSS@#S"))
   }
   
   @Test
-  fun positiveTestWithEscaping3() {
-    Assert.assertSame(TimeUnitType.R_MILLISECONDS, smallestAvailableUnitOf("ssM#MmmSS#Sh#LL#h"))
+  fun smallestAvailableUnitTestWithEscaping3() {
+    assertSame(R_MILLISECONDS, smallestAvailableUnitOf("ssM#MmmSS#Sh#LL#h"))
   }
   
   @Test
-  fun positiveTestWithEscaping4() {
-    Assert.assertSame(TimeUnitType.MINUTES, smallestAvailableUnitOf("H####H/#M#M#MM"))
+  fun smallestAvailableUnitTestWithEscaping4() {
+    assertSame(MINUTES, smallestAvailableUnitOf("H####H/#M#M#MM"))
   }
   
   @Test
-  fun positiveTestWithEscaping5() {
-    Assert.assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("MM#####M#M%^:SS#$&*"))
+  fun smallestAvailableUnitTestWithEscaping5() {
+    assertSame(SECONDS, smallestAvailableUnitOf("MM#####M#M%^:SS#$&*"))
   }
   
   @Test
-  fun positiveTestWithEscaping6() {
-    Assert.assertSame(TimeUnitType.R_MILLISECONDS,
-      smallestAvailableUnitOf(":SS#S==:##LL::#$&*"))
+  fun smallestAvailableUnitTestWithEscaping6() {
+    assertSame(R_MILLISECONDS, smallestAvailableUnitOf(":SS#S==:##LL::#$&*"))
   }
   
   @Test
-  fun positiveTestWithEscaping7() {
-    Assert.assertSame(TimeUnitType.SECONDS, smallestAvailableUnitOf("#S#SS#S#S"))
+  fun smallestAvailableUnitTestWithEscaping7() {
+    assertSame(SECONDS, smallestAvailableUnitOf("#S#SS#S#S"))
+  }
+  
+  @Test
+  fun largestAvailableUnitTest1() {
+    assertSame(MINUTES, largestAvailableUnitOf("MM:SS:LL"))
+  }
+  
+  @Test
+  fun largestAvailableUnitTest2() {
+    assertSame(HOURS, largestAvailableUnitOf("HH:MM:SS:LL"))
+  }
+  
+  @Test
+  fun largestAvailableUnitTest3() {
+    assertSame(SECONDS, largestAvailableUnitOf("__SS:LL"))
+  }
+  
+  @Test
+  fun largestAvailableUnitTestWithEscaping1() {
+    assertSame(MINUTES, largestAvailableUnitOf("#H#H:MM:SS"))
+  }
+  
+  @Test
+  fun largestAvailableUnitTestWithEscaping2() {
+    assertSame(MINUTES, largestAvailableUnitOf("#MM:SS:LL"))
   }
   
   @Test(expected = NoNecessarySymbolsException::class)
@@ -143,5 +163,17 @@ class AnalyzerTest {
   @Test(expected = IllegalSymbolsCombinationException::class)
   fun negativeTestWithIncorrectCombination5() {
     analyze(":M#ME#::LL")
+  }
+  
+  private fun smallestAvailableUnitOf(format: String): TimeUnitType {
+    return analyze(format).smallestAvailableUnit
+  }
+  
+  private fun largestAvailableUnitOf(format: String): TimeUnitType {
+    return analyze(format).largestAvailableUnit
+  }
+  
+  private fun analyze(format: String): Semantic {
+    return Analyzer.analyze(TestHelper.updateFormatIfNeeded(format))
   }
 }

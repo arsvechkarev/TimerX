@@ -1,6 +1,8 @@
 package timerx
 
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import timerx.Analyzer.analyze
 
@@ -10,9 +12,9 @@ class SemanticTest {
   fun basicFormatTest() {
     val format = "MM-SS-LL"
     val semantic = createSemantic(format)
-    Assert.assertEquals(semantic.format, format)
-    Assert.assertEquals(semantic.format, format)
-    Assert.assertEquals(semantic.format, format)
+    assertEquals(semantic.format, format)
+    assertEquals(semantic.format, format)
+    assertEquals(semantic.format, format)
   }
   
   @Test
@@ -20,39 +22,39 @@ class SemanticTest {
     val format = "#Hello: HH:MM.SS ##LOL"
     val strippedFormat = "Hello: HH:MM.SS #LOL"
     val semantic = createSemantic(format)
-    Assert.assertEquals(semantic.format, format)
-    Assert.assertEquals(semantic.strippedFormat, strippedFormat)
-    Assert.assertEquals(semantic.strippedFormat, strippedFormat)
+    assertEquals(semantic.format, format)
+    assertEquals(semantic.strippedFormat, strippedFormat)
+    assertEquals(semantic.strippedFormat, strippedFormat)
   }
   
   @Test
   fun positionsTest() {
     val semantic = createSemantic("QHH:SS:MM--")
-    Assert.assertTrue(hasRange(semantic.hoursPosition, 1, 2))
-    Assert.assertTrue(hasRange(semantic.minutesPosition, 7, 8))
-    Assert.assertTrue(hasRange(semantic.secondsPosition, 4, 5))
-    Assert.assertTrue(semantic.rMillisPosition.isEmpty)
+    assertTrue(hasRange(semantic.hoursPosition, 1, 2))
+    assertTrue(hasRange(semantic.minutesPosition, 7, 8))
+    assertTrue(hasRange(semantic.secondsPosition, 4, 5))
+    assertTrue(semantic.rMillisPosition.isEmpty)
   }
   
   @Test
   fun hasUnitsTest() {
     val semantic = createSemantic("HH:MM")
-    Assert.assertTrue(semantic.has(TimeUnitType.HOURS))
-    Assert.assertTrue(semantic.has(TimeUnitType.MINUTES))
-    Assert.assertFalse(semantic.has(TimeUnitType.SECONDS))
-    Assert.assertFalse(semantic.has(TimeUnitType.R_MILLISECONDS))
+    assertTrue(semantic.has(TimeUnitType.HOURS))
+    assertTrue(semantic.has(TimeUnitType.MINUTES))
+    assertFalse(semantic.has(TimeUnitType.SECONDS))
+    assertFalse(semantic.has(TimeUnitType.R_MILLISECONDS))
   }
   
   @Test
   fun hasNotOnlyRMillisTest() {
     val semantic = createSemantic("MM:SS:LL")
-    Assert.assertFalse(semantic.hasOnlyRMillis())
+    assertFalse(semantic.hasOnlyRMillis())
   }
   
   @Test
   fun hasOnlyRMillisTest() {
     val semantic = createSemantic("#Hello: LLLL")
-    Assert.assertTrue(semantic.hasOnlyRMillis())
+    assertTrue(semantic.hasOnlyRMillis())
   }
   
   private fun createSemantic(format: String): Semantic {

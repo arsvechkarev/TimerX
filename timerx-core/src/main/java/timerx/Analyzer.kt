@@ -14,8 +14,10 @@ internal object Analyzer {
     validatePositions(hours, minutes, seconds, rMillis)
     validateCombinations(hours, minutes, seconds, rMillis)
     val smallestUnit = getSmallestAvailableUnit(minutes, seconds, rMillis)
+    val largestUnit = getLargestAvailableUnit(hours, minutes, seconds)
     val strippedFormat = stripFormat(format)
-    return Semantic(hours, minutes, seconds, rMillis, format, strippedFormat, smallestUnit)
+    return Semantic(hours, minutes, seconds, rMillis, format,
+      strippedFormat, smallestUnit, largestUnit)
   }
   
   @VisibleForTesting
@@ -112,6 +114,18 @@ internal object Analyzer {
     if (seconds.isNotEmpty) smallestAvailableUnit = TimeUnitType.SECONDS
     if (rMillis.isNotEmpty) smallestAvailableUnit = TimeUnitType.R_MILLISECONDS
     return smallestAvailableUnit
+  }
+  
+  private fun getLargestAvailableUnit(
+    hours: Position,
+    minutes: Position,
+    seconds: Position,
+  ): TimeUnitType {
+    var largestAvailableUnit = TimeUnitType.R_MILLISECONDS
+    if (seconds.isNotEmpty) largestAvailableUnit = TimeUnitType.SECONDS
+    if (minutes.isNotEmpty) largestAvailableUnit = TimeUnitType.MINUTES
+    if (hours.isNotEmpty) largestAvailableUnit = TimeUnitType.HOURS
+    return largestAvailableUnit
   }
   
   private fun stripFormat(format: String): String {

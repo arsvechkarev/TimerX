@@ -11,8 +11,12 @@ internal class Semantic(
   val rMillisPosition: Position,
   val format: String,
   val strippedFormat: String,
-  val smallestAvailableUnit: TimeUnitType
+  val smallestAvailableUnit: TimeUnitType,
+  val largestAvailableUnit: TimeUnitType
 ) {
+  
+  val largestAvailableUnitLength: Int
+    get() = getPositionOf(largestAvailableUnit).length
   
   fun has(unitType: TimeUnitType) = when (unitType) {
     TimeUnitType.HOURS -> hoursPosition.isNotEmpty
@@ -24,5 +28,12 @@ internal class Semantic(
   fun hasOnlyRMillis(): Boolean {
     return (rMillisPosition.isNotEmpty && secondsPosition.isEmpty
         && minutesPosition.isEmpty && hoursPosition.isEmpty)
+  }
+  
+  fun getPositionOf(unitType: TimeUnitType) = when (unitType) {
+    TimeUnitType.HOURS -> hoursPosition
+    TimeUnitType.MINUTES -> minutesPosition
+    TimeUnitType.SECONDS -> secondsPosition
+    TimeUnitType.R_MILLISECONDS -> rMillisPosition
   }
 }
