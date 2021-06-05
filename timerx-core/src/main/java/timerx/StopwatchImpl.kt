@@ -32,6 +32,8 @@ internal class StopwatchImpl(
   override val formattedStartTime: CharSequence
     get() = StringBuilderTimeFormatter(startSemantic).format(startTime)
   
+  override val currentTimeInMillis: Long get() = currentTime
+  
   override fun start() {
     initialTime = when (state) {
       TimeCountingState.RESUMED -> return
@@ -67,10 +69,6 @@ internal class StopwatchImpl(
     copyOfNextActionsHolders.addAll(nextActionsHolders)
     copyOfSemanticsHolders.addAll(semanticsHolders)
     handler!!.removeCallbacksAndMessages(null)
-  }
-  
-  override fun getTimeIn(timeUnit: TimeUnit): Long {
-    return timeUnit.convert(currentTime, TimeUnit.MILLISECONDS)
   }
   
   override fun release() {

@@ -44,7 +44,7 @@ class StopwatchFragment : Fragment() {
     
     btn_stop.setOnClickListener {
       stopwatch.stop()
-      showToast("Current time in seconds = " + stopwatch.getTimeIn(TimeUnit.SECONDS))
+      showToast("Current time in milliseconds = " + stopwatch.currentTimeInMillis)
     }
     
     btn_reset.setOnClickListener {

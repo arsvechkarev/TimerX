@@ -34,6 +34,8 @@ internal class TimerImpl(
   override val formattedStartTime: CharSequence
     get() = StringBuilderTimeFormatter(startSemantic).format(startTime)
   
+  override val currentTimeInMillis: Long get() = currentTime
+  
   override fun start() {
     if (state != TimeCountingState.RESUMED) {
       if (state == TimeCountingState.INACTIVE) {

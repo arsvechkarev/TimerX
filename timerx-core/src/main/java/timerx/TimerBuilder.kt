@@ -33,31 +33,6 @@ import java.util.concurrent.TimeUnit
  * // When stopwatch is not needed anymore
  * stopwatch.release()
  *
- * Builder to configure and instantiate [Timer].<br></br> Usage example:
- * <pre>
- * Timer timer = new TimerBuilder()
- * // Set the start format of the timer
- * .startFormat("SS:LL")
- * // Set the start time
- * .startTime(45, TimeUnit.SECONDS)
- * // Set the tick listener that gets notified when time changes
- * .tickListener(time -> textViewTime.setText(time))
- * // Run the action after a certain time
- * .actionWhen(30, TimeUnit.SECONDS, () -> {
- * Toast.makeText(context, "30 seconds past!", Toast.LENGTH_SHORT).show();
- * })
- * // When time will be equal to one minute, change format to "MM:SS:LL"
- * .changeFormatWhen(1, TimeUnit.MINUTES, "MM:SS:LL")
- * .build();
- *
- * timer.start();
- *
- * // Wait a couple of seconds...
- *
- * // Get remaining time in seconds
- * long remaining = timer.getRemainingTimeIn(TimeUnit.SECONDS);
- * </pre>
- *
  * @see Timer
  */
 public class TimerBuilder internal constructor() {

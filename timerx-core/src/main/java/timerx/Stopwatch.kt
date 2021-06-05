@@ -21,6 +21,11 @@ public interface Stopwatch {
   public val formattedStartTime: CharSequence
   
   /**
+   * Returns current time of the stopwatch in milliseconds
+   */
+  public val currentTimeInMillis: Long
+  
+  /**
    * Depending on the state of the stopwatch there are three possible variants of
    * behavior:
    *
@@ -45,16 +50,9 @@ public interface Stopwatch {
   public fun setTimeTo(time: Long, timeUnit: TimeUnit)
   
   /**
-   * Stops stopwatch and resets time to initial time. Subsequent calls have no effect
+   * Stops stopwatch and resets time to initial value. Subsequent calls have no effect
    */
   public fun reset()
-  
-  /**
-   * Returns current time of the stopwatch converted to a specified time unit
-   *
-   * @param timeUnit time unit to witch current time time will be converted
-   */
-  public fun getTimeIn(timeUnit: TimeUnit): Long
   
   /**
    * Stops stopwatch and removes all tick and actions listeners and there is no guarantee that

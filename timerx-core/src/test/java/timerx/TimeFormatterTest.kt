@@ -196,23 +196,40 @@ class TimeFormatterTest {
     assertEquals("Hello ## 36:02", formatTime(format, millis))
   }
   
-  
   @Test
   fun multipleFormats1() {
     val format = "SS:LLL"
     val formatter = getFormatter(format)
     
-    val millis0 = 99077L
-    assertEquals("99:077", formatter.formatToString(millis0))
+    val millis1 = 99077L
+    assertEquals("99:077", formatter.formatToString(millis1))
     
-    val millis1 = 101049L
-    assertEquals("101:049", formatter.formatToString(millis1))
+    val millis2 = 101049L
+    assertEquals("101:049", formatter.formatToString(millis2))
     
-    val millis2 = 105921L
-    assertEquals("105:921", formatter.formatToString(millis2))
+    val millis3 = 105921L
+    assertEquals("105:921", formatter.formatToString(millis3))
     
-    val millis3 = 883310210L
-    assertEquals("883310:210", formatter.formatToString(millis3))
+    val millis4 = 883310210L
+    assertEquals("883310:210", formatter.formatToString(millis4))
+  }
+  
+  @Test
+  fun multipleFormats2() {
+    val format = "SS:LLL"
+    val formatter = getFormatter(format)
+    
+    val millis1 = 99077L
+    assertEquals("99:077", formatter.formatToString(millis1))
+    
+    val millis2 = 35L
+    assertEquals("00:035", formatter.formatToString(millis2))
+    
+    val millis3 = 101049L
+    assertEquals("101:049", formatter.formatToString(millis3))
+  
+    val millis4 = 883310210L
+    assertEquals("883310:210", formatter.formatToString(millis4))
   }
   
   private fun TimeFormatter.formatToString(millis: Long) = format(millis).toString()

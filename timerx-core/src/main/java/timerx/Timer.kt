@@ -22,6 +22,11 @@ public interface Timer {
   public val formattedStartTime: CharSequence
   
   /**
+   * Returns current time of the timer in milliseconds
+   */
+  public val currentTimeInMillis: Long
+  
+  /**
    * Depending on the state of the timer there are three possible variants of behavior:
    *
    * - If timer hasn't been started yet or [reset] was called, then
@@ -45,7 +50,7 @@ public interface Timer {
   public fun setTimeTo(time: Long, timeUnit: TimeUnit)
   
   /**
-   * Stops timer and resets time to initial time. Subsequent calls have no effect
+   * Stops timer and resets time to initial value. Subsequent calls have no effect
    */
   public fun reset()
   

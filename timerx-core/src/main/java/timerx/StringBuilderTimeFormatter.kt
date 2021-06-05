@@ -10,11 +10,10 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
   
   private val timeContainer = TimeContainer()
   
-  private var mutableString = StringBuilder(semantic.strippedFormat.length).apply {
-    append(semantic.strippedFormat)
-  }
+  private var formatString = getStrippedFormatString()
   
   private var currentLargestAvailableUnitLength = semantic.largestAvailableUnitLength
+  private var currentMillis = 0L
   
   override val optimalDelay: Long
     get() {
@@ -33,6 +32,10 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
     get() = semantic.format
   
   override fun format(millis: Long): CharSequence {
+    if (millis < currentMillis) {
+      formatString = getStrippedFormatString()
+    }
+    currentMillis = millis
     val units = timeUnitsOf(millis)
     var millisToShow = TimeValues.NONE
     var secondsToShow = TimeValues.NONE
@@ -51,7 +54,7 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
       hoursToShow = units.hours
     }
     applyFormat(millisToShow, secondsToShow, minutesToShow, hoursToShow)
-    return mutableString
+    return formatString
   }
   
   private fun timeUnitsOf(millis: Long): TimeContainer {
@@ -96,7 +99,7 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
       val howMuchZerosToAdd = (timeLength - currentLargestAvailableUnitLength).coerceAtLeast(0)
       if (currentLargestAvailableUnitLength < timeLength) {
         currentLargestAvailableUnitLength = timeLength
-        mutableString = StringBuilder(mutableString).apply {
+        formatString = StringBuilder(formatString).apply {
           repeat(howMuchZerosToAdd) { insert(0, ' ') }
         }
       }
@@ -105,7 +108,7 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
       position.copy(end = position.end + diff)
     } else {
       semantic.getPositionOf(timeUnitType)
-          .offsetBy(mutableString.length - semantic.strippedFormat.length)
+          .offsetBy(formatString.length - semantic.strippedFormat.length)
     }
     if (!semantic.hasOnlyRMillis() && timeUnitType === TimeUnitType.R_MILLISECONDS) {
       if (semantic.rMillisPosition.length < 3 && timeLength < 3) {
@@ -122,7 +125,7 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
     for (i in position.end downTo position.end - range) {
       val ch = ('0'.code.toLong() + timeVar % 10).toInt().toChar()
       require(i >= position.start)
-      mutableString.setCharAt(i, ch)
+      formatString.setCharAt(i, ch)
       timeVar /= 10
     }
   }
@@ -135,5 +138,9 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
       temp *= 10
     }
     return length
+  }
+  
+  private fun getStrippedFormatString() = StringBuilder(semantic.strippedFormat.length).apply {
+    append(semantic.strippedFormat)
   }
 }
