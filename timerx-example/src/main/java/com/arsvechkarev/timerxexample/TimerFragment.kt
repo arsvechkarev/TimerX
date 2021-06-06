@@ -30,7 +30,7 @@ class TimerFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     
     timer = buildTimer {
-      startFormat("30s -> SS:LL")
+      startFormat("30s -> MM:SS")
       startTime(30, TimeUnit.SECONDS)
       changeFormatWhen(10, TimeUnit.SECONDS, "10s -> SS:LL")
       changeFormatWhen(5, TimeUnit.SECONDS, "5s -> SS:LL")

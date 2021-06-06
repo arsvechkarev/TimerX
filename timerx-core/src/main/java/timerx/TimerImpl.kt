@@ -108,14 +108,14 @@ internal class TimerImpl(
     override fun handleMessage(msg: Message) {
       synchronized(this@TimerImpl) {
         val startExecution = SystemClock.elapsedRealtime()
+        tickListener?.onTick(timeFormatter.format(remainingTime))
         remainingTime = millisInFuture - SystemClock.elapsedRealtime()
         if (remainingTime <= 0) {
           finishTimer()
-          return
+        } else {
+          val executionTime = SystemClock.elapsedRealtime() - startExecution
+          sendMessageDelayed(obtainMessage(), delay - executionTime)
         }
-        tickListener?.onTick(timeFormatter.format(remainingTime))
-        val executionTime = SystemClock.elapsedRealtime() - startExecution
-        sendMessageDelayed(obtainMessage(), delay - executionTime)
       }
     }
   }
