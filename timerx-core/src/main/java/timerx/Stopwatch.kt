@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit
 public interface Stopwatch {
   
   /**
-   * Returns start time (in this case, 0) formatted according to start format. For
-   * example, if the start format is "MM:SS.LL", then result is "00:00.00"
+   * Returns start time formatted according to start format. For example, if the start format is
+   * "MM:SS.LL", and start time is 0, then result will be "00:00.00"
    */
   public val formattedStartTime: CharSequence
   
@@ -53,7 +53,7 @@ public interface Stopwatch {
    * Sets time to the stopwatch. Time will be set whether stopwatch is running or not. Note that
    * calling this **will not** result on onTickListener() callback invocation
    */
-  public fun setTimeTo(time: Long, timeUnit: TimeUnit)
+  public fun setTime(time: Long, timeUnit: TimeUnit)
   
   /**
    * Stops stopwatch and resets time to initial value. Subsequent calls have no effect

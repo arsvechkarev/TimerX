@@ -30,9 +30,12 @@ class TimerFragment : Fragment() {
     super.onViewCreated(view, savedInstanceState)
     
     timer = buildTimer {
-      startFormat("MM:SS")
-      changeFormatWhen(10, TimeUnit.SECONDS, "SS:LL")
-      startTime(60, TimeUnit.SECONDS)
+      startFormat("30s -> SS:LL")
+      startTime(30, TimeUnit.SECONDS)
+      changeFormatWhen(10, TimeUnit.SECONDS, "10s -> SS:LL")
+      changeFormatWhen(5, TimeUnit.SECONDS, "5s -> SS:LL")
+      actionWhen(20, TimeUnit.SECONDS) { showToast("20 seconds left") }
+      actionWhen(25, TimeUnit.SECONDS) { showToast("25 seconds left") }
       onTick { time -> text_time.text = time }
       onFinish { showToast("Finished!") }
     }
@@ -43,11 +46,10 @@ class TimerFragment : Fragment() {
     
     btn_stop.setOnClickListener {
       timer.stop()
-      showToast("Remaining time in milliseconds = " + timer.remainingTimeInMillis)
     }
     
     btn_set_time.setOnClickListener {
-      timer.setTimeTo(15, TimeUnit.SECONDS)
+      timer.setTime(15, TimeUnit.SECONDS)
       // Since call to setTimeTo() does not result in invoking onTick() callback,
       // we are setting time to textView manually so that it appears there even if
       // timer is paused now

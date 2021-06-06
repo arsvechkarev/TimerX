@@ -1,6 +1,7 @@
 package timerx
 
 import timerx.Constants.TimeValues
+import java.util.concurrent.TimeUnit
 import kotlin.math.pow
 
 /**
@@ -17,12 +18,18 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
   
   override val optimalDelay: Long
     get() {
-      var delay: Long = 100
+      var delay: Long = TimeUnit.HOURS.toMinutes(1)
+      if (semantic.has(TimeUnitType.MINUTES)) {
+        delay = TimeUnit.MINUTES.toMillis(1)
+      }
+      if (semantic.has(TimeUnitType.SECONDS)) {
+        delay = TimeUnit.SECONDS.toMillis(1)
+      }
       if (semantic.has(TimeUnitType.R_MILLISECONDS)) {
-        if (semantic.rMillisPosition.length == 2) {
-          delay = 10
-        } else if (semantic.rMillisPosition.length > 2) {
-          delay = 1
+        delay = when (semantic.rMillisPosition.length) {
+          1 -> 100
+          2 -> 10
+          else -> 1
         }
       }
       return delay

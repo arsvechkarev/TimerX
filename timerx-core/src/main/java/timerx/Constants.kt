@@ -1,6 +1,8 @@
 package timerx
 
-internal class Constants {
+internal object Constants {
+  
+  const val NONE: Int = -1
   
   object Symbols {
     
@@ -20,8 +22,6 @@ internal class Constants {
     const val SECONDS_IN_MINUTE: Long = 60
     const val MINUTES_IN_HOUR: Long = 60
     const val MILLIS_IN_SECOND: Long = 1000
-    const val MILLIS_IN_MINUTE = MILLIS_IN_SECOND * SECONDS_IN_MINUTE
-    const val MILLIS_IN_HOUR = MILLIS_IN_MINUTE * MINUTES_IN_HOUR
     const val NONE: Long = -1
   }
 }

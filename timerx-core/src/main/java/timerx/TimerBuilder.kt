@@ -41,8 +41,8 @@ public class TimerBuilder internal constructor() {
   private var startTime: Long = TimeValues.NONE
   private var tickListener: TimeTickListener? = null
   private var finishAction: Runnable? = null
-  private val semanticsHolder: SortedSet<SemanticsHolder> = TreeSet(Collections.reverseOrder())
-  private val nextActionsHolder: SortedSet<ActionsHolder> = TreeSet(Collections.reverseOrder())
+  private val semanticsHolders: SortedSet<SemanticsHolder> = TreeSet(Collections.reverseOrder())
+  private val actionsHolders: SortedSet<ActionsHolder> = TreeSet(Collections.reverseOrder())
   
   /**
    * Set the start format to timer
@@ -98,7 +98,7 @@ public class TimerBuilder internal constructor() {
     require(time >= 0) { "Time cannot be negative" }
     val semantic = Analyzer.analyze(newFormat)
     val millis = timeUnit.toMillis(time)
-    semanticsHolder.add(SemanticsHolder(millis, semantic))
+    semanticsHolders.add(SemanticsHolder(millis, semantic))
   }
   
   /**
@@ -114,7 +114,7 @@ public class TimerBuilder internal constructor() {
   public fun actionWhen(time: Long, timeUnit: TimeUnit, action: Runnable) {
     require(time >= 0) { "Time cannot be negative" }
     val millis = timeUnit.toMillis(time)
-    nextActionsHolder.add(ActionsHolder(millis, action))
+    actionsHolders.add(ActionsHolder(millis, action))
   }
   
   /**
@@ -122,10 +122,11 @@ public class TimerBuilder internal constructor() {
    */
   internal fun build(): Timer {
     val startSemantic = startSemantic ?: error("Start format is not provided. Call" +
-        " startFormat(String) before calling this method")
+        " startFormat(String) to provide initial format")
     require(startTime != TimeValues.NONE) { "Start time is not provided" }
-    return TimerImpl(startTime, startSemantic, tickListener,
-      finishAction, semanticsHolder, nextActionsHolder)
+    semanticsHolders.add(SemanticsHolder(startTime, startSemantic))
+    return TimerImpl(tickListener, finishAction, semanticsHolders.toMutableList(),
+      actionsHolders.toMutableList())
   }
 }
 

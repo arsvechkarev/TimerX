@@ -53,7 +53,7 @@ public interface Timer {
    * Sets time to the timer. Time will be set whether timer is running or not. Note that
    * calling this **will not** result on onTickListener() callback invocation
    */
-  public fun setTimeTo(time: Long, timeUnit: TimeUnit)
+  public fun setTime(time: Long, timeUnit: TimeUnit)
   
   /**
    * Stops timer and resets time to initial value. Subsequent calls have no effect

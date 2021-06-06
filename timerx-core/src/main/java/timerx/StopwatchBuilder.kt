@@ -40,8 +40,8 @@ public class StopwatchBuilder internal constructor() {
   private var startSemantic: Semantic? = null
   private var startTime: Long = 0
   private var tickListener: TimeTickListener? = null
-  private val semanticsHolder: SortedSet<SemanticsHolder> = TreeSet()
-  private val actionsHolder: SortedSet<ActionsHolder> = TreeSet()
+  private val semanticsHolders: SortedSet<SemanticsHolder> = TreeSet()
+  private val actionsHolders: SortedSet<ActionsHolder> = TreeSet()
   
   /**
    * Set start time format to stopwatch
@@ -88,7 +88,7 @@ public class StopwatchBuilder internal constructor() {
     require(time >= 0) { "Time cannot be negative" }
     val semantic = Analyzer.analyze(newFormat)
     val millis = timeUnit.toMillis(time)
-    semanticsHolder.add(SemanticsHolder(millis, semantic))
+    semanticsHolders.add(SemanticsHolder(millis, semantic))
   }
   
   /**
@@ -104,7 +104,7 @@ public class StopwatchBuilder internal constructor() {
   public fun actionWhen(time: Long, timeUnit: TimeUnit, action: Runnable) {
     require(time >= 0) { "Time cannot be negative" }
     val millis = timeUnit.toMillis(time)
-    actionsHolder.add(ActionsHolder(millis, action))
+    actionsHolders.add(ActionsHolder(millis, action))
   }
   
   /**
@@ -112,8 +112,10 @@ public class StopwatchBuilder internal constructor() {
    */
   internal fun build(): Stopwatch {
     val startSemantic = startSemantic ?: error("Start format is not provided. Call" +
-        " startFormat(String) before calling this method")
-    return StopwatchImpl(startSemantic, startTime, tickListener, semanticsHolder, actionsHolder)
+        " startFormat(String) to provide initial format")
+    semanticsHolders.add(SemanticsHolder(startTime, startSemantic))
+    return StopwatchImpl(tickListener, semanticsHolders.toMutableList(),
+      actionsHolders.toMutableList())
   }
 }
 

@@ -1,6 +1,7 @@
 package timerx
 
 import timerx.Constants.Symbols
+import java.util.concurrent.TimeUnit
 
 /**
  * Helper class for tests
@@ -19,3 +20,11 @@ object TestHelper {
       .replace('L', Symbols.SYMBOL_REM_MILLIS)
       .replace('#', Symbols.SYMBOL_ESCAPE)
 }
+
+val Int.millis get() = TimeUnit.MILLISECONDS.toMillis(this.toLong())
+
+val Int.seconds get() = TimeUnit.SECONDS.toMillis(this.toLong())
+
+val Int.minutes get() = TimeUnit.MINUTES.toMillis(this.toLong())
+
+val Int.hours get() = TimeUnit.HOURS.toMillis(this.toLong())

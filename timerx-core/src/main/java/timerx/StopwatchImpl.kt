@@ -8,16 +8,12 @@ import timerx.Constants.TimeValues
 import timerx.TimeCountingState.INACTIVE
 import timerx.TimeCountingState.PAUSED
 import timerx.TimeCountingState.RESUMED
-import java.util.SortedSet
-import java.util.TreeSet
 import java.util.concurrent.TimeUnit
 
 internal class StopwatchImpl(
-  private val startSemantic: Semantic,
-  private val startTime: Long,
   private var tickListener: TimeTickListener?,
-  private val semanticsHolders: SortedSet<SemanticsHolder>,
-  private val nextActionsHolders: SortedSet<ActionsHolder>
+  private val semanticsHolders: MutableList<SemanticsHolder>,
+  private val actionsHolders: MutableList<ActionsHolder>
 ) : Stopwatch {
   
   // Current time of stopwatch (in millis)
@@ -26,15 +22,23 @@ internal class StopwatchImpl(
   // Time when stopwatch started (in millis)
   private var initialTime: Long = TimeValues.NONE
   
-  // Delay for handler in millis
+  // Delay (in millis) for stopwatch
   private var delay: Long = 0
+  
+  // Handler for scheduling actions and formats change
+  private val workerHandler = Handler()
+  
+  // State of the stopwatch
   private var state = INACTIVE
-  private var timeFormatter = StringBuilderTimeFormatter(startSemantic)
-  private val copyOfSemanticsHolders: SortedSet<SemanticsHolder> = TreeSet(semanticsHolders)
-  private val copyOfNextActionsHolders: SortedSet<ActionsHolder> = TreeSet(nextActionsHolders)
+  
+  // Current time formatter
+  private var timeFormatter = StringBuilderTimeFormatter(semanticsHolders.first().semantic)
   
   override val formattedStartTime: CharSequence
-    get() = StringBuilderTimeFormatter(startSemantic).format(startTime)
+    get() {
+      val holder = semanticsHolders.first()
+      return StringBuilderTimeFormatter(holder.semantic).format(holder.millis)
+    }
   
   override val currentTimeInMillis: Long
     get() = currentTime
@@ -45,60 +49,65 @@ internal class StopwatchImpl(
   override fun start() {
     if (state == RESUMED) return
     if (initialTime == TimeValues.NONE) {
-      applyFormat(startSemantic)
+      val startTime = semanticsHolders.first().millis
+      currentTime = startTime
+      applyFormat(semanticsHolders.first().semantic)
       initialTime = SystemClock.elapsedRealtime() - startTime
     } else {
       initialTime = SystemClock.elapsedRealtime() - currentTime
     }
     handler!!.sendMessage(handler!!.obtainMessage())
+    scheduleFormatsAndActionsChange()
     state = RESUMED
   }
   
   override fun stop() {
     state = PAUSED
     handler!!.removeCallbacksAndMessages(null)
+    cancelFormatsAndActionsChanges()
   }
   
-  override fun setTimeTo(time: Long, timeUnit: TimeUnit) {
+  override fun setTime(time: Long, timeUnit: TimeUnit) {
     val newTime = timeUnit.toMillis(time)
     initialTime = SystemClock.elapsedRealtime() - newTime
     currentTime = newTime
+    cancelFormatsAndActionsChanges()
+    applyAppropriateFormat()
+    scheduleFormatsAndActionsChange()
   }
   
   override fun reset() {
-    currentTime = startTime
-    initialTime = TimeValues.NONE
     state = INACTIVE
-    copyOfNextActionsHolders.clear()
-    copyOfSemanticsHolders.clear()
-    copyOfNextActionsHolders.addAll(nextActionsHolders)
-    copyOfSemanticsHolders.addAll(semanticsHolders)
+    initialTime = TimeValues.NONE
+    currentTime = semanticsHolders.first().millis
     handler!!.removeCallbacksAndMessages(null)
+    cancelFormatsAndActionsChanges()
+    applyFormat(semanticsHolders.first().semantic)
   }
   
   override fun release() {
     semanticsHolders.clear()
-    copyOfSemanticsHolders.clear()
-    nextActionsHolders.clear()
-    copyOfNextActionsHolders.clear()
+    actionsHolders.clear()
     tickListener = null
+    cancelFormatsAndActionsChanges()
     handler!!.removeCallbacksAndMessages(null)
     handler = null
   }
   
   private fun applyFormat(semantic: Semantic) {
-    timeFormatter = StringBuilderTimeFormatter(semantic)
-    delay = timeFormatter.optimalDelay
+    synchronized(this) {
+      timeFormatter = StringBuilderTimeFormatter(semantic)
+      delay = timeFormatter.optimalDelay
+    }
   }
   
   @SuppressLint("HandlerLeak")
   private var handler: Handler? = object : Handler() {
+    
     override fun handleMessage(msg: Message) {
       synchronized(this@StopwatchImpl) {
         val executionStartedTime = SystemClock.elapsedRealtime()
         currentTime = SystemClock.elapsedRealtime() - initialTime
-        changeFormatIfNeeded()
-        notifyActionIfNeeded()
         tickListener?.onTick(timeFormatter.format(currentTime))
         val executionDelay = SystemClock.elapsedRealtime() - executionStartedTime
         sendMessageDelayed(obtainMessage(), delay - executionDelay)
@@ -106,19 +115,35 @@ internal class StopwatchImpl(
     }
   }
   
-  private fun notifyActionIfNeeded() {
-    if (copyOfNextActionsHolders.size > 0
-        && currentTime >= copyOfNextActionsHolders.first().millis) {
-      copyOfNextActionsHolders.first().action.run()
-      copyOfNextActionsHolders.remove(copyOfNextActionsHolders.first())
+  private fun applyAppropriateFormat() {
+    if (currentTime < semanticsHolders.first().millis) {
+      applyFormat(semanticsHolders.first().semantic)
+      return
+    }
+    for (i in semanticsHolders.indices.reversed()) {
+      if (semanticsHolders[i].millis < currentTime) {
+        applyFormat(semanticsHolders[i].semantic)
+        break
+      }
     }
   }
   
-  private fun changeFormatIfNeeded() {
-    if (copyOfSemanticsHolders.size > 0 && timeFormatter.format != copyOfSemanticsHolders.first().semantic.format
-        && currentTime >= copyOfSemanticsHolders.first().millis) {
-      applyFormat(copyOfSemanticsHolders.first().semantic)
-      copyOfSemanticsHolders.remove(copyOfSemanticsHolders.first())
+  private fun scheduleFormatsAndActionsChange() {
+    semanticsHolders.forEach { holder ->
+      if (holder.millis > currentTime) {
+        workerHandler.postDelayed({ applyFormat(holder.semantic) },
+          holder.millis - currentTime)
+      }
     }
+    actionsHolders.forEach { holder ->
+      if (holder.millis > currentTime) {
+        workerHandler.postDelayed({ holder.action.run() },
+          holder.millis - currentTime)
+      }
+    }
+  }
+  
+  private fun cancelFormatsAndActionsChanges() {
+    workerHandler.removeCallbacksAndMessages(null)
   }
 }
