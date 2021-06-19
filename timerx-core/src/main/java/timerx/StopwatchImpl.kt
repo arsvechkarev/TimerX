@@ -11,6 +11,7 @@ import timerx.TimeCountingState.RESUMED
 import java.util.concurrent.TimeUnit
 
 internal class StopwatchImpl(
+  private val useExactDelay: Boolean,
   private var tickListener: TimeTickListener?,
   private val semanticsHolders: MutableList<SemanticsHolder>,
   private val actionsHolders: MutableList<ActionsHolder>
@@ -97,7 +98,7 @@ internal class StopwatchImpl(
   private fun applyFormat(semantic: Semantic) {
     synchronized(this) {
       timeFormatter = StringBuilderTimeFormatter(semantic)
-      delay = timeFormatter.optimalDelay
+      delay = timeFormatter.getWaitingDelay(useExactDelay)
     }
   }
   
@@ -108,7 +109,7 @@ internal class StopwatchImpl(
       synchronized(this@StopwatchImpl) {
         val executionStartedTime = SystemClock.elapsedRealtime()
         currentTime = SystemClock.elapsedRealtime() - initialTime
-        tickListener?.onTick(timeFormatter.format(currentTime))
+        tickListener?.onTick(currentTime, timeFormatter.format(currentTime))
         val executionDelay = SystemClock.elapsedRealtime() - executionStartedTime
         sendMessageDelayed(obtainMessage(), delay - executionDelay)
       }

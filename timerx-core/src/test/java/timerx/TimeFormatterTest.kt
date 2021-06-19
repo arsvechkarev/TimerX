@@ -15,39 +15,45 @@ class TimeFormatterTest {
   }
   
   @Test
-  fun optimizedDelayTest1() {
+  fun waitingDelayTest1() {
     val format = "MM:SS:LLLLL"
-    assertEquals(1.millis, getFormatter(format).optimalDelay)
+    assertEquals(1.millis, getFormatter(format).getWaitingDelay(useExactDelay = true))
+    assertEquals(1.millis, getFormatter(format).getWaitingDelay(useExactDelay = false))
   }
   
   @Test
-  fun optimizedDelayTest2() {
+  fun waitingDelayTest2() {
     val format = "MM:SS:LLL"
-    assertEquals(1.millis, getFormatter(format).optimalDelay)
+    assertEquals(1.millis, getFormatter(format).getWaitingDelay(useExactDelay = true))
+    assertEquals(1.millis, getFormatter(format).getWaitingDelay(useExactDelay = false))
   }
   
   @Test
-  fun optimizedDelayTest3() {
+  fun waitingDelayTest3() {
     val format = "MM:SS:LL"
-    assertEquals(10.millis, getFormatter(format).optimalDelay)
+    assertEquals(10.millis, getFormatter(format).getWaitingDelay(useExactDelay = true))
+    assertEquals(10.millis, getFormatter(format).getWaitingDelay(useExactDelay = false))
   }
   
   @Test
-  fun optimizedDelayTest4() {
+  fun waitingDelayTest4() {
     val format = "MM:SS:L"
-    assertEquals(100.millis, getFormatter(format).optimalDelay)
+    assertEquals(100.millis, getFormatter(format).getWaitingDelay(useExactDelay = true))
+    assertEquals(100.millis, getFormatter(format).getWaitingDelay(useExactDelay = false))
   }
   
   @Test
-  fun optimizedDelayTest5() {
+  fun waitingDelayTest5() {
     val format = "MM:SS::"
-    assertEquals(1.seconds, getFormatter(format).optimalDelay)
+    assertEquals(1.seconds, getFormatter(format).getWaitingDelay(useExactDelay = true))
+    assertEquals(100.millis, getFormatter(format).getWaitingDelay(useExactDelay = false))
   }
   
   @Test
-  fun optimizedDelayTest6() {
+  fun waitingDelayTest6() {
     val format = "HH:MM"
-    assertEquals(1.minutes, getFormatter(format).optimalDelay)
+    assertEquals(1.minutes, getFormatter(format).getWaitingDelay(useExactDelay = true))
+    assertEquals(100.millis, getFormatter(format).getWaitingDelay(useExactDelay = false))
   }
   
   @Test

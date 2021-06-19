@@ -2,6 +2,7 @@ package com.arsvechkarev.timerxexample
 
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +40,10 @@ class StopwatchFragment : Fragment() {
       actionWhen(5, TimeUnit.SECONDS) { showToast("5s passed") }
       actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
       actionWhen(20, TimeUnit.SECONDS) { showToast("20s passed") }
-      onTick { time -> text_time.text = time }
+      onTick { millis, formattedTime ->
+        text_time.text = formattedTime
+        Log.i("Stopwatch", "Current time = $millis")
+      }
     }
     
     text_time.text = stopwatch.formattedStartTime

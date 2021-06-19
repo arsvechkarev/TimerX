@@ -16,24 +16,11 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
   private var currentLargestAvailableUnitLength = semantic.largestAvailableUnitLength
   private var currentMillis = 0L
   
-  override val optimalDelay: Long
-    get() {
-      var delay: Long = TimeUnit.HOURS.toMinutes(1)
-      if (semantic.has(TimeUnitType.MINUTES)) {
-        delay = TimeUnit.MINUTES.toMillis(1)
-      }
-      if (semantic.has(TimeUnitType.SECONDS)) {
-        delay = TimeUnit.SECONDS.toMillis(1)
-      }
-      if (semantic.has(TimeUnitType.R_MILLISECONDS)) {
-        delay = when (semantic.rMillisPosition.length) {
-          1 -> 100
-          2 -> 10
-          else -> 1
-        }
-      }
-      return delay
-    }
+  override fun getWaitingDelay(useExactDelay: Boolean) = if (useExactDelay) {
+    calculateExactDelay()
+  } else {
+    calculateOptimalDelay()
+  }
   
   override val format: String
     get() = semantic.format
@@ -62,6 +49,32 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
     }
     applyFormat(millisToShow, secondsToShow, minutesToShow, hoursToShow)
     return formatString
+  }
+  
+  private fun calculateOptimalDelay(): Long {
+    var delay: Long = 100
+    if (semantic.has(TimeUnitType.R_MILLISECONDS)) {
+      if (semantic.rMillisPosition.length == 2) {
+        delay = 10
+      } else if (semantic.rMillisPosition.length > 2) {
+        delay = 1
+      }
+    }
+    return delay
+  }
+  
+  private fun calculateExactDelay(): Long {
+    var delay: Long = TimeUnit.HOURS.toMinutes(1)
+    if (semantic.has(TimeUnitType.MINUTES)) {
+      delay = TimeUnit.MINUTES.toMillis(1)
+    }
+    if (semantic.has(TimeUnitType.SECONDS)) {
+      delay = TimeUnit.SECONDS.toMillis(1)
+    }
+    if (semantic.has(TimeUnitType.R_MILLISECONDS)) {
+      delay = 1
+    }
+    return delay
   }
   
   private fun timeUnitsOf(millis: Long): TimeContainer {

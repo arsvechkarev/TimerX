@@ -9,22 +9,27 @@ import timerx.TimeCountingState.INACTIVE
 import timerx.TimeCountingState.PAUSED
 import timerx.TimeCountingState.RESUMED
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 internal class TimerImpl(
+  private val useExactDelay: Boolean,
   private var tickListener: TimeTickListener?,
   private val finishAction: Runnable?,
-  private val semanticsHolders: MutableList<SemanticsHolder>,
-  private val actionsHolders: MutableList<ActionsHolder>
+  private val semantics: MutableList<SemanticsHolder>,
+  private val actions: MutableList<ActionsHolder>
 ) : Timer {
   
   // Remaining (current time) in millis
-  private var remainingTime: Long = semanticsHolders.first().millis
+  private var remainingTime: Long = semantics.first().millis
   
   // Time in future when timer should stop
   private var millisInFuture: Long = TimeValues.NONE
   
-  // Delay (in millis) for timer
-  private var delay: Long = 0
+  // Delay (in millis) for delaying timer
+  private var currentDelay: Long = 0
+  
+  // Delay (in millis) for correcting timer ticking
+  private var currentExactDelay: Long = 0
   
   // Handler for scheduling actions and formats change
   private val workerHandler = Handler()
@@ -33,11 +38,15 @@ internal class TimerImpl(
   private var state = INACTIVE
   
   // Current time formatter
-  private var timeFormatter = StringBuilderTimeFormatter(semanticsHolders.first().semantic)
+  private var timeFormatter = StringBuilderTimeFormatter(semantics.first().semantic)
+  
+  private val isInSimpleSecondsMode = semantics.all {
+    !it.semantic.has(TimeUnitType.R_MILLISECONDS)
+  }
   
   override val formattedStartTime: CharSequence
     get() {
-      val holder = semanticsHolders.first()
+      val holder = semantics.first()
       return StringBuilderTimeFormatter(holder.semantic).format(holder.millis)
     }
   
@@ -50,12 +59,14 @@ internal class TimerImpl(
   override fun start() {
     if (state == RESUMED) return
     if (millisInFuture == TimeValues.NONE) {
-      val startTime = semanticsHolders.first().millis
+      val startTime = semantics.first().millis
       remainingTime = startTime
-      applyFormat(semanticsHolders.first().semantic)
-      millisInFuture = SystemClock.elapsedRealtime() + startTime
+      applyFormat(semantics.first().semantic)
+      val timeToSkip = if (useExactDelay) currentExactDelay else 0
+      millisInFuture = SystemClock.elapsedRealtime() + startTime - timeToSkip
     } else {
-      millisInFuture = SystemClock.elapsedRealtime() + remainingTime
+      val timeToSkip = if (useExactDelay) currentExactDelay else 0
+      millisInFuture = SystemClock.elapsedRealtime() + remainingTime - timeToSkip
     }
     handler!!.sendMessage(handler!!.obtainMessage())
     scheduleFormatsAndActionsChange()
@@ -80,15 +91,15 @@ internal class TimerImpl(
   override fun reset() {
     state = INACTIVE
     millisInFuture = TimeValues.NONE
-    remainingTime = semanticsHolders.first().millis
+    remainingTime = semantics.first().millis
     handler!!.removeCallbacksAndMessages(null)
     cancelFormatsAndActionsChanges()
-    applyFormat(semanticsHolders.first().semantic)
+    applyFormat(semantics.first().semantic)
   }
   
   override fun release() {
-    semanticsHolders.clear()
-    actionsHolders.clear()
+    semantics.clear()
+    actions.clear()
     tickListener = null
     cancelFormatsAndActionsChanges()
     handler?.removeCallbacksAndMessages(null)
@@ -98,7 +109,8 @@ internal class TimerImpl(
   private fun applyFormat(semantic: Semantic) {
     synchronized(this) {
       timeFormatter = StringBuilderTimeFormatter(semantic)
-      delay = timeFormatter.optimalDelay
+      currentDelay = timeFormatter.getWaitingDelay(useExactDelay)
+      currentExactDelay = timeFormatter.getWaitingDelay(useExactDelay = true)
     }
   }
   
@@ -108,39 +120,55 @@ internal class TimerImpl(
     override fun handleMessage(msg: Message) {
       synchronized(this@TimerImpl) {
         val startExecution = SystemClock.elapsedRealtime()
-        tickListener?.onTick(timeFormatter.format(remainingTime))
-        remainingTime = millisInFuture - SystemClock.elapsedRealtime()
-        if (remainingTime <= 0) {
-          finishTimer()
+        if (isInSimpleSecondsMode) {
+          remainingTime = remainingTime.coerceAtLeast(0)
+          val oldRemainingTime = remainingTime
+          tickListener?.onTick(remainingTime, timeFormatter.format(remainingTime))
+          remainingTime = millisInFuture - SystemClock.elapsedRealtime()
+          val expectedTime = oldRemainingTime - currentExactDelay
+          val diff = abs(remainingTime - expectedTime)
+          remainingTime += diff
+          if (remainingTime <= 0) {
+            postDelayed(::finishTimer, currentExactDelay)
+            return
+          }
         } else {
-          val executionTime = SystemClock.elapsedRealtime() - startExecution
-          sendMessageDelayed(obtainMessage(), delay - executionTime)
+          remainingTime = millisInFuture - SystemClock.elapsedRealtime()
+          remainingTime = remainingTime.coerceAtLeast(0)
+          tickListener?.onTick(remainingTime, timeFormatter.format(remainingTime))
+          if (remainingTime <= 0) {
+            finishAction?.run()
+            reset()
+            return
+          }
         }
+        val executionTime = SystemClock.elapsedRealtime() - startExecution
+        sendMessageDelayed(obtainMessage(), currentDelay - executionTime)
       }
     }
   }
   
   private fun applyAppropriateFormat() {
-    if (remainingTime > semanticsHolders.first().millis) {
-      applyFormat(semanticsHolders.first().semantic)
+    if (remainingTime > semantics.first().millis) {
+      applyFormat(semantics.first().semantic)
       return
     }
-    for (i in semanticsHolders.indices.reversed()) {
-      if (semanticsHolders[i].millis > remainingTime) {
-        applyFormat(semanticsHolders[i].semantic)
+    for (i in semantics.indices.reversed()) {
+      if (semantics[i].millis > remainingTime) {
+        applyFormat(semantics[i].semantic)
         break
       }
     }
   }
   
   private fun scheduleFormatsAndActionsChange() {
-    semanticsHolders.forEach { holder ->
+    semantics.forEach { holder ->
       if (holder.millis < remainingTime) {
         workerHandler.postDelayed({ applyFormat(holder.semantic) },
           remainingTime - holder.millis)
       }
     }
-    actionsHolders.forEach { holder ->
+    actions.forEach { holder ->
       if (holder.millis < remainingTime) {
         workerHandler.postDelayed({ holder.action.run() },
           remainingTime - holder.millis)
@@ -154,7 +182,7 @@ internal class TimerImpl(
   
   private fun finishTimer() {
     remainingTime = 0
-    tickListener?.onTick(timeFormatter.format(remainingTime))
+    tickListener?.onTick(remainingTime, timeFormatter.format(remainingTime))
     finishAction?.run()
     reset()
   }

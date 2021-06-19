@@ -1,6 +1,8 @@
 package com.arsvechkarev.timerxexample
 
 import android.os.Bundle
+import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +21,7 @@ import java.util.concurrent.TimeUnit
  */
 class TimerFragment : Fragment() {
   
+  private var cTimer: CountDownTimer? = null
   private lateinit var timer: Timer
   
   override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -31,12 +34,16 @@ class TimerFragment : Fragment() {
     
     timer = buildTimer {
       startFormat("30s -> MM:SS")
-      startTime(30, TimeUnit.SECONDS)
-      changeFormatWhen(10, TimeUnit.SECONDS, "10s -> SS:LL")
-      changeFormatWhen(5, TimeUnit.SECONDS, "5s -> SS:LL")
-      actionWhen(20, TimeUnit.SECONDS) { showToast("20 seconds left") }
-      actionWhen(25, TimeUnit.SECONDS) { showToast("25 seconds left") }
-      onTick { time -> text_time.text = time }
+      startTime(15, TimeUnit.SECONDS)
+      useExactDelay(true)
+      changeFormatWhen(10, TimeUnit.SECONDS, "10s -> SS")
+//      changeFormatWhen(5, TimeUnit.SECONDS, "5#S -> SS:L")
+//      actionWhen(20, TimeUnit.SECONDS) { showToast("20 seconds left") }
+//      actionWhen(25, TimeUnit.SECONDS) { showToast("25 seconds left") }
+      onTick { millis, formattedTime ->
+        text_time.text = formattedTime
+        Log.i("Timer", "Remaining time = $millis")
+      }
       onFinish { showToast("Finished!") }
     }
     

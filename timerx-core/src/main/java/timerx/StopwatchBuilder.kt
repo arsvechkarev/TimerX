@@ -1,19 +1,20 @@
 package timerx
 
+import androidx.annotation.UiThread
 import java.util.SortedSet
 import java.util.TreeSet
 import java.util.concurrent.TimeUnit
 
 /**
- * Builder to create an instance of [Stopwatch]. Use function [buildStopwatch] to instantiate
+ * Builder to create an instance of [Stopwatch]. Use [buildStopwatch] to instantiate
  * the builder. Usage example:
  * <pre>
  *
  * val stopwatch = buildStopwatch {
- *    // Set the start format of timer
+ *    // Set the start format of stopwatch
  *    startFormat("SS:LL")
  *    // Set the tick listener that gets notified when time changes
- *    onTick { time: CharSequence -> myTextView.text = time }
+ *    onTick { millis: Long, time: CharSequence -> myTextView.text = time }
  *    // Run the action at a certain time
  *    actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
  *    // When time is equal to one minute, change format to "MM:SS:LL"
@@ -23,10 +24,12 @@ import java.util.concurrent.TimeUnit
  * // Start stopwatch
  * stopwatch.start();
  *
- * // Wait a couple of seconds...
- *
  * // Get current time in milliseconds
- * long currentTime = stopwatch.getTimeIn(TimeUnit.MILLISECONDS);
+ * long currentTime = stopwatch.currentTimeInMillis
+ *
+ * // You can change time of stopwatch using [Stopwatch.setTime] method. Time will be changed whether stopwatch
+ * // is running or not. All formats will be applied accordingly
+ * stopwatch.setTime(20, TimeUnit.SECONDS)
  *
  * // When stopwatch is not needed anymore
  * stopwatch.release()
@@ -42,6 +45,7 @@ public class StopwatchBuilder internal constructor() {
   private var tickListener: TimeTickListener? = null
   private val semanticsHolders: SortedSet<SemanticsHolder> = TreeSet()
   private val actionsHolders: SortedSet<ActionsHolder> = TreeSet()
+  private var useExactDelay = false
   
   /**
    * Set start time format to stopwatch
@@ -108,22 +112,48 @@ public class StopwatchBuilder internal constructor() {
   }
   
   /**
+   * Determines whether stopwatch should have precise delays between ticks or not.
+   *
+   * If flag is set to _true_ then delay between ticks will happen according to format.
+   * For example if current format on stopwatch is "MM:SS" delay between onTick() invocations
+   * will be exactly 1 second, if format is "HH:MM" - exactly one minute, "SS:LL" - exactly 10
+   * milliseconds and so on
+   *
+   * If, however, this flag is set to _false_ then delay between ticks might be less than exact
+   * time. For example, if format is "MM:SS", delay between ticks might be less than seconds, like
+   * 100 milliseconds. In this case [TimeTickListener.onTick] will be called multiple times per
+   * second with **same** formatted time, but **different** milliseconds
+   *
+   * By default this flag is set to false and generally you don't have to worry about it. If you
+   * are just displaying formatted time in TextView and you want to have good precision then leave
+   * this flag as false. You need to set it to true if you want [TimeTickListener.onTick] method to
+   * be called called exactly between delays specified by your format
+   *
+   * @param [useExactDelay] Whether stopwatch should use exact delays or not. Default is false
+   */
+  public fun useExactDelay(useExactDelay: Boolean) {
+    this.useExactDelay = useExactDelay
+  }
+  
+  /**
    * Creates and returns stopwatch instance
    */
   internal fun build(): Stopwatch {
     val startSemantic = startSemantic ?: error("Start format is not provided. Call" +
         " startFormat(String) to provide initial format")
     semanticsHolders.add(SemanticsHolder(startTime, startSemantic))
-    return StopwatchImpl(tickListener, semanticsHolders.toMutableList(),
+    return StopwatchImpl(useExactDelay, tickListener, semanticsHolders.toMutableList(),
       actionsHolders.toMutableList())
   }
 }
 
 /**
- * Use this function to create and configure an instance of stopwatch
+ * Use this method to create and configure an instance of stopwatch. Note that you should call
+ * this method either on UI thread or on a thread that has its own Looper
  *
  * @see StopwatchBuilder
  */
+@UiThread
 public fun buildStopwatch(action: StopwatchBuilder.() -> Unit): Stopwatch {
   return StopwatchBuilder().apply(action).build()
 }
