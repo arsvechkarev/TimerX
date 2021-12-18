@@ -21,16 +21,16 @@ class MainActivity : AppCompatActivity() {
     tabs.setupWithViewPager(viewPager)
   }
   
-  private inner class SectionsPagerAdapter internal constructor(fm: FragmentManager) :
+  private inner class SectionsPagerAdapter(fm: FragmentManager) :
     FragmentPagerAdapter(fm, BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT) {
-    
+  
     override fun getItem(position: Int): Fragment {
       return if (position == 0)
         StopwatchFragment()
       else
         TimerFragment()
     }
-    
+  
     override fun getPageTitle(position: Int): CharSequence? {
       return if (position == 0)
         "Stopwatch"

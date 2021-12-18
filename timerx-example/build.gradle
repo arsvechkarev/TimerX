@@ -24,7 +24,7 @@ android {
 dependencies {
   implementation project(':timerx-core')
 
-  debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.2'
+  debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
   implementation 'androidx.appcompat:appcompat:1.2.0'
   implementation 'com.google.android.material:material:1.0.0'
   implementation "androidx.core:core-ktx:1.0.0"

@@ -1,1 +1,2 @@
 include ':timerx-example', ':timerx-core'
+include ':timerx-formatting'

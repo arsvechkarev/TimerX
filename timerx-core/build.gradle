@@ -1,23 +1,6 @@
-apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
-
-publish {
-  userOrg = rootProject.ext.userOrg
-  repoName = rootProject.ext.repoName
-  groupId = rootProject.ext.groupId
-  artifactId = rootProject.ext.artifactId
-  publishVersion = rootProject.ext.publishVersion
-  desc = rootProject.ext.desc
-  website = rootProject.ext.website
-}
-
-buildscript {
-  repositories {
-    jcenter()
-  }
-  dependencies {
-    classpath rootProject.ext.build.novoda
-  }
+plugins {
+  id 'com.android.library'
+  id 'kotlin-android'
 }
 
 android {
@@ -27,13 +10,19 @@ android {
   defaultConfig {
     minSdkVersion configs.minSdkVersion
     targetSdkVersion configs.targetSdkVersion
-    versionCode configs.versionCode
-    versionName configs.versionName
     testInstrumentationRunner configs.testInstrumentationRunner
   }
 }
 
+kotlin {
+  explicitApi()
+}
+
 dependencies {
+  implementation project(':timerx-formatting')
   implementation rootProject.ext.application.annotations
-  testImplementation rootProject.ext.test.junit
+}
+
+repositories {
+  mavenCentral()
 }
