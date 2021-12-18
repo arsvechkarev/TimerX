@@ -47,7 +47,7 @@ class StopwatchBuilder internal constructor() {
   private var tickListener: TimeTickListener? = null
   private val semanticHolders: SortedSet<SemanticHolder> = TreeSet()
   private val actionsHolders: SortedSet<ActionsHolder> = TreeSet()
-  private var useExactDelay = true
+  private var useExactDelay = false
   
   /**
    * Set start time format to stopwatch
@@ -131,7 +131,7 @@ class StopwatchBuilder internal constructor() {
    * this flag as false. You need to set it to true if you want [TimeTickListener.onTick] method to
    * be called called exactly between delays specified by your format
    *
-   * @param [useExactDelay] Whether stopwatch should use exact delays or not. Default is true
+   * @param [useExactDelay] Whether stopwatch should use exact delays or not. Default is false
    */
   fun useExactDelay(useExactDelay: Boolean) {
     this.useExactDelay = useExactDelay
