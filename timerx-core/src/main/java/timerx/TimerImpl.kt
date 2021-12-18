@@ -124,7 +124,7 @@ internal class TimerImpl(
     override fun handleMessage(msg: Message) {
       synchronized(this@TimerImpl) {
         val startExecution = SystemClock.elapsedRealtime()
-        if (isInSimpleSecondsMode) {
+        if (isInSimpleSecondsMode && useExactDelay) {
           remainingTime = remainingTime.coerceAtLeast(0)
           val oldRemainingTime = remainingTime
           tickListener?.onTick(remainingTime, timeFormatter.format(remainingTime))
