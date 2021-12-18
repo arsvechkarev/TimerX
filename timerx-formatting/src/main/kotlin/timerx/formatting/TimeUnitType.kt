@@ -5,7 +5,7 @@ import timerx.formatting.Constants.Symbols.SYMBOL_MINUTES
 import timerx.formatting.Constants.Symbols.SYMBOL_REM_MILLIS
 import timerx.formatting.Constants.Symbols.SYMBOL_SECONDS
 
-internal enum class TimeUnitType(val value: Char) {
+enum class TimeUnitType(val value: Char) {
   HOURS(SYMBOL_HOURS),
   MINUTES(SYMBOL_MINUTES),
   SECONDS(SYMBOL_SECONDS),

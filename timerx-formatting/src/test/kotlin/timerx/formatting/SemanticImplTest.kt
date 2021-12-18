@@ -4,9 +4,9 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import timerx.formatting.Analyzer.analyze
+import timerx.formatting.AnalyzerImpl.analyze
 
-class SemanticTest {
+class SemanticImplTest {
   
   @Test
   fun basicFormatTest() {
@@ -57,7 +57,7 @@ class SemanticTest {
     assertTrue(semantic.hasOnlyRMillis())
   }
   
-  private fun createSemantic(format: String): Semantic {
+  private fun createSemantic(format: String): SemanticImpl {
     return analyze(format)
   }
   

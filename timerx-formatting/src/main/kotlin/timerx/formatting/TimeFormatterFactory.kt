@@ -9,6 +9,6 @@ object TimeFormatterFactory {
    * Creates an instance of [TimeFormatter] for a particular [format]
    */
   fun create(format: String): TimeFormatter {
-    return StringBuilderTimeFormatter(Analyzer.analyze(format))
+    return StringBuilderTimeFormatter(AnalyzerImpl.analyze(format))
   }
 }

@@ -7,10 +7,13 @@ import android.os.SystemClock
 import timerx.TimeCountingState.INACTIVE
 import timerx.TimeCountingState.PAUSED
 import timerx.TimeCountingState.RESUMED
+import timerx.formatting.Analyzer
 import timerx.formatting.Constants.TimeValues
 import timerx.formatting.TimeFormatter
 import timerx.formatting.TimeFormatterFactory
+import timerx.formatting.TimeUnitType
 import java.util.concurrent.TimeUnit
+import kotlin.math.abs
 
 internal class TimerImpl(
   private val useExactDelay: Boolean,
@@ -40,6 +43,11 @@ internal class TimerImpl(
   
   // Current time formatter
   private var timeFormatter = TimeFormatterFactory.create(formats.first().format)
+  
+  // Mode when all formats don't have milliseconds
+  private val isInSimpleSecondsMode = formats.all {
+    !Analyzer.get().analyze(it.format).has(TimeUnitType.R_MILLISECONDS)
+  }
   
   override val formattedStartTime: CharSequence
     get() {
@@ -117,13 +125,27 @@ internal class TimerImpl(
     override fun handleMessage(msg: Message) {
       synchronized(this@TimerImpl) {
         val startExecution = SystemClock.elapsedRealtime()
-        remainingTime = millisInFuture - SystemClock.elapsedRealtime()
-        remainingTime = remainingTime.coerceAtLeast(0)
-        if (remainingTime <= 0) {
-          finishTimer()
-          return
-        } else {
+        if (isInSimpleSecondsMode) {
+          remainingTime = remainingTime.coerceAtLeast(0)
+          val oldRemainingTime = remainingTime
           tickListener?.onTick(remainingTime, timeFormatter.format(remainingTime))
+          remainingTime = millisInFuture - SystemClock.elapsedRealtime()
+          val expectedTime = oldRemainingTime - currentExactDelay
+          val diff = abs(remainingTime - expectedTime)
+          remainingTime += diff
+          if (remainingTime <= 0) {
+            postDelayed(::finishTimer, currentExactDelay)
+            return
+          }
+        } else {
+          remainingTime = millisInFuture - SystemClock.elapsedRealtime()
+          remainingTime = remainingTime.coerceAtLeast(0)
+          tickListener?.onTick(remainingTime, timeFormatter.format(remainingTime))
+          if (remainingTime <= 0) {
+            finishAction?.run()
+            reset()
+            return
+          }
         }
         val executionTime = SystemClock.elapsedRealtime() - startExecution
         sendMessageDelayed(obtainMessage(), currentDelay - executionTime)

@@ -130,7 +130,7 @@ interface TimeFormatter {
      * @param millis Time in milliseconds
      */
     fun format(format: String, millis: Long): CharSequence {
-      return StringBuilderTimeFormatter(Analyzer.analyze(format)).format(millis)
+      return StringBuilderTimeFormatter(AnalyzerImpl.analyze(format)).format(millis)
     }
   }
 }

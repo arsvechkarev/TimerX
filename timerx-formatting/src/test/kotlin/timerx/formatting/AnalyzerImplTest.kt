@@ -7,7 +7,7 @@ import timerx.formatting.TimeUnitType.MINUTES
 import timerx.formatting.TimeUnitType.R_MILLISECONDS
 import timerx.formatting.TimeUnitType.SECONDS
 
-class AnalyzerTest {
+class AnalyzerImplTest {
   
   @Test
   fun smallestAvailableUnitTest1() {
@@ -173,7 +173,7 @@ class AnalyzerTest {
     return analyze(format).largestAvailableUnit
   }
   
-  private fun analyze(format: String): Semantic {
-    return Analyzer.analyze(TestHelper.updateFormatIfNeeded(format))
+  private fun analyze(format: String): SemanticImpl {
+    return AnalyzerImpl.analyze(TestHelper.updateFormatIfNeeded(format))
   }
 }
