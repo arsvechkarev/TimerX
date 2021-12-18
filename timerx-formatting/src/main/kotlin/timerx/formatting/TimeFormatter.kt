@@ -1,6 +1,4 @@
-package timerx
-
-import timerx.Analyzer.analyze
+package timerx.formatting
 
 /**
  * Main class for formatting input milliseconds into char sequence representation
@@ -103,7 +101,7 @@ import timerx.Analyzer.analyze
  *
  * @author Arseniy Svechkarev
  */
-public interface TimeFormatter {
+interface TimeFormatter {
   
   /**
    * Returns delay for timer/stopwatch based on what the format is. If [useExactDelay] is set to
@@ -111,28 +109,28 @@ public interface TimeFormatter {
    * is "MM:SS", then delay should be 1 seconds. If [useExactDelay] is set to false then delay
    * might be less be 1 seconds, like 100 or milliseconds
    */
-  public fun getWaitingDelay(useExactDelay: Boolean): Long
+  fun getWaitingDelay(useExactDelay: Boolean): Long
   
   /**
    * Returns the format of the formatter
    */
-  public val format: String
+  val format: String
   
   /**
    * Formats input milliseconds according to the format
    */
-  public fun format(millis: Long): CharSequence
+  fun format(millis: Long): CharSequence
   
   companion object {
-    
+  
     /**
-     * Helper method to format time according to format
+     * Helper method for formatting time
      *
      * @param format Format to format time with
      * @param millis Time in milliseconds
      */
-    public fun format(format: String, millis: Long): CharSequence {
-      return StringBuilderTimeFormatter(analyze(format)).format(millis)
+    fun format(format: String, millis: Long): CharSequence {
+      return StringBuilderTimeFormatter(Analyzer.analyze(format)).format(millis)
     }
   }
 }

@@ -1,4 +1,4 @@
-package timerx
+package timerx.formatting
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue

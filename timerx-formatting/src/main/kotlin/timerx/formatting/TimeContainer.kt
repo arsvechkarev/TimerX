@@ -1,4 +1,4 @@
-package timerx
+package timerx.formatting
 
 /**
  * Temporary holds time in different time units

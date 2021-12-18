@@ -1,6 +1,6 @@
-package timerx
+package timerx.formatting
 
-internal object Constants {
+object Constants {
   
   const val NONE: Int = -1
   

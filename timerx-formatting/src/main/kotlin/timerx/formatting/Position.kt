@@ -1,4 +1,4 @@
-package timerx
+package timerx.formatting
 
 /**
  * Represents position indices of special symbols in a format. [start] and [end] both could be

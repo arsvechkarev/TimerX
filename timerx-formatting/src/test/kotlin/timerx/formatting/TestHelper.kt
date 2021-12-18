@@ -1,6 +1,6 @@
-package timerx
+package timerx.formatting
 
-import timerx.Constants.Symbols
+import timerx.formatting.Constants.Symbols
 import java.util.concurrent.TimeUnit
 
 /**

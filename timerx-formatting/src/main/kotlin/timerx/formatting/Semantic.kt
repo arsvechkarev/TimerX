@@ -1,4 +1,4 @@
-package timerx
+package timerx.formatting
 
 /**
  * Information about format, such as positions of different units, smallest available unit

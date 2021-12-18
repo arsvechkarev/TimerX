@@ -1,8 +1,7 @@
-package timerx
+package timerx.formatting
 
-import androidx.annotation.VisibleForTesting
-import timerx.Constants.Symbols
-import timerx.Constants.Symbols.isOneOfSpecialSymbols
+import timerx.formatting.Constants.Symbols
+import timerx.formatting.Constants.Symbols.isOneOfSpecialSymbols
 
 internal object Analyzer {
   
@@ -20,8 +19,7 @@ internal object Analyzer {
       strippedFormat, smallestUnit, largestUnit)
   }
   
-  @VisibleForTesting
-  fun getPositionOf(timeUnitType: TimeUnitType, input: String): Position {
+  private fun getPositionOf(timeUnitType: TimeUnitType, input: String): Position {
     val timeUnitChar = timeUnitType.value
     var start = -1
     var end = -1

@@ -1,10 +1,10 @@
-package timerx
+package timerx.formatting
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import timerx.Analyzer.analyze
+import timerx.formatting.Analyzer.analyze
 
 class SemanticTest {
   

@@ -1,11 +1,11 @@
-package timerx
+package timerx.formatting
 
 import org.junit.Assert.assertSame
 import org.junit.Test
-import timerx.TimeUnitType.HOURS
-import timerx.TimeUnitType.MINUTES
-import timerx.TimeUnitType.R_MILLISECONDS
-import timerx.TimeUnitType.SECONDS
+import timerx.formatting.TimeUnitType.HOURS
+import timerx.formatting.TimeUnitType.MINUTES
+import timerx.formatting.TimeUnitType.R_MILLISECONDS
+import timerx.formatting.TimeUnitType.SECONDS
 
 class AnalyzerTest {
   

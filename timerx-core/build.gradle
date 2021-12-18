@@ -21,6 +21,8 @@ kotlin {
 }
 
 dependencies {
+  implementation project(':timerx-formatting')
+
   implementation rootProject.ext.application.annotations
   testImplementation rootProject.ext.test.junit
 }

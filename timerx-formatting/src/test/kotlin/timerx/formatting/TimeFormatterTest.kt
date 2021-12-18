@@ -1,9 +1,9 @@
-package timerx
+package timerx.formatting
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import timerx.Analyzer.analyze
-import timerx.TestHelper.updateFormatIfNeeded
+import timerx.formatting.Analyzer.analyze
+import timerx.formatting.TestHelper.updateFormatIfNeeded
 import java.util.concurrent.TimeUnit
 
 class TimeFormatterTest {

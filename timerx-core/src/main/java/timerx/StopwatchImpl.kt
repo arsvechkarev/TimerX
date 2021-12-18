@@ -4,16 +4,18 @@ import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Message
 import android.os.SystemClock
-import timerx.Constants.TimeValues
 import timerx.TimeCountingState.INACTIVE
 import timerx.TimeCountingState.PAUSED
 import timerx.TimeCountingState.RESUMED
+import timerx.formatting.Constants.TimeValues
+import timerx.formatting.TimeFormatter
+import timerx.formatting.TimeFormatterFactory
 import java.util.concurrent.TimeUnit
 
 internal class StopwatchImpl(
   private val useExactDelay: Boolean,
   private var tickListener: TimeTickListener?,
-  private val semanticsHolders: MutableList<SemanticsHolder>,
+  private val formatHolders: MutableList<FormatHolder>,
   private val actionsHolders: MutableList<ActionsHolder>
 ) : Stopwatch {
   
@@ -33,12 +35,12 @@ internal class StopwatchImpl(
   private var state = INACTIVE
   
   // Current time formatter
-  private var timeFormatter = StringBuilderTimeFormatter(semanticsHolders.first().semantic)
+  private var timeFormatter = TimeFormatterFactory.create(formatHolders.first().format)
   
   override val formattedStartTime: CharSequence
     get() {
-      val holder = semanticsHolders.first()
-      return StringBuilderTimeFormatter(holder.semantic).format(holder.millis)
+      val holder = formatHolders.first()
+      return TimeFormatter.format(holder.format, holder.millis)
     }
   
   override val currentTimeInMillis: Long
@@ -50,9 +52,9 @@ internal class StopwatchImpl(
   override fun start() {
     if (state == RESUMED) return
     if (initialTime == TimeValues.NONE) {
-      val startTime = semanticsHolders.first().millis
+      val startTime = formatHolders.first().millis
       currentTime = startTime
-      applyFormat(semanticsHolders.first().semantic)
+      applyFormat(formatHolders.first().format)
       initialTime = SystemClock.elapsedRealtime() - startTime
     } else {
       initialTime = SystemClock.elapsedRealtime() - currentTime
@@ -80,14 +82,14 @@ internal class StopwatchImpl(
   override fun reset() {
     state = INACTIVE
     initialTime = TimeValues.NONE
-    currentTime = semanticsHolders.first().millis
+    currentTime = formatHolders.first().millis
     handler!!.removeCallbacksAndMessages(null)
     cancelFormatsAndActionsChanges()
-    applyFormat(semanticsHolders.first().semantic)
+    applyFormat(formatHolders.first().format)
   }
   
   override fun release() {
-    semanticsHolders.clear()
+    formatHolders.clear()
     actionsHolders.clear()
     tickListener = null
     cancelFormatsAndActionsChanges()
@@ -95,9 +97,9 @@ internal class StopwatchImpl(
     handler = null
   }
   
-  private fun applyFormat(semantic: Semantic) {
+  private fun applyFormat(format: String) {
     synchronized(this) {
-      timeFormatter = StringBuilderTimeFormatter(semantic)
+      timeFormatter = TimeFormatterFactory.create(format)
       delay = timeFormatter.getWaitingDelay(useExactDelay)
     }
   }
@@ -117,22 +119,22 @@ internal class StopwatchImpl(
   }
   
   private fun applyAppropriateFormat() {
-    if (currentTime < semanticsHolders.first().millis) {
-      applyFormat(semanticsHolders.first().semantic)
+    if (currentTime < formatHolders.first().millis) {
+      applyFormat(formatHolders.first().format)
       return
     }
-    for (i in semanticsHolders.indices.reversed()) {
-      if (semanticsHolders[i].millis < currentTime) {
-        applyFormat(semanticsHolders[i].semantic)
+    for (i in formatHolders.indices.reversed()) {
+      if (formatHolders[i].millis < currentTime) {
+        applyFormat(formatHolders[i].format)
         break
       }
     }
   }
   
   private fun scheduleFormatsAndActionsChange() {
-    semanticsHolders.forEach { holder ->
+    formatHolders.forEach { holder ->
       if (holder.millis > currentTime) {
-        workerHandler.postDelayed({ applyFormat(holder.semantic) },
+        workerHandler.postDelayed({ applyFormat(holder.format) },
           holder.millis - currentTime)
       }
     }

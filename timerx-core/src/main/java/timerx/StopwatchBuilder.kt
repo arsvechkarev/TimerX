@@ -38,22 +38,22 @@ import java.util.concurrent.TimeUnit
  * @see Stopwatch
  * @see buildStopwatch
  */
-public class StopwatchBuilder internal constructor() {
+class StopwatchBuilder internal constructor() {
   
-  private var startSemantic: Semantic? = null
+  private var startFormat: String? = null
   private var startTime: Long = 0
   private var tickListener: TimeTickListener? = null
-  private val semanticsHolders: SortedSet<SemanticsHolder> = TreeSet()
+  private val formatHolders: SortedSet<FormatHolder> = TreeSet()
   private val actionsHolders: SortedSet<ActionsHolder> = TreeSet()
-  private var useExactDelay = false
+  private var useExactDelay = true
   
   /**
    * Set start time format to stopwatch
    *
    * @param format Format for stopwatch. See [TimeFormatter] to find out about formats
    */
-  public fun startFormat(format: String) {
-    startSemantic = Analyzer.analyze(format)
+  fun startFormat(format: String) {
+    startFormat = format
   }
   
   /**
@@ -62,7 +62,7 @@ public class StopwatchBuilder internal constructor() {
    * @param time Time to set
    * @param timeUnit Unit of the time
    */
-  public fun startTime(time: Long, timeUnit: TimeUnit) {
+  fun startTime(time: Long, timeUnit: TimeUnit) {
     require(time >= 0) { "Time shouldn't be negative" }
     startTime = timeUnit.toMillis(time)
   }
@@ -70,7 +70,7 @@ public class StopwatchBuilder internal constructor() {
   /**
    * Set tick listener to receive formatted time
    */
-  public fun onTick(tickListener: TimeTickListener) {
+  fun onTick(tickListener: TimeTickListener) {
     this.tickListener = tickListener
   }
   
@@ -88,11 +88,10 @@ public class StopwatchBuilder internal constructor() {
    * }
    * </pre>
    */
-  public fun changeFormatWhen(time: Long, timeUnit: TimeUnit, newFormat: String) {
+  fun changeFormatWhen(time: Long, timeUnit: TimeUnit, newFormat: String) {
     require(time >= 0) { "Time cannot be negative" }
-    val semantic = Analyzer.analyze(newFormat)
     val millis = timeUnit.toMillis(time)
-    semanticsHolders.add(SemanticsHolder(millis, semantic))
+    formatHolders.add(FormatHolder(millis, newFormat))
   }
   
   /**
@@ -105,7 +104,7 @@ public class StopwatchBuilder internal constructor() {
    *  }
    * </pre>
    */
-  public fun actionWhen(time: Long, timeUnit: TimeUnit, action: Runnable) {
+  fun actionWhen(time: Long, timeUnit: TimeUnit, action: Runnable) {
     require(time >= 0) { "Time cannot be negative" }
     val millis = timeUnit.toMillis(time)
     actionsHolders.add(ActionsHolder(millis, action))
@@ -129,9 +128,9 @@ public class StopwatchBuilder internal constructor() {
    * this flag as false. You need to set it to true if you want [TimeTickListener.onTick] method to
    * be called called exactly between delays specified by your format
    *
-   * @param [useExactDelay] Whether stopwatch should use exact delays or not. Default is false
+   * @param [useExactDelay] Whether stopwatch should use exact delays or not. Default is true
    */
-  public fun useExactDelay(useExactDelay: Boolean) {
+  fun useExactDelay(useExactDelay: Boolean) {
     this.useExactDelay = useExactDelay
   }
   
@@ -139,10 +138,10 @@ public class StopwatchBuilder internal constructor() {
    * Creates and returns stopwatch instance
    */
   internal fun build(): Stopwatch {
-    val startSemantic = startSemantic ?: error("Start format is not provided. Call" +
+    val startSemantic = startFormat ?: error("Start format is not provided. Call" +
         " startFormat(String) to provide initial format")
-    semanticsHolders.add(SemanticsHolder(startTime, startSemantic))
-    return StopwatchImpl(useExactDelay, tickListener, semanticsHolders.toMutableList(),
+    formatHolders.add(FormatHolder(startTime, startSemantic))
+    return StopwatchImpl(useExactDelay, tickListener, formatHolders.toMutableList(),
       actionsHolders.toMutableList())
   }
 }
@@ -154,6 +153,6 @@ public class StopwatchBuilder internal constructor() {
  * @see StopwatchBuilder
  */
 @UiThread
-public fun buildStopwatch(action: StopwatchBuilder.() -> Unit): Stopwatch {
+fun buildStopwatch(action: StopwatchBuilder.() -> Unit): Stopwatch {
   return StopwatchBuilder().apply(action).build()
 }

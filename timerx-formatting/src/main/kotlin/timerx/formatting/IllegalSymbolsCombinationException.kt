@@ -1,4 +1,4 @@
-package timerx
+package timerx.formatting
 
 /**
  * This exception is thrown when symbols in input format are in unacceptable combination,
@@ -7,4 +7,4 @@ package timerx
  * 2) Input format has hours, minutes, and milliseconds, but does not have seconds<br></br>
  * 3) Input format has minutes and milliseconds, but does not have seconds
  */
-public class IllegalSymbolsCombinationException(message: String?) : RuntimeException(message)
+class IllegalSymbolsCombinationException(message: String?) : RuntimeException(message)

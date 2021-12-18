@@ -1,7 +1,7 @@
 package timerx
 
 import androidx.annotation.UiThread
-import timerx.Constants.TimeValues
+import timerx.formatting.Constants.TimeValues
 import java.util.Collections
 import java.util.SortedSet
 import java.util.TreeSet
@@ -44,23 +44,23 @@ import java.util.concurrent.TimeUnit
  *
  * @see Timer
  */
-public class TimerBuilder internal constructor() {
+class TimerBuilder internal constructor() {
   
-  private var startSemantic: Semantic? = null
+  private var startFormat: String? = null
   private var startTime: Long = TimeValues.NONE
   private var tickListener: TimeTickListener? = null
   private var finishAction: Runnable? = null
-  private val semanticsHolders: SortedSet<SemanticsHolder> = TreeSet(Collections.reverseOrder())
+  private val formatHolders: SortedSet<FormatHolder> = TreeSet(Collections.reverseOrder())
   private val actionsHolders: SortedSet<ActionsHolder> = TreeSet(Collections.reverseOrder())
   private var useExactDelay = false
   
   /**
    * Set the start format to timer
    *
-   * @param format Format for timer. See [TimeFormatter] to find out about formats
+   * @param format Format for timer. See [TimeFormatter] to find out more about formats
    */
-  public fun startFormat(format: String) {
-    startSemantic = Analyzer.analyze(format)
+  fun startFormat(format: String) {
+    startFormat = format
   }
   
   /**
@@ -69,7 +69,7 @@ public class TimerBuilder internal constructor() {
    * @param time Time to set
    * @param timeUnit Unit of the time
    */
-  public fun startTime(time: Long, timeUnit: TimeUnit) {
+  fun startTime(time: Long, timeUnit: TimeUnit) {
     require(time >= 0) { "Time shouldn't be negative" }
     startTime = timeUnit.toMillis(time)
   }
@@ -77,7 +77,7 @@ public class TimerBuilder internal constructor() {
   /**
    * Set tick listener to receive formatted time
    */
-  public fun onTick(tickListener: TimeTickListener) {
+  fun onTick(tickListener: TimeTickListener) {
     this.tickListener = tickListener
   }
   
@@ -86,7 +86,7 @@ public class TimerBuilder internal constructor() {
    *
    * @param finishAction Action that fires up when timer reaches 0
    */
-  public fun onFinish(finishAction: Runnable) {
+  fun onFinish(finishAction: Runnable) {
     this.finishAction = finishAction
   }
   
@@ -104,11 +104,10 @@ public class TimerBuilder internal constructor() {
    * }
    * </pre>
    */
-  public fun changeFormatWhen(time: Long, timeUnit: TimeUnit, newFormat: String) {
+  fun changeFormatWhen(time: Long, timeUnit: TimeUnit, newFormat: String) {
     require(time >= 0) { "Time cannot be negative" }
-    val semantic = Analyzer.analyze(newFormat)
     val millis = timeUnit.toMillis(time)
-    semanticsHolders.add(SemanticsHolder(millis, semantic))
+    formatHolders.add(FormatHolder(millis, newFormat))
   }
   
   /**
@@ -121,7 +120,7 @@ public class TimerBuilder internal constructor() {
    *  }
    * </pre>
    */
-  public fun actionWhen(time: Long, timeUnit: TimeUnit, action: Runnable) {
+  fun actionWhen(time: Long, timeUnit: TimeUnit, action: Runnable) {
     require(time >= 0) { "Time cannot be negative" }
     val millis = timeUnit.toMillis(time)
     actionsHolders.add(ActionsHolder(millis, action))
@@ -147,7 +146,7 @@ public class TimerBuilder internal constructor() {
    *
    * @param [useExactDelay] Whether timer should use exact delays or not. Default is false
    */
-  public fun useExactDelay(useExactDelay: Boolean) {
+  fun useExactDelay(useExactDelay: Boolean) {
     this.useExactDelay = useExactDelay
   }
   
@@ -155,11 +154,11 @@ public class TimerBuilder internal constructor() {
    * Creates and returns timer instance
    */
   internal fun build(): Timer {
-    val startSemantic = startSemantic ?: error("Start format is not provided. Call" +
+    val startSemantic = startFormat ?: error("Start format is not provided. Call" +
         " startFormat(String) to provide initial format")
     require(startTime != TimeValues.NONE) { "Start time is not provided" }
-    semanticsHolders.add(SemanticsHolder(startTime, startSemantic))
-    return TimerImpl(useExactDelay, tickListener, finishAction, semanticsHolders.toMutableList(),
+    formatHolders.add(FormatHolder(startTime, startSemantic))
+    return TimerImpl(useExactDelay, tickListener, finishAction, formatHolders.toMutableList(),
       actionsHolders.toMutableList())
   }
 }
@@ -171,6 +170,6 @@ public class TimerBuilder internal constructor() {
  * @see TimerBuilder
  */
 @UiThread
-public fun buildTimer(action: TimerBuilder.() -> Unit): Timer {
+fun buildTimer(action: TimerBuilder.() -> Unit): Timer {
   return TimerBuilder().apply(action).build()
 }
