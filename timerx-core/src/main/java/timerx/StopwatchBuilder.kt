@@ -1,6 +1,8 @@
 package timerx
 
 import androidx.annotation.UiThread
+import timerx.formatting.Analyzer
+import timerx.formatting.Semantic
 import java.util.SortedSet
 import java.util.TreeSet
 import java.util.concurrent.TimeUnit
@@ -40,10 +42,10 @@ import java.util.concurrent.TimeUnit
  */
 class StopwatchBuilder internal constructor() {
   
-  private var startFormat: String? = null
+  private var startSemantic: Semantic? = null
   private var startTime: Long = 0
   private var tickListener: TimeTickListener? = null
-  private val formatHolders: SortedSet<FormatHolder> = TreeSet()
+  private val semanticHolders: SortedSet<SemanticHolder> = TreeSet()
   private val actionsHolders: SortedSet<ActionsHolder> = TreeSet()
   private var useExactDelay = true
   
@@ -53,7 +55,7 @@ class StopwatchBuilder internal constructor() {
    * @param format Format for stopwatch. See [TimeFormatter] to find out about formats
    */
   fun startFormat(format: String) {
-    startFormat = format
+    startSemantic = Analyzer.get().analyze(format)
   }
   
   /**
@@ -91,7 +93,8 @@ class StopwatchBuilder internal constructor() {
   fun changeFormatWhen(time: Long, timeUnit: TimeUnit, newFormat: String) {
     require(time >= 0) { "Time cannot be negative" }
     val millis = timeUnit.toMillis(time)
-    formatHolders.add(FormatHolder(millis, newFormat))
+    val semantic = Analyzer.get().analyze(newFormat)
+    semanticHolders.add(SemanticHolder(millis, semantic))
   }
   
   /**
@@ -138,10 +141,10 @@ class StopwatchBuilder internal constructor() {
    * Creates and returns stopwatch instance
    */
   internal fun build(): Stopwatch {
-    val startSemantic = startFormat ?: error("Start format is not provided. Call" +
+    val startSemantic = startSemantic ?: error("Start format is not provided. Call" +
         " startFormat(String) to provide initial format")
-    formatHolders.add(FormatHolder(startTime, startSemantic))
-    return StopwatchImpl(useExactDelay, tickListener, formatHolders.toMutableList(),
+    semanticHolders.add(SemanticHolder(startTime, startSemantic))
+    return StopwatchImpl(useExactDelay, tickListener, semanticHolders.toMutableList(),
       actionsHolders.toMutableList())
   }
 }

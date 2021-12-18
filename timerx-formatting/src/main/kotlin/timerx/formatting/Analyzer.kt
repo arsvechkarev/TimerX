@@ -6,7 +6,9 @@ package timerx.formatting
 interface Analyzer {
   
   /**
-   * Creates [Semantic]
+   * Validates [format] and creates [Semantic] from it. May throw [IllegalSymbolsCombinationException],
+   * [NonContiguousFormatSymbolsException], [NoNecessarySymbolsException] if the format is not
+   * valid. See documentation to this exceptions to find out what types of formats are invalid
    */
   fun analyze(format: String): Semantic
   

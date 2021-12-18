@@ -1,7 +1,9 @@
 package timerx
 
 import androidx.annotation.UiThread
+import timerx.formatting.Analyzer
 import timerx.formatting.Constants.TimeValues
+import timerx.formatting.Semantic
 import java.util.Collections
 import java.util.SortedSet
 import java.util.TreeSet
@@ -46,11 +48,11 @@ import java.util.concurrent.TimeUnit
  */
 class TimerBuilder internal constructor() {
   
-  private var startFormat: String? = null
+  private var startSemantic: Semantic? = null
   private var startTime: Long = TimeValues.NONE
   private var tickListener: TimeTickListener? = null
   private var finishAction: Runnable? = null
-  private val formatHolders: SortedSet<FormatHolder> = TreeSet(Collections.reverseOrder())
+  private val semanticHolders: SortedSet<SemanticHolder> = TreeSet(Collections.reverseOrder())
   private val actionsHolders: SortedSet<ActionsHolder> = TreeSet(Collections.reverseOrder())
   private var useExactDelay = false
   
@@ -60,7 +62,7 @@ class TimerBuilder internal constructor() {
    * @param format Format for timer. See [TimeFormatter] to find out more about formats
    */
   fun startFormat(format: String) {
-    startFormat = format
+    startSemantic = Analyzer.get().analyze(format)
   }
   
   /**
@@ -107,7 +109,8 @@ class TimerBuilder internal constructor() {
   fun changeFormatWhen(time: Long, timeUnit: TimeUnit, newFormat: String) {
     require(time >= 0) { "Time cannot be negative" }
     val millis = timeUnit.toMillis(time)
-    formatHolders.add(FormatHolder(millis, newFormat))
+    val semantic = Analyzer.get().analyze(newFormat)
+    semanticHolders.add(SemanticHolder(millis, semantic))
   }
   
   /**
@@ -154,11 +157,11 @@ class TimerBuilder internal constructor() {
    * Creates and returns timer instance
    */
   internal fun build(): Timer {
-    val startSemantic = startFormat ?: error("Start format is not provided. Call" +
+    val startSemantic = startSemantic ?: error("Start format is not provided. Call" +
         " startFormat(String) to provide initial format")
     require(startTime != TimeValues.NONE) { "Start time is not provided" }
-    formatHolders.add(FormatHolder(startTime, startSemantic))
-    return TimerImpl(useExactDelay, tickListener, finishAction, formatHolders.toMutableList(),
+    semanticHolders.add(SemanticHolder(startTime, startSemantic))
+    return TimerImpl(useExactDelay, tickListener, finishAction, semanticHolders.toMutableList(),
       actionsHolders.toMutableList())
   }
 }

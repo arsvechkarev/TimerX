@@ -6,9 +6,16 @@ package timerx.formatting
 object TimeFormatterFactory {
   
   /**
-   * Creates an instance of [TimeFormatter] for a particular [format]
+   * Creates an instance of [TimeFormatter] from a particular [format]
    */
   fun create(format: String): TimeFormatter {
-    return StringBuilderTimeFormatter(AnalyzerImpl.analyze(format))
+    return StringBuilderTimeFormatter(Analyzer.get().analyze(format))
+  }
+  
+  /**
+   * Creates an instance of [TimeFormatter] from a particular [semantic]
+   */
+  fun create(semantic: Semantic): TimeFormatter {
+    return StringBuilderTimeFormatter(semantic)
   }
 }

@@ -10,9 +10,6 @@ data class Position(val start: Int, val end: Int) {
     require(start <= end) { "start value: $start is more than end value: $end" }
   }
   
-  /**
-   *
-   */
   val isEmpty: Boolean
     get() = start == -1 && end == -1
   

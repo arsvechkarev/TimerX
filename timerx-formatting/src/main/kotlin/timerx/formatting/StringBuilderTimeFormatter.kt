@@ -7,7 +7,7 @@ import kotlin.math.pow
 /**
  * Optimized time formatter based on string builder
  */
-internal class StringBuilderTimeFormatter(private val semantic: SemanticImpl) : TimeFormatter {
+internal class StringBuilderTimeFormatter(private val semantic: Semantic) : TimeFormatter {
   
   private val timeContainer = TimeContainer()
   

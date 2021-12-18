@@ -7,9 +7,8 @@ import android.os.SystemClock
 import timerx.TimeCountingState.INACTIVE
 import timerx.TimeCountingState.PAUSED
 import timerx.TimeCountingState.RESUMED
-import timerx.formatting.Analyzer
 import timerx.formatting.Constants.TimeValues
-import timerx.formatting.TimeFormatter
+import timerx.formatting.Semantic
 import timerx.formatting.TimeFormatterFactory
 import timerx.formatting.TimeUnitType
 import java.util.concurrent.TimeUnit
@@ -19,12 +18,12 @@ internal class TimerImpl(
   private val useExactDelay: Boolean,
   private var tickListener: TimeTickListener?,
   private val finishAction: Runnable?,
-  private val formats: MutableList<FormatHolder>,
+  private val semantics: MutableList<SemanticHolder>,
   private val actions: MutableList<ActionsHolder>
 ) : Timer {
   
   // Remaining (current time) in millis
-  private var remainingTime: Long = formats.first().millis
+  private var remainingTime: Long = semantics.first().millis
   
   // Time in future when timer should stop
   private var millisInFuture: Long = TimeValues.NONE
@@ -42,17 +41,17 @@ internal class TimerImpl(
   private var state = INACTIVE
   
   // Current time formatter
-  private var timeFormatter = TimeFormatterFactory.create(formats.first().format)
+  private var timeFormatter = TimeFormatterFactory.create(semantics.first().semantic)
   
   // Mode when all formats don't have milliseconds
-  private val isInSimpleSecondsMode = formats.all {
-    !Analyzer.get().analyze(it.format).has(TimeUnitType.R_MILLISECONDS)
+  private val isInSimpleSecondsMode = semantics.all {
+    !it.semantic.has(TimeUnitType.R_MILLISECONDS)
   }
   
   override val formattedStartTime: CharSequence
     get() {
-      val holder = formats.first()
-      return TimeFormatter.format(holder.format, holder.millis)
+      val holder = semantics.first()
+      return TimeFormatterFactory.create(holder.semantic).format(holder.millis)
     }
   
   override val remainingTimeInMillis: Long
@@ -64,9 +63,9 @@ internal class TimerImpl(
   override fun start() {
     if (state == RESUMED) return
     if (millisInFuture == TimeValues.NONE) {
-      val startTime = formats.first().millis
+      val startTime = semantics.first().millis
       remainingTime = startTime
-      applyFormat(formats.first().format)
+      applyFormat(semantics.first().semantic)
       val timeToSkip = if (useExactDelay) currentExactDelay else 0
       millisInFuture = SystemClock.elapsedRealtime() + startTime - timeToSkip
     } else {
@@ -96,14 +95,14 @@ internal class TimerImpl(
   override fun reset() {
     state = INACTIVE
     millisInFuture = TimeValues.NONE
-    remainingTime = formats.first().millis
+    remainingTime = semantics.first().millis
     handler!!.removeCallbacksAndMessages(null)
     cancelFormatsAndActionsChanges()
-    applyFormat(formats.first().format)
+    applyFormat(semantics.first().semantic)
   }
   
   override fun release() {
-    formats.clear()
+    semantics.clear()
     actions.clear()
     tickListener = null
     cancelFormatsAndActionsChanges()
@@ -111,9 +110,9 @@ internal class TimerImpl(
     handler = null
   }
   
-  private fun applyFormat(format: String) {
+  private fun applyFormat(semantic: Semantic) {
     synchronized(this) {
-      timeFormatter = TimeFormatterFactory.create(format)
+      timeFormatter = TimeFormatterFactory.create(semantic)
       currentDelay = timeFormatter.getWaitingDelay(useExactDelay)
       currentExactDelay = timeFormatter.getWaitingDelay(useExactDelay = true)
     }
@@ -154,22 +153,22 @@ internal class TimerImpl(
   }
   
   private fun applyAppropriateFormat() {
-    if (remainingTime > formats.first().millis) {
-      applyFormat(formats.first().format)
+    if (remainingTime > semantics.first().millis) {
+      applyFormat(semantics.first().semantic)
       return
     }
-    for (i in formats.indices.reversed()) {
-      if (formats[i].millis > remainingTime) {
-        applyFormat(formats[i].format)
+    for (i in semantics.indices.reversed()) {
+      if (semantics[i].millis > remainingTime) {
+        applyFormat(semantics[i].semantic)
         break
       }
     }
   }
   
   private fun scheduleFormatsAndActionsChange() {
-    formats.forEach { holder ->
+    semantics.forEach { holder ->
       if (holder.millis < remainingTime) {
-        workerHandler.postDelayed({ applyFormat(holder.format) },
+        workerHandler.postDelayed({ applyFormat(holder.semantic) },
           remainingTime - holder.millis)
       }
     }
