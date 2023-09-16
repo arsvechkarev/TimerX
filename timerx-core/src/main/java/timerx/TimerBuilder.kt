@@ -8,38 +8,38 @@ import java.util.TreeSet
 import java.util.concurrent.TimeUnit
 
 /**
- * Builder to create an instance of [Timer]. Use function [buildTimer] to instantiate
+ * Builder for creationg instances of [Timer]. Use function [buildTimer] to instantiate
  * the builder. Usage example:
  * <pre>
  *
  * val timer = buildTimer {
- *    // Set the start format of timer
+ *    // Setting the start format of timer
  *    startFormat("MM:SS")
- *    // Set the start time of the timer
+ *    // Setting the start time of the timer
  *    startTime(60, TimeUnit.SECONDS)
- *    // Set the tick listener that gets notified when time changes
+ *    // Setting a tick listener that gets notified when time changes
  *    onTick { millis: Long, time: CharSequence -> myTextView.text = time }
  *    // Run actions at a certain time
  *    actionWhen(40, TimeUnit.SECONDS) { showToast("40 seconds left") }
  *    actionWhen(20, TimeUnit.SECONDS) { showToast("20 seconds left") }
- *    // When time is equal to ten seconds, change format to "SS:LL"
+ *    // When the time is equal to ten seconds, change format to "SS:LL"
  *    changeFormatWhen(10, TimeUnit.SECONDS, "SS:LL")
  * }
  *
- * // You can set formatted start time to TextView before timer started
+ * // You can set formatted start time to a TextView before the timer started
  * myTextView.text = timer.formattedStartTime
  *
- * // Start timer
+ * // Starting the timer
  * timer.start();
  *
- * // Get current time in milliseconds
- * long currentTime = timer.currentTimeInMillis
+ * // Getting the current time in milliseconds
+ * val currentTime: Long = timer.currentTimeInMillis
  *
- * // You can change time of timer using [Timer.setTime] method. Time will be changed whether timer
- * // is running or not. All formats will be applied accordingly
+ * // You can change the time of the timer using [Timer.setTime] method. Time will be changed
+ * // whether timer is running or not. All formats will be applied accordingly.
  * timer.setTime(20, TimeUnit.SECONDS)
  *
- * // When timer is not needed anymore
+ * // When the timer is not needed anymore
  * timer.release()
  *
  * @see Timer
@@ -55,7 +55,7 @@ public class TimerBuilder internal constructor() {
   private var useExactDelay = false
   
   /**
-   * Set the start format to timer
+   * Sets the start format to the timer.
    *
    * @param format Format for timer. See [TimeFormatter] to find out about formats
    */
@@ -64,7 +64,7 @@ public class TimerBuilder internal constructor() {
   }
   
   /**
-   * Set the start time to timer
+   * Sets the start time to the timer.
    *
    * @param time Time to set
    * @param timeUnit Unit of the time
@@ -75,25 +75,25 @@ public class TimerBuilder internal constructor() {
   }
   
   /**
-   * Set tick listener to receive formatted time
+   * Sets the tick listener to receive time.
    */
   public fun onTick(tickListener: TimeTickListener) {
     this.tickListener = tickListener
   }
   
   /**
-   * Set tick listener to be notified when timer ends
+   * Sets the finish listener to be notified when timer finishes.
    *
-   * @param finishAction Action that fires up when timer reaches 0
+   * @param finishAction Action that is invoked when the timer reaches 0.
    */
   public fun onFinish(finishAction: Runnable) {
     this.finishAction = finishAction
   }
   
   /**
-   * Schedules changing format at a certain time. Format is applied as soon as timer
+   * Schedules format change at a certain time. Format is applied as soon as the timer
    * reaches given time. This method can be called many times, all received formats will
-   * be scheduled. When called with the same time, only first invocation is scheduled.
+   * be scheduled. When called with the same time, only the first invocation is applied.
    * Examples:
    * <pre>
    * val timer = buildTimer {
@@ -112,7 +112,7 @@ public class TimerBuilder internal constructor() {
   }
   
   /**
-   * Like [changeFormatWhen], but schedules an action at a certain time.
+   * Like [changeFormatWhen], but schedules an action to run at a certain time.
    * Example:
    * <pre>
    *  val timer = buildTimer {
@@ -130,29 +130,29 @@ public class TimerBuilder internal constructor() {
   /**
    * Determines whether timer should have precise delays between ticks or not.
    *
-   * If flag is set to _true_ then delay between ticks will happen according to format.
-   * For example if current format on timer is "MM:SS" delay between onTick() invocations
-   * will be exactly 1 second, if format is "HH:MM" - exactly one minute, "SS:LL" - exactly 10
-   * milliseconds and so on
+   * If flag is set to _true_, then delay between ticks will happen according to format.
+   * For example, if the current format of the stopwatch is "MM:SS", delay between onTick() \
+   * invocations will be exactly 1 second, if the format is "HH:MM" - exactly one minute,
+   * "SS:LL" - exactly 10 milliseconds and so on
    *
-   * If, however, this flag is set to _false_ then delay between ticks might be less than exact
-   * time. For example, if format is "MM:SS", delay between ticks might be less than seconds, like
+   * If, however, this flag is set to _false_, then delay between ticks might be less than exact
+   * time. For example, if format is "MM:SS", delay between ticks might be less than a second, like
    * 100 milliseconds. In this case [TimeTickListener.onTick] will be called multiple times per
    * second with **same** formatted time, but **different** milliseconds
    *
-   * By default this flag is set to false and generally you don't have to worry about it. If you
-   * are just displaying formatted time in TextView and you want to have good precision then leave
+   * By default this flag is set to false, and generally you don't have to worry about it. If you
+   * are just displaying formatted time in a TextView and you want to have good precision, then leave
    * this flag as false. You need to set it to true if you want [TimeTickListener.onTick] method to
-   * be called called exactly between delays specified by your format
+   * be called called exactly between delays specified by your format.
    *
-   * @param [useExactDelay] Whether timer should use exact delays or not. Default is false
+   * @param [useExactDelay] Whether the timer should use exact delays or not. Default is false.
    */
   public fun useExactDelay(useExactDelay: Boolean) {
     this.useExactDelay = useExactDelay
   }
   
   /**
-   * Creates and returns timer instance
+   * Creates and returns a timer instance.
    */
   internal fun build(): Timer {
     val startSemantic = startSemantic ?: error("Start format is not provided. Call" +

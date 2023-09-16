@@ -2,7 +2,7 @@ package timerx
 
 /**
  * Represents position indices of special symbols in a format. [start] and [end] both could be
- * equal to -1 if there is no symbols of necessary type
+ * equal to -1 if there is no symbols of corresponding type.
  */
 internal data class Position(val start: Int, val end: Int) {
   

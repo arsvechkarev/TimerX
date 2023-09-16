@@ -1,15 +1,15 @@
 package timerx
 
 /**
- * Tick listener that receives time in milliseconds and formatted time
+ * Tick listener that receives time in milliseconds and formatted time.
  */
 public fun interface TimeTickListener {
   
   /**
-   * Called on timer/stopwatch tick
+   * Called on timer/stopwatch tick.
    *
    * @param millis Time on timer/stopwatch
-   * @param formattedTime Time formatted according to current format
+   * @param formattedTime Time formatted according to the current format
    */
   public fun onTick(millis: Long, formattedTime: CharSequence)
 }

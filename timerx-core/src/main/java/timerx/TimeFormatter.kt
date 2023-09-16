@@ -13,19 +13,19 @@ import timerx.Analyzer.analyze
  *
  * "S" - seconds
  *
- * "L" - can be milliseconds, hundredths of second, etc. (It depends on amount of the
+ * "L" - can be milliseconds, hundredths of a second and so on. (It depends on amount of the
  * symbols, detailed explanation later)<br></br>
  *
- * For example, let's consider a format like "MM:SS". It contains minutes and seconds. If
- * current time is 1 minute and 37 seconds, result of formatting will be "01:37", and if
- * current time is 1 hour, 2 minutes and 9 seconds, result will be "122:09" and so
+ * For example, let's consider a format like "MM:SS". It contains minutes and seconds. If the
+ * current time is 1 minute and 37 seconds, then result of formatting will be "01:37", and if
+ * current time is 1 hour, 2 minutes and 9 seconds, the result will be "122:09" and so
  * on.<br></br><br></br>
  *
  * If you need to use special format characters ("H", "M", "S", or "L") as a plain text,
- * you can put the escape symbol before these symbols "#", For example, if format is "HH#H
- * MM#M", and time is 2 hours 47 minutes, then result will be "02H 47M".<br></br><br></br>
+ * you can put the escape symbol "#" before them, For example, if format is "HH#H
+ * MM#M", and time is 2 hours 47 minutes, then the result will be "02H 47M".<br></br><br></br>
  *
- * There are some formatting examples:
+ * Here are more formatting examples:
  *
  * <pre>
  * | ------------------------------------------------------------ |
@@ -64,17 +64,17 @@ import timerx.Analyzer.analyze
  * Now, let's take a look at the character "L". It can be formatted as milliseconds,
  * hundredths of second or tenths of second.<br></br><br></br>
  *
- * If there is no other special symbols then "L" is formatted as milliseconds. If there is
+ * If there are no other special symbols, then "L" is formatted as milliseconds. If there are
  * other special symbols, then "L" is formatted depending on how many "L" characters are
- * in the format. If there is one character - it is formatted as tenths of second, two -
- * hundredths of second, three and more - milliseconds.<br></br><br></br>
+ * in the format. If there is one character - it is formatted as tenths of a second, two -
+ * hundredths of a second, three and more - milliseconds.<br></br><br></br>
  *
  * Consider format "M:SS.LL" and time 36698 milliseconds (36 seconds and 698
  * milliseconds). In this case, since the amount of "L" characters in the format is 2,
  * last digit of 698 milliseconds will be omitted, and the result will be
  * "0:36.69".<br></br><br></br>
  *
- * Here some examples of formatting with "L" symbol:
+ * Here are some examples of formatting with "L" symbol:
  * <pre>
  * | ---------------------------------------------- |
  * |   Format    |  Time(milliseconds)  |  Output   |
