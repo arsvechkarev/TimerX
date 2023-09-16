@@ -108,8 +108,8 @@ public interface TimeFormatter {
   /**
    * Returns delay for timer/stopwatch based on what the format is. If [useExactDelay] is set to
    * true, then delay should be calculated **exactly** according to format. For example, if format
-   * is "MM:SS", then delay should be 1 seconds. If [useExactDelay] is set to false then delay
-   * might be less be 1 seconds, like 100 or milliseconds
+   * is "MM:SS", then delay should be 1 second. If [useExactDelay] is set to false then delay
+   * might be less be 1 second, like 100 or 10 milliseconds
    */
   public fun getWaitingDelay(useExactDelay: Boolean): Long
   

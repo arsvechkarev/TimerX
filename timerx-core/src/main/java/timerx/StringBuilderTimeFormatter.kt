@@ -72,7 +72,11 @@ internal class StringBuilderTimeFormatter(private val semantic: Semantic) : Time
       delay = TimeUnit.SECONDS.toMillis(1)
     }
     if (semantic.has(TimeUnitType.R_MILLISECONDS)) {
-      delay = 1
+      delay = when (semantic.rMillisPosition.length) {
+        1 -> 100
+        2 -> 10
+        else -> 1
+      }
     }
     return delay
   }

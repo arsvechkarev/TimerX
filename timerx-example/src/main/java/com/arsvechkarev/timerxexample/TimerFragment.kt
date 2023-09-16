@@ -44,7 +44,9 @@ class TimerFragment : Fragment() {
         text_time.text = formattedTime
         Log.i("Timer", "Remaining time = $millis")
       }
-      onFinish { showToast("Finished!") }
+      onFinish {
+        showToast("Finished!")
+      }
     }
     
     text_time.text = timer.formattedStartTime
