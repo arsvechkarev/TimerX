@@ -1,6 +1,7 @@
 plugins {
   id 'com.android.library'
   id 'kotlin-android'
+  id 'maven-publish'
 }
 
 android {
@@ -27,4 +28,18 @@ dependencies {
 
 repositories {
   mavenCentral()
+}
+
+publishing {
+  publications {
+    release(MavenPublication) {
+      groupId = 'com.github.arsvechkarev'
+      artifactId = 'timerx.core'
+      version = '3.0.0'
+
+      afterEvaluate {
+        from components.release
+      }
+    }
+  }
 }
