@@ -1,17 +1,17 @@
 # TimerX
-A simple timer & stowatch library for android which allows you build customizable timer or stopwatch, set custom formats, and schedule actions.
+A simple timer & stowatch library for android which allows for building customizable timer or stopwatch, applying custom formats, scheduling actions and more.
 
-TimerX provides a simple api to apply different format to a timer or a stopwatch. For instance, you can create stopwatch, specify format as **HH:MM:SS** or **SS.LL** and time in the stopwatch will be formatted according to this format. 
+TimerX provides a simple api to apply a different format to a timer or a stopwatch. For instance, you can create a stopwatch, specify format as **HH:MM:SS** or **SS.LL** and time in the stopwatch will be formatted accordingly. 
 
 See [wiki](https://github.com/arsvechkarev/TimerX/wiki/Format-syntax) for more detailed explanation.
 
 ## Gradle Setup
-Make sure you have jcenter added in your top-level build.gradle file:
+Make sure you have jitpack added in your top-level build.gradle file:
 ```groovy
 allprojects {
   repositories {
     google()
-    jcenter() // Make sure you have this line
+    maven { url 'https://jitpack.io' }
   }
 }
 ```
@@ -20,44 +20,47 @@ allprojects {
 And then, add following lines in your module-level build.gradle file:
 ```groovy
 dependencies {
-      implementation 'com.arsvechkarev:timerx:2.1.0'
+    implementation 'com.github.arsvechkarev:timerx:3.1.0'
 }
 ```
 
 
 ## Examples:
 #### Stopwatch:
-```java
-Stopwatch stopwatch = new StopwatchBuilder()
-      // Set the initial format
-      .startFormat("MM:SS")
-      // Set the tick listener for displaying time
-      .tickListener(time -> textViewStopwatch.setText(time)) 
-      // When time is equal to one hour, change format to "HH:MM:SS"
-      .changeFormatWhen(1, TimeUnit.HOURS, "HH:MM:SS")
-      .build();
-      
-// Start the stopwatch
-stowatch.start()
+```kotlin
+val stopwatch = buildStopwatch { 
+    // Setting the start format of the stopwatch
+    startFormat("SS:LL")
+    // Setting a tick listener that gets notified when time changes
+    onTick { millis: Long, time: CharSequence -> myTextView.text = time }
+    // Running an action at a certain time
+    actionWhen(10, TimeUnit.SECONDS) { showToast("10s passed") }
+    // When the time is equal to one minute, change format to "MM:SS:LL"
+    changeFormatWhen(1, TimeUnit.MINUTES, "MM:SS:LL")
+}
+
+// Starting the stopwatch
+stopwatch.start();
 ...
 ```
 
 #### Timer:
-```java
-Timer timer = new TimerBuilder()
-      // Set start time
-      .startTime(5, TimeUnit.MINUTES)
-      // Set the initial format
-      .startFormat("MM:SS")
-      // Set the tick listener that receives formatted time
-      .tickListener(time -> textViewTimer.setText(time))
-      // Run an action when the remaining time is 30 seсonds
-      .actionWhen(30, TimeUnit.SECONDS, () -> {
-          Toast.makeText(context, "30 seconds left!", Toast.LENGTH_SHORT).show();
-      })
-      .build();
-      
-// Start the timer
-timer.start()
+```kotlin
+val timer = buildTimer {
+    // Setting the start format of timer
+    startFormat("MM:SS")
+    // Setting the start time of the timer
+    startTime(60, TimeUnit.SECONDS)
+    // Setting a tick listener that gets notified when time changes
+    onTick { millis: Long, time: CharSequence -> myTextView.text = time }
+    // Run actions at a certain time
+    actionWhen(40, TimeUnit.SECONDS) { showToast("40 seconds left") }
+    actionWhen(20, TimeUnit.SECONDS) { showToast("20 seconds left") }
+    // When the time is equal to ten seconds, change format to "SS:LL"
+    changeFormatWhen(10, TimeUnit.SECONDS, "SS:LL")
+}
+    
+// Starting the timer
+timer.start();
 ...
 ```

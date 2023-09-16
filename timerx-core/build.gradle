@@ -34,7 +34,7 @@ publishing {
   publications {
     release(MavenPublication) {
       groupId = 'com.github.arsvechkarev'
-      artifactId = 'timerx.core'
+      artifactId = 'timerx'
       version = '3.1.0'
 
       afterEvaluate {
